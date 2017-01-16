@@ -22,17 +22,10 @@ public class MainActivity extends AppCompatActivity implements MainView, LoaderM
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        // presenter = new MainPresenter();
+        
         getSupportLoaderManager().initLoader(LOADER_ID, null, this);
         Icepick.restoreInstanceState(this, savedInstanceState);
-
-        /*
-        if (savedInstanceState == null) {
-            presenter = new MainPresenter();
-        } else {
-
-        }
-        */
+        
         setContentView(R.layout.activity_main);
     }
 
