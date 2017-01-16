@@ -10,7 +10,6 @@ import internetofeveryone.ioe.View.MvpView;
 
 public abstract class MvpPresenter<V extends MvpView> implements ModelObserver {
 
-    // private ModelInterface model = null;
     private Model model = null;
     private WeakReference<V> view;
 
