@@ -103,12 +103,10 @@ public class BrowserActivity extends AppCompatActivity implements BrowserView, L
 
         super.onSaveInstanceState(outState);
         Icepick.saveInstanceState(this, outState);
-        // System.out.println("Main: onSaveInstanceState. Presenter = " + (presenter == null ? null : "Pres."));
     }
 
     @Override
     public Loader<BrowserPresenter> onCreateLoader(int id, Bundle arg){
-        // System.out.println("Main: onCreateLoader. Presenter = " + (presenter == null ? null : "Pres."));
 
         return new PresenterLoader<>(this, new BrowserPresenterFactory(this));
     }
@@ -116,7 +114,6 @@ public class BrowserActivity extends AppCompatActivity implements BrowserView, L
     @Override
     public void onLoadFinished(Loader<BrowserPresenter> loader, final BrowserPresenter presenter) {
         this.presenter = presenter;
-        // System.out.println("Main: onLoadFinished. Presenter = " + (presenter == null ? null : "Pres."));
         spinner = (Spinner) findViewById(R.id.dropdown_url);
         spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
@@ -142,7 +139,6 @@ public class BrowserActivity extends AppCompatActivity implements BrowserView, L
     @Override
     public void onLoaderReset(Loader<BrowserPresenter> loader) {
         presenter = null;
-        // System.out.println("Main: onLoaderReset. Presenter = " + (presenter == null ? null : "Pres."));
 
     }
 }
