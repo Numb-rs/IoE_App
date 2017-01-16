@@ -52,13 +52,6 @@ public class MainActivity extends AppCompatActivity implements MainView, LoaderM
     public void onPause() {
         super.onPause();
     }
-    /*
-    @Override
-    protected void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-        // PresenterManager.getInstance().savePresenter(presenter, outState);
-    }
-    */
 
     public void onClickMessenger(View view) {
         presenter.onMessengerClicked();
