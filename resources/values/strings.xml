@@ -1,0 +1,31 @@
+<resources>
+    <string name="app_name">IoE</string>
+    <string name="edit_message">Enter a message</string>
+    <string name="button_messages">Messages</string>
+    <string name="button_downloads">Downloads</string>
+    <string name="button_browser">Browser</string>
+    <string name="button_language">Change Language</string>
+    <string name="title_activity_browser">BrowserActivity</string>
+    <string name="title_activity_downloads">DownloadsActivity</string>
+    <string name="title_activity_messenger">MessengerActivity</string>
+    <string name="pick_language">Choose your Language</string>
+    <string name="button_download">Download</string>
+    <string name="button_open">Open</string>
+    <string name="tutorial_browser">Select a Website from the Dropdown Menu or enter a URL and confirm the URL with \'Enter\' and then press \'Download\' or \'Open\' </string>
+    <string name="button_enter">Enter</string>
+    <string name="button_add_contact">Add Contact</string>
+    <string name="button_add_chat">Add Chat</string>
+    <string name="phone_number">Phone Number</string>
+    <string name="save">Save</string>
+    <string name="cancel">Cancel</string>
+    <string name="name">Name</string>
+    <string name="default_websites">Default Websites</string>
+    <string name="button_delete_default_website">Delete</string>
+    <string name="button_add_default_website">Add</string>
+    <string name="exit">Exit</string>
+    <string-array name="languages">
+        <item>German</item>
+        <item>English</item>
+        <item>French</item>
+    </string-array>
+</resources>
