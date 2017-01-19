@@ -5,6 +5,7 @@ import android.content.Context;
 import java.util.ArrayList;
 import java.util.Collection;
 
+import internetofeveryone.ioe.Data.DataType;
 import internetofeveryone.ioe.Presenter.MvpPresenter;
 import internetofeveryone.ioe.Data.Website;
 
@@ -86,8 +87,8 @@ public class BrowserPresenter extends MvpPresenter<BrowserView> {
 
 
     @Override
-    public void update(String type, String id) {
-        if (type.equals("website")) {
+    public void update(DataType type, String id) {
+        if (type.equals(DataType.WEBSITE)) {
             if (isViewAttached()) {
                 getView().dataChanged();
             }
