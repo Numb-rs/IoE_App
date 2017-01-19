@@ -2,6 +2,7 @@ package internetofeveryone.ioe.Main;
 
 import android.content.Context;
 
+import internetofeveryone.ioe.Data.DataType;
 import internetofeveryone.ioe.Presenter.MvpPresenter;
 
 public class MainPresenter extends MvpPresenter<MainView> {
@@ -31,7 +32,7 @@ public class MainPresenter extends MvpPresenter<MainView> {
 
 
     @Override
-    public void update(String type, String id) {
+    public void update(DataType type, String id) {
     }
 
 }
