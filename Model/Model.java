@@ -13,11 +13,13 @@ import java.util.TreeMap;
 
 import internetofeveryone.ioe.Data.Chat;
 import internetofeveryone.ioe.Data.Contact;
+import internetofeveryone.ioe.Data.DataType;
 import internetofeveryone.ioe.Data.Message;
 import internetofeveryone.ioe.Data.Website;
 import internetofeveryone.ioe.Presenter.ModelObserver;
 
 public class Model {
+
 
     private static Model singleton = null;
     private final ArrayList<ModelObserver> observers = new ArrayList<>();
@@ -29,6 +31,10 @@ public class Model {
     private int myUserCode;
     Context context;
     DataBase db;
+    DataType chatType = DataType.CHAT;
+    DataType contactType = DataType.CONTACT;
+    DataType websiteType = DataType.WEBSITE;
+    DataType messageType = DataType.MESSAGE;
 
     private Model(Context context) {
         this.context = context;
@@ -70,7 +76,7 @@ public class Model {
     //TODO: letzte nachricht
     //TODO: liste der nachrichten die zu einem chat gehören
 
-    public void notify(String type, String url) {
+    public void notify(DataType type, String url) {
         for (ModelObserver o : observers) {
             o.update(type, url);
         }
@@ -78,17 +84,17 @@ public class Model {
 
     public void addChat(Chat chat) {
         this.chatList.put(chat.getContact().getName(), chat);
-        notify("chat", chat.getContact().getName());
+        notify(chatType, chat.getContact().getName());
     }
 
     public void addContact(Contact contact) {
         this.contactList.put(contact.getUserCode(), contact);
-        notify("contact", "" + contact.getUserCode());
+        notify(contactType, "" + contact.getUserCode());
     }
 
     public void addMessage(Message message) {
         this.messageList.put(message.getId(), message);
-        notify("message", "" + message.getId());
+        notify(messageType, "" + message.getId());
     }
 
     public void addDownloadedWebsite(Website website) {
@@ -97,7 +103,7 @@ public class Model {
         if (ins) {
             System.out.println("An item has been added!");
         }
-        notify("website", website.getUrl());
+        notify(websiteType, website.getUrl());
     }
 
     public Chat getChat(String name) {
@@ -160,17 +166,17 @@ public class Model {
         System.out.println("Added to Model: " + website.getUrl());
         defaultWebsiteList.put(website.getUrl(), website);
         // defaultWebsiteNames.add(website.getName());
-        notify("website", website.getUrl());
+        notify(websiteType, website.getUrl());
     }
 
     public void removeDefaultWebsite(String url) {
         defaultWebsiteList.remove(url);
-        notify("website", url);
+        notify(websiteType, url);
     }
 
     public void removeContact(long userCode) {
         contactList.remove(userCode);
-        notify("contact", "" + userCode);
+        notify(contactType, "" + userCode);
     }
 
     // TODO: public void updateContact() {}
@@ -182,13 +188,13 @@ public class Model {
         if (deletedRows > 0) {
             System.out.println(deletedRows + " Rows have been deleted!");
         }
-        notify("website", url);
+        notify(websiteType, url);
     }
 
     public void removeChat(Chat chat) {
         chatList.remove(chat.getContact().getName());
-        notify("chat", chat.getContact().getName());
-        notify("contact", "" + chat.getContact().getUserCode());
+        notify(chatType, chat.getContact().getName());
+        notify(contactType, "" + chat.getContact().getUserCode());
     }
 
     public HashMap<String, Website> getDefaultWebsiteList() {
