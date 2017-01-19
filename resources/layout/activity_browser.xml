@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/activity_browser"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingBottom="@dimen/activity_vertical_margin"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    tools:context="internetofeveryone.ioe.Browser.BrowserActivity">
+
+    <Button
+        android:text="@string/button_enter"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/button_enter"
+        android:onClick="onClickEnter"
+        android:layout_alignBaseline="@+id/textView_url"
+        android:layout_alignBottom="@+id/textView_url"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true" />
+
+
+    <Spinner
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/dropdown_url"
+        android:layout_marginTop="96dp"
+        android:layout_below="@+id/textView"
+        android:layout_centerHorizontal="true" />
+
+    <TextView
+        android:id="@+id/textView"
+        android:layout_marginTop="17dp"
+        android:layout_height="wrap_content"
+        android:layout_width="wrap_content"
+        android:text="@string/tutorial_browser"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true">
+
+    </TextView>
+
+    <EditText
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:inputType="textPersonName"
+        android:hint="URL"
+        android:id="@+id/textView_url"
+        android:layout_marginTop="91dp"
+        android:layout_below="@+id/dropdown_url"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_toLeftOf="@+id/button_enter"
+        android:layout_toStartOf="@+id/button_enter" />
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="120dp"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_marginRight="15dp"
+        android:layout_marginLeft="15dp">
+
+        <Button
+            android:background="@drawable/download"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:id="@+id/download_website"
+            android:onClick="onClickDownload"
+            android:layout_marginBottom="10dp"
+            android:layout_marginLeft="50dp"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentBottom="true" />
+
+        <Button
+            android:background="@drawable/arrow_right"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:id="@+id/open_website"
+            android:onClick="onClickOpen"
+            android:layout_marginRight="50dp"
+            android:layout_below="@+id/textView2"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentEnd="true"
+            android:layout_marginEnd="50dp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Open"
+            android:layout_above="@id/open_website"
+            android:layout_alignParentRight="true"
+            android:layout_marginRight="50dp"
+            android:layout_marginBottom="10dp"
+            android:textSize="20sp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Download"
+            android:layout_above="@id/download_website"
+            android:layout_alignParentLeft="true"
+            android:layout_marginBottom="10dp"
+            android:layout_marginLeft="30dp"
+            android:textSize="20sp"
+            android:id="@+id/textView2" />
+
+
+    </RelativeLayout>
+</RelativeLayout>

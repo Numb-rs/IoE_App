@@ -1,0 +1,29 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:padding="10dp">
+
+    <TextView
+        android:id="@+id/downloaded_website_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="WebsiteName"
+        android:textColor="@android:color/white"/>
+
+    <Button
+        android:layout_width="32dp"
+        android:layout_height="32dp"
+        android:id="@+id/button_delete_downloaded_website"
+        android:background="@drawable/delete"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"/>
+
+    <Button
+        android:layout_width="32dp"
+        android:layout_height="32dp"
+        android:id="@+id/button_open_downloaded_website"
+        android:background="@drawable/arrow_right"/>
+
+
+</LinearLayout>
