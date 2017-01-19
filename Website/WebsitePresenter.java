@@ -9,6 +9,7 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 
+import internetofeveryone.ioe.Data.DataType;
 import internetofeveryone.ioe.Presenter.MvpPresenter;
 
 public class WebsitePresenter extends MvpPresenter<WebsiteView> {
@@ -22,7 +23,7 @@ public class WebsitePresenter extends MvpPresenter<WebsiteView> {
     }
 
     @Override
-    public void update(String type, String id) {
+    public void update(DataType type, String id) {
 
     }
 
