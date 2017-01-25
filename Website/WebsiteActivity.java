@@ -45,7 +45,7 @@ public class WebsiteActivity extends AppCompatActivity implements WebsiteView, L
     }
 
     public void onClickLink(String url) {
-        presenter.linkClicked(url); // speicher in FIFO letzte Website um dann wieder zurückspringen zu können
+        presenter.linkClicked(url); // speicher in FILO letzte Website um dann wieder zurückspringen zu können
     }
 
     @Override
