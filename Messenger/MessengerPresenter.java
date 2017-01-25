@@ -28,14 +28,14 @@ public class MessengerPresenter extends MvpPresenter<MessengerView> {
             getView().openChat(chat.getContact());
         }
     }
-
+    /*
     public void onSwipeRight(Chat chat) {
         if(isViewAttached()) {
             chat.getContact().setOpenChat(false);
             getModel().removeChat(chat);
         }
     }
-
+    */
     public HashMap<String, Chat> getChatList() {
         return getModel().getChatList();
     }
