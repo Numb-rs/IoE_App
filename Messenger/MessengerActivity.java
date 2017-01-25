@@ -102,8 +102,6 @@ public class MessengerActivity extends AppCompatActivity implements MessengerVie
 
     @Override
     public Loader<MessengerPresenter> onCreateLoader(int id, Bundle arg){
-        // System.out.println("Main: onCreateLoader. Presenter = " + (presenter == null ? null : "Pres."));
-
         return new PresenterLoader<>(this, new MessengerPresenterFactory(this));
     }
 
