@@ -24,8 +24,6 @@ public class DefaultWebsiteFragment extends android.support.v4.app.DialogFragmen
 
     private DefaultWebsitePresenter presenter;
     private View view;
-    private String name = "";
-    private String url = "";
     private String currentName = "";
     private String currentURL = "";
     private String[] defaultWebsiteNames;
@@ -102,10 +100,10 @@ public class DefaultWebsiteFragment extends android.support.v4.app.DialogFragmen
         builder2.setPositiveButton(R.string.button_add_default_website, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int id) {
-                name = ((EditText) view.findViewById(R.id.editText_website_name)).getText().toString();
-                url = ((EditText) view.findViewById(R.id.editText_website_url)).getText().toString();
-                System.out.println(name + ", " + url);
-                presenter.onClickAddWebsite(name, url);
+                currentName = ((EditText) view.findViewById(R.id.editText_website_name)).getText().toString();
+                currentURL = ((EditText) view.findViewById(R.id.editText_website_url)).getText().toString();
+                System.out.println(currentName + ", " + currentURL);
+                presenter.onClickAddWebsite(currentName, currentURL);
                 dismiss();
             }
         });
