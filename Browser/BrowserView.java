@@ -2,9 +2,18 @@ package internetofeveryone.ioe.Browser;
 
 import internetofeveryone.ioe.View.MvpView;
 
+/**
+ * Created by Fabian Martin for 'Internet of Everyone'
+ *
+ * This interface represents the view for the Browser page
+ */
 public interface BrowserView extends MvpView {
 
+    /**
+     * Opens the Website with the given URL
+     *
+     * @param url the URL of the requested Website
+     */
     public void goToURL(String url);
-    public void dataChanged();
 
 }

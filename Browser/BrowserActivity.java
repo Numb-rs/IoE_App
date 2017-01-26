@@ -19,28 +19,37 @@ import internetofeveryone.ioe.Presenter.PresenterLoader;
 import internetofeveryone.ioe.R;
 import internetofeveryone.ioe.Website.WebsiteActivity;
 
+/**
+ * Created by Fabian Martin for 'Internet of Everyone'
+ *
+ * This class is responsible for user-interaction and represents the implementation of view for the Browser page
+ */
 public class BrowserActivity extends AppCompatActivity implements BrowserView, LoaderManager.LoaderCallbacks<BrowserPresenter> {
 
-    private String url = "";
-    private EditText txtDescription;
+    private String url = ""; // URL that gets entered into the EditText
+    private EditText txtDescription; // description on how to use the Browser
     private BrowserPresenter presenter;
-    ArrayAdapter<String> spinnerArrayAdapter;
-    Spinner spinner;
-    private static final int LOADER_ID = 106;
+    /**
+     * Adapter for the Spinner (dropdown menu)
+     * It's responsible for displaying data in the Spinner
+     */
+    private ArrayAdapter<String> spinnerArrayAdapter;
+    private Spinner spinner; // dropdown menu
+    private static final int LOADER_ID = 106; // unique identification for the BrowserActivity-LoaderManager
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
+
         super.onCreate(savedInstanceState);
-
-        getSupportLoaderManager().initLoader(LOADER_ID, null, this);
-        Icepick.restoreInstanceState(this, savedInstanceState);
-
+        getSupportLoaderManager().initLoader(LOADER_ID, null, this); // initialises LoaderManager
+        Icepick.restoreInstanceState(this, savedInstanceState); // restores instance state
         getSupportActionBar().setTitle("Browser");
         setContentView(R.layout.activity_browser);
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
+
         getMenuInflater().inflate(R.menu.menu_default_websites, menu);
         return true;
     }
@@ -49,27 +58,49 @@ public class BrowserActivity extends AppCompatActivity implements BrowserView, L
     public boolean onOptionsItemSelected(MenuItem item) {
 
         int id = item.getItemId();
-        if (id == R.id.change_default_websites) {
+        if (id == R.id.change_default_websites) { // if the default website option from the menu gets clicked
             DefaultWebsiteFragment fragment = new DefaultWebsiteFragment();
-            fragment.show(getSupportFragmentManager(), "changeDefaultWebsites");
+            fragment.show(getSupportFragmentManager(), "changeDefaultWebsites"); // shows DefaultWebsiteFragment
         }
         return super.onOptionsItemSelected(item);
     }
 
+    /**
+     * Notifies the presenter that the user has entered a URL in the EditText
+     *
+     * @param view
+     */
     public void onClickEnter(View view) {
+
         url = txtDescription.getText().toString();
-        presenter.websiteSelectedbyURL(url);
+        presenter.websiteSelectedByURL(url);
     }
 
+    /**
+     * Notifies the presenter that the user wants to open a Website
+     *
+     * @param view
+     */
     public void onClickOpen(View view) {
         presenter.onOpenClicked();
     }
 
+    /**
+     * Notifies the presenter that the user wants to download a Website
+     *
+     * @param view
+     */
     public void onClickDownload(View view) {
         presenter.onDownloadClicked();
     }
 
+    /**
+     * Opens the Website with the given URL
+     *
+     * @param url the URL of the requested Website
+     */
     public void goToURL(String url) {
+
         Intent intent = new Intent(this, WebsiteActivity.class);
         intent.putExtra("URL", url);
         startActivity(intent);
@@ -92,7 +123,12 @@ public class BrowserActivity extends AppCompatActivity implements BrowserView, L
         super.onPause();
     }
 
+    /**
+     * Updates the data in the spinner by creating a new spinner
+     * and replacing the old one so that the update will be instantly visible to the user
+     */
     public void dataChanged() {
+
         spinnerArrayAdapter = new ArrayAdapter<>(this, R.layout.support_simple_spinner_dropdown_item,
                 presenter.getDefaultWebsiteNames());
         spinnerArrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
@@ -102,7 +138,7 @@ public class BrowserActivity extends AppCompatActivity implements BrowserView, L
     @Override protected void onSaveInstanceState(Bundle outState) {
 
         super.onSaveInstanceState(outState);
-        Icepick.saveInstanceState(this, outState);
+        Icepick.saveInstanceState(this, outState); // saves instance state
     }
 
     @Override
@@ -111,23 +147,27 @@ public class BrowserActivity extends AppCompatActivity implements BrowserView, L
         return new PresenterLoader<>(this, new BrowserPresenterFactory(this));
     }
 
+
     @Override
     public void onLoadFinished(Loader<BrowserPresenter> loader, final BrowserPresenter presenter) {
+
         this.presenter = presenter;
         spinner = (Spinner) findViewById(R.id.dropdown_url);
         spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
                 String chosenWebsite = adapterView.getItemAtPosition(i).toString();
-                presenter.websiteSelectedbyName(chosenWebsite);
+                presenter.websiteSelectedByName(chosenWebsite);
             }
 
             @Override
             public void onNothingSelected(AdapterView<?> adapterView) {
-
+                // ErrorHandling
             }
         });
 
+        // sets up the spinner after the load has finished
         spinnerArrayAdapter = new ArrayAdapter<>(this, R.layout.support_simple_spinner_dropdown_item,
                 presenter.getDefaultWebsiteNames());
         spinnerArrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
