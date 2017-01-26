@@ -10,6 +10,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
 
@@ -49,7 +50,7 @@ public class DefaultWebsiteFragment extends android.support.v4.app.DialogFragmen
         Icepick.restoreInstanceState(this, savedInstanceState); // restores instance state
         builder = new AlertDialog.Builder(getActivity());
         LayoutInflater inflater = getActivity().getLayoutInflater();
-        builder.setTitle("Edit default Websites");
+        builder.setTitle(R.string.edit_default_website_title);
         view = inflater.inflate(R.layout.fragment_default_websites, null);
         builder.setView(view);
 
@@ -67,7 +68,21 @@ public class DefaultWebsiteFragment extends android.support.v4.app.DialogFragmen
             }
         });
 
-        return builder.create();
+        final AlertDialog b = builder.create();
+        b.setOnShowListener(new DialogInterface.OnShowListener() {
+            @Override
+            public void onShow(DialogInterface dialog) {
+
+            Button button = ((AlertDialog) dialog).getButton(AlertDialog.BUTTON_POSITIVE);
+                button.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        presenter.onClickAdd();
+                    }
+                });
+            }
+        });
+        return b;
     }
 
     @Override
@@ -87,7 +102,7 @@ public class DefaultWebsiteFragment extends android.support.v4.app.DialogFragmen
 
         AlertDialog.Builder builder2 = new AlertDialog.Builder(getActivity());
         LayoutInflater inflater = getActivity().getLayoutInflater();
-        builder2.setTitle("Add new default Website");
+        builder2.setTitle(R.string.add_default_website_title);
         view = inflater.inflate(R.layout.fragment_add_default_website, null);
         builder2.setView(view);
 
@@ -98,7 +113,6 @@ public class DefaultWebsiteFragment extends android.support.v4.app.DialogFragmen
 
                 currentName = ((EditText) view.findViewById(R.id.editText_website_name)).getText().toString();
                 currentURL = ((EditText) view.findViewById(R.id.editText_website_url)).getText().toString();
-                // System.out.println(currentName + ", " + currentURL);
                 presenter.onClickAddWebsite(currentName, currentURL); // notifies presenter that the user wants to add a new Website
             }
         });
@@ -122,7 +136,7 @@ public class DefaultWebsiteFragment extends android.support.v4.app.DialogFragmen
 
         AlertDialog.Builder builder3 = new AlertDialog.Builder(getActivity());
         LayoutInflater inflater = getActivity().getLayoutInflater();
-        builder3.setTitle("Edit default Website");
+        builder3.setTitle(R.string.edit_default_website_title);
         view = inflater.inflate(R.layout.fragment_edit_default_website, null);
         builder3.setView(view);
 
