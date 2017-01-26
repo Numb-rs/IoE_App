@@ -12,52 +12,73 @@ import com.android.volley.toolbox.Volley;
 import internetofeveryone.ioe.Data.DataType;
 import internetofeveryone.ioe.Presenter.MvpPresenter;
 
+/**
+ * Created by Fabian Martin for 'Internet of Everyone'
+ *
+ * This class handles the logic and represents the implementation of presenter for the Website page
+ */
 public class WebsitePresenter extends MvpPresenter<WebsiteView> {
 
     private Context context;
-    private RequestQueue queue;
+    private RequestQueue queue; // queue for outgoing requests
 
+    /**
+     * Instantiates a new Website presenter.
+     *
+     * @param context
+     */
     public WebsitePresenter(Context context) {
         super(context);
         this.context = context;
     }
 
     @Override
-    public void update(DataType type, String id) {
+    public void update(DataType type, String id) {}
 
-    }
-
+    /**
+     * Sends a website request to the network
+     *
+     * @param url URL of the requested Website
+     */
     public void onURLPassed(String url) {
-        // request website
 
         queue = Volley.newRequestQueue(context);
 
-        // Request a string response from the provided URL.
+        // request the content of the website
         StringRequest stringRequest = new StringRequest(Request.Method.GET, url,
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
-                        // Display the first 500 characters of the response string.
                         if (isViewAttached()) {
-                            getView().displayWebsite("Response is: " + response);
+                            getView().displayWebsite(response); // Sends a request to the view to diplay the content
+                        } else {
+                            // ErrorHandling
                         }
                     }
                 }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
                 if (isViewAttached()) {
-                    getView().displayErrorMessage();
+                    getView().displayErrorMessage(); // Sends a request to the view to diplay an error message
                 }
 
             }
         });
-        // Add the request to the RequestQueue.
+        // add the request to the RequestQueue.
         queue.add(stringRequest);
     }
 
+    /**
+     * Opens a new Website and saves the current Website in a FILO queue
+     *
+     * @param url URL of the new Website
+     */
     public void linkClicked(String url) {
         if (isViewAttached()) {
             getView().displayWebsite(url);
+            // TODO: speicher in FILO letzte Website um dann wieder zurückspringen zu können
+        } else {
+            // ErrorHandling
         }
     }
 

@@ -11,47 +11,56 @@ import internetofeveryone.ioe.Presenter.PresenterLoader;
 import internetofeveryone.ioe.R;
 
 
+/**
+ * Created by Fabian Martin for 'Internet of Everyone'
+ *
+ * This class is responsible for user-interaction and represents the implementation of view for the Website page
+ */
 public class WebsiteActivity extends AppCompatActivity implements WebsiteView, LoaderManager.LoaderCallbacks<WebsitePresenter> {
 
     private WebsitePresenter presenter;
     private TextView textView;
-    private static final int LOADER_ID = 108;
+    private static final int LOADER_ID = 108; // unique identification for the WebsiteActivity-LoaderManager
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
-        getSupportLoaderManager().initLoader(LOADER_ID, null, this);
-        Icepick.restoreInstanceState(this, savedInstanceState);
-
+        getSupportLoaderManager().initLoader(LOADER_ID, null, this); // initialises the LoaderManager
+        Icepick.restoreInstanceState(this, savedInstanceState); // restore instance state
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_website);
-
         textView = (TextView) findViewById(R.id.website);
-
-        /*
-        Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(urlPassed));
-        startActivity(browserIntent);
-        */
     }
 
+    /**
+     * Displays the content of the Website to the user
+     *
+     * @param content of the website
+     */
     public void displayWebsite(String content) {
-        // display
+        // TODO: display the content
         textView.setText(content);
     }
 
+    /**
+     * Displays an error message to the user
+     */
     public void displayErrorMessage() {
-        textView.setText("That didn't work :(");
+        textView.setText(R.string.error_message_website);
     }
 
+    /**
+     * Notifies the presenter that a link has been clicked
+     *
+     * @param url URL of the new Website
+     */
     public void onClickLink(String url) {
-        presenter.linkClicked(url); // speicher in FILO letzte Website um dann wieder zurückspringen zu können
+        presenter.linkClicked(url);
     }
 
     @Override
-    public void dataChanged() {
-
-    }
+    public void dataChanged() {}
 
     @Override
     public void onStart() {
@@ -73,7 +82,7 @@ public class WebsiteActivity extends AppCompatActivity implements WebsiteView, L
     @Override protected void onSaveInstanceState(Bundle outState) {
 
         super.onSaveInstanceState(outState);
-        Icepick.saveInstanceState(this, outState);
+        Icepick.saveInstanceState(this, outState); // saves instance state
     }
 
     @Override
@@ -83,6 +92,7 @@ public class WebsiteActivity extends AppCompatActivity implements WebsiteView, L
 
     @Override
     public void onLoadFinished(Loader<WebsitePresenter> loader, WebsitePresenter presenter) {
+
         this.presenter = presenter;
         String urlPassed = getIntent().getStringExtra("URL");
         presenter.onURLPassed(urlPassed);
