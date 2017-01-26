@@ -12,26 +12,45 @@ import icepick.Icepick;
 import internetofeveryone.ioe.Presenter.PresenterLoader;
 import internetofeveryone.ioe.R;
 
+/**
+ * Created by Fabian Martin for 'Internet of Everyone'
+ *
+ * This class is responsible for user-interaction and represents the implementation of view for the Downloads page
+ */
 public class DownloadsActivity extends AppCompatActivity implements DownloadsView, LoaderManager.LoaderCallbacks<DownloadsPresenter> {
 
-    DownloadsPresenter presenter;
-    DownloadsAdapter adapter;
-    private static final int LOADER_ID = 102;
+    private DownloadsPresenter presenter;
+    /**
+     * Adapter for the ListView
+     * It's responsible for displaying data in the list
+     */
+    private DownloadsAdapter adapter;
+    private static final int LOADER_ID = 102; // unique identification for the DownloadsActivity-LoaderManager
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
 
         super.onCreate(savedInstanceState);
-        getSupportLoaderManager().initLoader(LOADER_ID, null, this);
-        Icepick.restoreInstanceState(this, savedInstanceState);
+        getSupportLoaderManager().initLoader(LOADER_ID, null, this); // initialises the LoaderManager
+        Icepick.restoreInstanceState(this, savedInstanceState); // restores instance state
         getSupportActionBar().setTitle("Downloads");
         setContentView(R.layout.activity_downloads);
-
     }
 
+    /**
+     * Notifies the presenter that the user wants to delete a downloaded Website
+     *
+     * @param name name of the downloaded Website
+     */
     public void onClickDelete(String name) {
         presenter.deleteClicked(name);
     }
+
+    /**
+     * Notifies the presenter that the user wants to open a downloaded Website
+     *
+     * @param name name of the downloaded Website
+     */
     public void onClickOpen(String name) {
         presenter.openClicked(name);
     }
@@ -53,16 +72,18 @@ public class DownloadsActivity extends AppCompatActivity implements DownloadsVie
         super.onPause();
     }
 
-
+    /**
+     * Opens a Website
+     * @param url URL of the Website
+     */
     public void openWebsite(String url) {
         Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
         startActivity(browserIntent);
     }
 
     public void dataChanged() {
-        adapter.notifyDataSetChanged();
+        adapter.notifyDataSetChanged(); // updates the ListView
     }
-
 
     @Override
     public Loader<DownloadsPresenter> onCreateLoader(int id, Bundle arg){
@@ -71,7 +92,9 @@ public class DownloadsActivity extends AppCompatActivity implements DownloadsVie
 
     @Override
     public void onLoadFinished(Loader<DownloadsPresenter> loader, DownloadsPresenter presenter) {
+
         this.presenter = presenter;
+        // sets up the ListView after the load has finished
         ListView listView = (ListView)findViewById(R.id.downloads_list);
         adapter = new DownloadsAdapter(presenter.getDownloadedWebsiteNames(), this);
         listView.setAdapter(adapter);
@@ -85,6 +108,6 @@ public class DownloadsActivity extends AppCompatActivity implements DownloadsVie
 
     @Override protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        Icepick.saveInstanceState(this, outState);
+        Icepick.saveInstanceState(this, outState); // save instance state
     }
 }
