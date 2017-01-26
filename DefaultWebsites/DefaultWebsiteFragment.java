@@ -10,7 +10,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
 
@@ -29,6 +28,7 @@ public class DefaultWebsiteFragment extends android.support.v4.app.DialogFragmen
 
     private DefaultWebsitePresenter presenter;
     private View view;
+    private ListView listView; // list of all DefaultWebsite names
     private String currentName = ""; // name that has been entered by the user
     private String currentURL = ""; // URL that has been entered by the user
     private String[] defaultWebsiteNames; // names of all DefaultWebsites
@@ -67,23 +67,7 @@ public class DefaultWebsiteFragment extends android.support.v4.app.DialogFragmen
             }
         });
 
-        final AlertDialog b = builder.create();
-        b.setOnShowListener(new DialogInterface.OnShowListener() {
-
-            @Override
-            public void onShow(DialogInterface dialog) {
-
-                Button button = ((AlertDialog) dialog).getButton(AlertDialog.BUTTON_POSITIVE);
-                button.setOnClickListener(new View.OnClickListener() {
-
-                    @Override
-                    public void onClick(View view) {
-                        presenter.onClickAdd();
-                    }
-                });
-            }
-        });
-        return b;
+        return builder.create();
     }
 
     @Override
@@ -116,7 +100,6 @@ public class DefaultWebsiteFragment extends android.support.v4.app.DialogFragmen
                 currentURL = ((EditText) view.findViewById(R.id.editText_website_url)).getText().toString();
                 // System.out.println(currentName + ", " + currentURL);
                 presenter.onClickAddWebsite(currentName, currentURL); // notifies presenter that the user wants to add a new Website
-                dismiss(); // closes the AlertDialog
             }
         });
         builder2.setNegativeButton(R.string.exit, new DialogInterface.OnClickListener() {
@@ -168,7 +151,6 @@ public class DefaultWebsiteFragment extends android.support.v4.app.DialogFragmen
             public void onClick(DialogInterface dialog, int id) {
 
                 presenter.onClickDelete(originalURL); // notifies the presenter that the user wants to delete the DefaultWebsite
-                dismiss(); // closes the AlertDialog
             }
         });
         builder3.setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
@@ -194,7 +176,6 @@ public class DefaultWebsiteFragment extends android.support.v4.app.DialogFragmen
     @Override
     public void onStop() {
         super.onStop();
-        // System.out.println("Fragment stopped.");
         presenter.detachView();
     }
 
@@ -222,7 +203,7 @@ public class DefaultWebsiteFragment extends android.support.v4.app.DialogFragmen
         adapter = new ArrayAdapter<>(getActivity(), android.R.layout.simple_list_item_1, defaultWebsiteNames);
 
         // sets up the list after the load has finished
-        ListView listView = (ListView) view.findViewById(R.id.default_website_list);
+        listView = (ListView) view.findViewById(R.id.default_website_list);
         listView.setAdapter(adapter);
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -240,10 +221,21 @@ public class DefaultWebsiteFragment extends android.support.v4.app.DialogFragmen
     }
 
     /**
-     * Updates the data in the ListView
+     * Updates the data in the ListView by creating a new adapter and
+     * replacing the old one so the changes will be instantly visible to the user
      */
     public void dataChanged() {
-        adapter.notifyDataSetChanged();
+
+        defaultWebsiteNames = presenter.getDefaultWebsiteNames();
+        adapter = new ArrayAdapter<>(getActivity(), android.R.layout.simple_list_item_1, defaultWebsiteNames);
+
+        listView.setAdapter(adapter);
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                presenter.onClickDefaultWebsite(position); // notifies the presenter that the user has clicked on an item in the list
+            }
+        });
     }
 
 }
