@@ -3,18 +3,18 @@ package internetofeveryone.ioe.Browser;
 import android.content.Context;
 
 import java.util.ArrayList;
-import java.util.Collection;
+import java.util.List;
 
 import internetofeveryone.ioe.Data.DataType;
-import internetofeveryone.ioe.Presenter.MvpPresenter;
 import internetofeveryone.ioe.Data.Website;
+import internetofeveryone.ioe.Presenter.BrowsingPresenter;
 
 /**
  * Created by Fabian Martin for 'Internet of Everyone'
  *
  * This class handles the logic and represents the implementation of presenter for the Browser page
  */
-public class BrowserPresenter extends MvpPresenter<BrowserView> {
+public class BrowserPresenter extends BrowsingPresenter<BrowserView> {
 
     private String selectedWebsiteName; // name of the selected Website
     private String selectedWebsiteURL; // URL of the selected Website
@@ -44,7 +44,7 @@ public class BrowserPresenter extends MvpPresenter<BrowserView> {
      * @return a list of the names
      */
     public ArrayList<String> getDefaultWebsiteNames() {
-        Collection<Website> websites = getModel().getDefaultWebsiteList().values();
+        List<Website> websites = getModel().getAllDefaultWebsites();
         ArrayList<String> result = new ArrayList<>();
         for (Website w : websites) {
             result.add(w.getName());
@@ -84,7 +84,7 @@ public class BrowserPresenter extends MvpPresenter<BrowserView> {
     public void onOpenClicked() {
         switch (latest) {
             case NAME:
-                for(Website w : getModel().getDefaultWebsiteList().values()) {
+                for(Website w : getModel().getAllDefaultWebsites()) {
                     if (w.getName() == selectedWebsiteName) {
                         enterURL(w.getUrl());
                     }
@@ -105,15 +105,16 @@ public class BrowserPresenter extends MvpPresenter<BrowserView> {
     public void onDownloadClicked() {
         switch (latest) {
             case NAME:
-                for(Website w : getModel().getDefaultWebsiteList().values()) {
+                for(Website w : getModel().getAllDefaultWebsites()) {
                     if (w.getName() == selectedWebsiteName) {
-                        getModel().addDownloadedWebsite(getModel().getDefaultWebsite(w.getUrl()));
+                        Website website = getModel().getDefaultWebsiteByURL(w.getUrl());
+                        getModel().addDownloadedWebsite(website.getName(), website.getUrl(), website.getContent());
                     }
                 }
                 break;
             case URL:
-                Website website = new Website(selectedWebsiteName, selectedWebsiteURL, "content");
-                getModel().addDownloadedWebsite(website);
+                // TODO: "content" mit tatsächliem content ersetzen
+                getModel().addDownloadedWebsite(selectedWebsiteName, selectedWebsiteURL, "content");
                 break;
             default:
                 break;

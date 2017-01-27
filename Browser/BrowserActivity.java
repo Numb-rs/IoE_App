@@ -12,6 +12,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.Spinner;
+import android.widget.Toast;
 
 import icepick.Icepick;
 import internetofeveryone.ioe.DefaultWebsites.DefaultWebsiteFragment;
@@ -71,7 +72,8 @@ public class BrowserActivity extends AppCompatActivity implements BrowserView, L
      * @param view
      */
     public void onClickEnter(View view) {
-
+        Toast toast = Toast.makeText(this, R.string.browser_enter_toast, Toast.LENGTH_SHORT);
+        toast.show();
         url = txtDescription.getText().toString();
         presenter.websiteSelectedByURL(url);
     }
