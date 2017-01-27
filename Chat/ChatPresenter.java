@@ -2,20 +2,20 @@ package internetofeveryone.ioe.Chat;
 
 import android.content.Context;
 
-import java.util.Arrays;
+import java.util.TreeMap;
 
 import internetofeveryone.ioe.Data.Chat;
 import internetofeveryone.ioe.Data.Contact;
 import internetofeveryone.ioe.Data.DataType;
 import internetofeveryone.ioe.Data.Message;
-import internetofeveryone.ioe.Presenter.MvpPresenter;
+import internetofeveryone.ioe.Presenter.MessagingPresenter;
 
 /**
  * Created by Fabian Martin for 'Internet of Everyone'
  *
  * This class handles the logic and represents the implementation of presenter for the Contact fragment
  */
-public class ChatPresenter extends MvpPresenter<ChatView> {
+public class ChatPresenter extends MessagingPresenter<ChatView> {
 
     private Contact contact;
     private Chat chat;
@@ -44,8 +44,9 @@ public class ChatPresenter extends MvpPresenter<ChatView> {
      * @param userCode the user code
      */
     public void getContact(long userCode) {
-        contact = getModel().getContact(userCode);
-        chat = getModel().getChat(contact.getName());
+        contact = getModel().getContactByID(userCode);
+        TreeMap<Long, Message> msgList = getModel().getAllMessagesByContact(userCode); // all Messages for this Chat
+        chat = new Chat(contact, msgList);
     }
 
     /**
@@ -58,19 +59,26 @@ public class ChatPresenter extends MvpPresenter<ChatView> {
     }
 
     /**
+     * Gets encryption state from the chat
+     *
+     * @return true if encryption is currently activated, false if not
+     */
+    public boolean isChatEncrypted(String contactName) {
+        return chat.isEncrypted();
+    }
+
+    /**
      * Adds a new Message
      *
      * @param msgPassed the message
      */
     public void sendMessage(String msgPassed) {
         String content = msgPassed;
-        boolean encrypt = false;
-        if (chat.isEncrypted()) {
-            encrypt = true;
+        boolean encrypt = chat.isEncrypted();
+        if (encrypt) {
             content = Message.encrypt(msgPassed, contact.getKey());
         }
-        Message message = new Message("0", "1", content, encrypt);
-        getModel().addMessage(message);
+        getModel().addMessage(getModel().getUserCode(), contact.getUserCode(), content, encrypt);
     }
 
     /**
@@ -79,11 +87,10 @@ public class ChatPresenter extends MvpPresenter<ChatView> {
      * @return array of all messages
      */
     public String[] getMessageList() {
-        Object[] objects = getModel().getMessageList().values().toArray();
-        Message[] messages = Arrays.copyOf(objects, objects.length, Message[].class);
-        String[] result = new String[messages.length];
-        for (int i = 0; i < messages.length; i++) {
-            result[i] = messages[i].getMessage();
+        TreeMap<Long, Message> messages = chat.getMessageList();
+        String[] result = new String[messages.size()];
+        for (int i = 0; i < messages.size(); i++) {
+            result[i] = messages.get(i).getContent();
         }
         return result;
     }

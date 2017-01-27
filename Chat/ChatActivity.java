@@ -40,6 +40,8 @@ public class ChatActivity extends AppCompatActivity implements ChatView, LoaderM
         Icepick.restoreInstanceState(this, savedInstanceState); // restore instance state
         setContentView(R.layout.activity_chat);
         contactName = getIntent().getStringExtra("contactName");
+        ToggleButton encryption = (ToggleButton) findViewById(R.id.button_encryption);
+        encryption.setChecked(presenter.isChatEncrypted(contactName));
     }
 
     @Override
@@ -106,7 +108,10 @@ public class ChatActivity extends AppCompatActivity implements ChatView, LoaderM
     public void onLoadFinished(Loader<ChatPresenter> loader, ChatPresenter presenter) {
 
         this.presenter = presenter;
-        long contactUserCode = Long.valueOf(getIntent().getStringExtra("contactUserCode"));
+        long contactUserCode = getIntent().getLongExtra("contactUserCode", -1);
+        if (contactUserCode == -1) {
+            // ErrorHandling
+        }
         presenter.getContact(contactUserCode);
         getSupportActionBar().setTitle(contactName);
         // sets up ListView after load has finished
