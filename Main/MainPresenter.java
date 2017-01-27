@@ -3,14 +3,14 @@ package internetofeveryone.ioe.Main;
 import android.content.Context;
 
 import internetofeveryone.ioe.Data.DataType;
-import internetofeveryone.ioe.Presenter.MvpPresenter;
+import internetofeveryone.ioe.Presenter.BrowsingPresenter;
 
 /**
  * Created by Fabian Martin for 'Internet of Everyone'
  *
  * This class handles the logic and represents the implementation of presenter for the Main page
  */
-public class MainPresenter extends MvpPresenter<MainView> {
+public class MainPresenter extends BrowsingPresenter<MainView> {
 
     /**
      * Instantiates a new Main presenter.
