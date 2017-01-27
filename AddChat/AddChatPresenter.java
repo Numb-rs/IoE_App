@@ -5,17 +5,16 @@ import android.content.Context;
 import java.util.ArrayList;
 import java.util.Collection;
 
-import internetofeveryone.ioe.Data.Chat;
 import internetofeveryone.ioe.Data.Contact;
 import internetofeveryone.ioe.Data.DataType;
-import internetofeveryone.ioe.Presenter.MvpPresenter;
+import internetofeveryone.ioe.Presenter.MessagingPresenter;
 
 /**
  * Created by Fabian Martin for 'Internet of Everyone'
  *
  * This class handles the logic and represents the implementation of presenter for the AddChat fragment
  */
-public class AddChatPresenter extends MvpPresenter<AddChatView> {
+public class AddChatPresenter extends MessagingPresenter<AddChatView> {
 
     private Collection<Contact> contactList; // list of all Contacts
 
@@ -45,7 +44,7 @@ public class AddChatPresenter extends MvpPresenter<AddChatView> {
      * @return list of all names
      */
     public ArrayList<String> getContactNames() {
-        contactList = getModel().getContactList().values();
+        contactList = getModel().getAllContacts();
         ArrayList<String> contactNames = new ArrayList<>();
         for (Contact c : contactList) {
             if (!c.hasOpenChat()) {
@@ -63,8 +62,7 @@ public class AddChatPresenter extends MvpPresenter<AddChatView> {
     public void addChat(String name) {
         for (Contact c : contactList) {
             if (c.getName().equals(name)) {
-                ArrayList<String> msgList = new ArrayList<>();
-                getModel().addChat(new Chat(c, msgList));
+                getModel().updateContact(c.getName(), c.getUserCode(), c.getKey(), true);
             }
         }
     }
