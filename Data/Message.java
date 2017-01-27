@@ -7,31 +7,26 @@ package internetofeveryone.ioe.Data;
  */
 public class Message {
 
-    private String senderID; // user code of the sender
-    private String receiverID; // user code of the receiver
-    private String message;
-    private int id; // unique identifier the message
+    private long senderID; // user code of the sender
+    private long receiverID; // user code of the receiver
+    private String content;
+    private long id; // unique identifier the message
     private boolean isEncrypted; // flag that stores if the message is encrypted
-    /**
-     * The constant counter that is being incremented for every new Message
-     */
-    public static int counter = 0;
 
     /**
      * Instantiates a new Message.
      *
      * @param senderID
      * @param receiverID
-     * @param message
+     * @param content
      * @param isEncrypted
      */
-    public Message(String senderID, String receiverID, String message, boolean isEncrypted) {
+    public Message(long id, long senderID, long receiverID, String content, boolean isEncrypted) {
+        this.id = id;
         this.senderID = senderID;
         this.receiverID = receiverID;
-        this.message = message;
-        this.id = counter;
+        this.content = content;
         this.isEncrypted = isEncrypted;
-        counter++;
     }
 
     /**
@@ -42,7 +37,7 @@ public class Message {
      * @return the encrypted message
      */
     public static String encrypt(String message, String key) {
-        return message + " (encrypted)"; // TODO: add logic
+        return message + " (encrypted with " + key + ")"; // TODO: add logic
     }
 
     /**
@@ -61,7 +56,7 @@ public class Message {
      *
      * @return the sender id
      */
-    public String getSenderID() {
+    public long getSenderID() {
         return senderID;
     }
 
@@ -70,7 +65,7 @@ public class Message {
      *
      * @param senderID the sender id
      */
-    public void setSenderID(String senderID) {
+    public void setSenderID(long senderID) {
         this.senderID = senderID;
     }
 
@@ -79,7 +74,7 @@ public class Message {
      *
      * @return the receiver id
      */
-    public String getReceiverID() {
+    public long getReceiverID() {
         return receiverID;
     }
 
@@ -88,26 +83,26 @@ public class Message {
      *
      * @param receiverID the receiver id
      */
-    public void setReceiverID(String receiverID) {
+    public void setReceiverID(long receiverID) {
         this.receiverID = receiverID;
     }
 
     /**
-     * Gets message.
+     * Gets content.
      *
-     * @return the message
+     * @return the content
      */
-    public String getMessage() {
-        return message;
+    public String getContent() {
+        return content;
     }
 
     /**
-     * Sets message.
+     * Sets content.
      *
-     * @param message the message
+     * @param content the content
      */
-    public void setMessage(String message) {
-        this.message = message;
+    public void setContent(String content) {
+        this.content = content;
     }
 
     /**
@@ -115,7 +110,7 @@ public class Message {
      *
      * @return the id
      */
-    public int getId() {
+    public long getId() {
         return id;
     }
 
@@ -124,7 +119,7 @@ public class Message {
      *
      * @param id the id
      */
-    public void setId(int id) {
+    public void setId(long id) {
         this.id = id;
     }
 

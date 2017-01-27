@@ -1,6 +1,6 @@
 package internetofeveryone.ioe.Data;
 
-import java.util.ArrayList;
+import java.util.TreeMap;
 
 /**
  * Created by Fabian Martin for 'Internet of Everyone'
@@ -10,7 +10,7 @@ import java.util.ArrayList;
 public class Chat {
 
     private Contact contact; // the contact that receives all the messages that are send here
-    private ArrayList<String> messageList; // list of all messages in the chat
+    private TreeMap<Long, Message> messageList; // list of all messages in the chat
     private boolean encryption; // flag that stores if encryption is currently active
 
     /**
@@ -19,7 +19,7 @@ public class Chat {
      * @param contact
      * @param messageList
      */
-    public Chat(Contact contact, ArrayList<String> messageList) {
+    public Chat(Contact contact, TreeMap<Long, Message> messageList) {
         this.contact = contact;
         this.messageList = messageList;
         contact.setOpenChat(true);
@@ -48,7 +48,7 @@ public class Chat {
      *
      * @return the message list
      */
-    public ArrayList<String> getMessageList() {
+    public TreeMap<Long, Message> getMessageList() {
         return messageList;
     }
 
@@ -57,7 +57,7 @@ public class Chat {
      *
      * @param messageList the message list
      */
-    public void setMessageList(ArrayList<String> messageList) {
+    public void setMessageList(TreeMap<Long, Message> messageList) {
         this.messageList = messageList;
     }
 
@@ -77,5 +77,13 @@ public class Chat {
      */
     public boolean isEncrypted() {
         return encryption;
+    }
+
+    public Message getLastMessage() {
+        if (messageList.size() <= 0) {
+            return null;
+        } else {
+            return messageList.lastEntry().getValue();
+        }
     }
 }

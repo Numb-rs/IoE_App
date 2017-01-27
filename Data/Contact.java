@@ -19,11 +19,11 @@ public class Contact {
      * @param userCode
      * @param key
      */
-    public Contact(String name, long userCode, String key) {
+    public Contact(String name, long userCode, String key, boolean openChat) {
         this.name = name;
         this.userCode = userCode;
         this.key = key;
-        this.openChat = false;
+        this.openChat = openChat;
     }
 
     /**
