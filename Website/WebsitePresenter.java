@@ -10,14 +10,14 @@ import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 
 import internetofeveryone.ioe.Data.DataType;
-import internetofeveryone.ioe.Presenter.MvpPresenter;
+import internetofeveryone.ioe.Presenter.BrowsingPresenter;
 
 /**
  * Created by Fabian Martin for 'Internet of Everyone'
  *
  * This class handles the logic and represents the implementation of presenter for the Website page
  */
-public class WebsitePresenter extends MvpPresenter<WebsiteView> {
+public class WebsitePresenter extends BrowsingPresenter<WebsiteView> {
 
     private Context context;
     private RequestQueue queue; // queue for outgoing requests
