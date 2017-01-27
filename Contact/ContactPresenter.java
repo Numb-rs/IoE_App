@@ -6,14 +6,14 @@ import java.util.Arrays;
 
 import internetofeveryone.ioe.Data.Contact;
 import internetofeveryone.ioe.Data.DataType;
-import internetofeveryone.ioe.Presenter.MvpPresenter;
+import internetofeveryone.ioe.Presenter.MessagingPresenter;
 
 /**
  * Created by Fabian Martin for 'Internet of Everyone'
  *
  * This class handles the logic and represents the implementation of presenter for the Contact fragment
  */
-public class ContactPresenter extends MvpPresenter<ContactView> {
+public class ContactPresenter extends MessagingPresenter<ContactView> {
 
     /**
      * Instantiates a new ContactPresenter.
@@ -30,7 +30,7 @@ public class ContactPresenter extends MvpPresenter<ContactView> {
      * @return array of all the names
      */
     public String[] getContactNames() {
-        Object[] objects = getModel().getContactList().values().toArray();
+        Object[] objects = getModel().getAllContacts().toArray();
         Contact[] contacts = Arrays.copyOf(objects, objects.length, Contact[].class);
         String[] result = new String[contacts.length];
         for (int i = 0; i < contacts.length; i++) {
@@ -45,7 +45,7 @@ public class ContactPresenter extends MvpPresenter<ContactView> {
      * @return array of all the user codes
      */
     public Long[] getContactUserCodes(){
-        Object[] objects = getModel().getContactList().values().toArray();
+        Object[] objects = getModel().getAllContacts().toArray();
         Contact[] contacts = Arrays.copyOf(objects, objects.length, Contact[].class);
         Long[] result = new Long[contacts.length];
         for (int i = 0; i < contacts.length; i++) {
@@ -60,7 +60,7 @@ public class ContactPresenter extends MvpPresenter<ContactView> {
      * @return array of all the keys
      */
     public String[] getContactKeys() {
-        Object[] objects = getModel().getContactList().values().toArray();
+        Object[] objects = getModel().getAllContacts().toArray();
         Contact[] contacts = Arrays.copyOf(objects, objects.length, Contact[].class);
         String[] result = new String[contacts.length];
         for (int i = 0; i < contacts.length; i++) {
@@ -78,9 +78,9 @@ public class ContactPresenter extends MvpPresenter<ContactView> {
      * @param currentContactKey       changed key
      */
     public void onClickSaveChange(long originalContactUserCode, long currentContactUserCode, String currentContactName, String currentContactKey) {
-        getModel().removeContact(originalContactUserCode);
-        Contact contact = new Contact(currentContactName, currentContactUserCode, currentContactKey);
-        getModel().addContact(contact);
+        boolean hasOpenChat = getModel().getContactByID(originalContactUserCode).hasOpenChat();
+        getModel().deleteContact(originalContactUserCode);
+        getModel().addContact(currentContactName, currentContactUserCode, currentContactKey, hasOpenChat);
     }
 
     /**
@@ -91,8 +91,7 @@ public class ContactPresenter extends MvpPresenter<ContactView> {
      * @param key      key
      */
     public void addContact(String name, long userCode, String key) {
-        Contact contact = new Contact(name, userCode, key);
-        getModel().addContact(contact);
+        getModel().addContact(name, userCode, key, false);
     }
 
     public void onClickCancel() {
@@ -129,7 +128,7 @@ public class ContactPresenter extends MvpPresenter<ContactView> {
      * @param userCode user code for the contact that is to be removed
      */
     public void onClickDelete(long userCode) {
-        getModel().removeContact(userCode);
+        getModel().deleteContact(userCode);
     }
 
     public void onClickExit() {
