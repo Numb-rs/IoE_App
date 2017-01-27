@@ -3,17 +3,21 @@ package internetofeveryone.ioe.Messenger;
 import android.content.Context;
 
 import java.util.HashMap;
+import java.util.List;
+import java.util.TreeMap;
 
 import internetofeveryone.ioe.Data.Chat;
+import internetofeveryone.ioe.Data.Contact;
 import internetofeveryone.ioe.Data.DataType;
-import internetofeveryone.ioe.Presenter.MvpPresenter;
+import internetofeveryone.ioe.Data.Message;
+import internetofeveryone.ioe.Presenter.MessagingPresenter;
 
 /**
  * Created by Fabian Martin for 'Internet of Everyone'
  *
  * This class handles the logic and represents the implementation of presenter for the Messenger page
  */
-public class MessengerPresenter extends MvpPresenter<MessengerView> {
+public class MessengerPresenter extends MessagingPresenter<MessengerView> {
 
     /**
      * Instantiates a new MessengerPresenter.
@@ -51,12 +55,14 @@ public class MessengerPresenter extends MvpPresenter<MessengerView> {
      *
      * @param chat the chat
      */
+    /*
     public void onSwipeRight(Chat chat) {
         if(isViewAttached()) {
             chat.getContact().setOpenChat(false);
-            getModel().removeChat(chat);
+            getModel().deleteChat(chat);
         }
     }
+    */
 
     /**
      * Gets the list of all chats from the Model
@@ -64,7 +70,13 @@ public class MessengerPresenter extends MvpPresenter<MessengerView> {
      * @return the chat list
      */
     public HashMap<String, Chat> getChatList() {
-        return getModel().getChatList();
+        HashMap<String, Chat> chatList = new HashMap<>();
+        List<Contact> contacts = getModel().getAllContacts();
+        for (Contact c : contacts) {
+            TreeMap<Long, Message> msgList = (getModel().getAllMessagesByContact(c.getUserCode())); // all Messages for this Chat
+            chatList.put(c.getName(), new Chat(c, msgList)); // insert this chat into chatList
+        }
+        return chatList;
     }
 
 
