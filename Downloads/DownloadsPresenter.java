@@ -3,18 +3,18 @@ package internetofeveryone.ioe.Downloads;
 import android.content.Context;
 
 import java.util.ArrayList;
-import java.util.Collection;
+import java.util.List;
 
 import internetofeveryone.ioe.Data.DataType;
 import internetofeveryone.ioe.Data.Website;
-import internetofeveryone.ioe.Presenter.MvpPresenter;
+import internetofeveryone.ioe.Presenter.BrowsingPresenter;
 
 /**
  * Created by Fabian Martin for 'Internet of Everyone'
  *
  * This class handles the logic and represents the implementation of presenter for the Downloads page
  */
-public class DownloadsPresenter extends MvpPresenter<DownloadsView> {
+public class DownloadsPresenter extends BrowsingPresenter<DownloadsView> {
 
 
     /**
@@ -41,10 +41,10 @@ public class DownloadsPresenter extends MvpPresenter<DownloadsView> {
      * @return a list of the names
      */
     public ArrayList<String> getDownloadedWebsiteNames() {
-        if (getModel().getDownloadedWebsiteList() == null) {
+        if (getModel().getAllDownloadedWebsites() == null) {
             return new ArrayList<String>(); // just momentarily
         }
-        Collection<Website> websites = getModel().getDownloadedWebsiteList().values();
+        List<Website> websites = getModel().getAllDownloadedWebsites();
         ArrayList<String> result = new ArrayList<>();
         for (Website w : websites) {
             result.add(w.getName());
@@ -59,14 +59,14 @@ public class DownloadsPresenter extends MvpPresenter<DownloadsView> {
      * @param name name of the downloaded Website
      */
     public void deleteClicked(String name) {
-        Collection<Website> websites = getModel().getDownloadedWebsiteList().values();
+        List<Website> websites = getModel().getAllDownloadedWebsites();
         String url = null;
         for (Website w : websites) {
             if (w.getName().equals(name)) {
                 url = w.getUrl();
             }
         }
-        getModel().removeDownloadedWebsite(url);
+        getModel().deleteDownloadedWebsite(url);
     }
 
     /**
@@ -75,7 +75,7 @@ public class DownloadsPresenter extends MvpPresenter<DownloadsView> {
      * @param name name of the downloaded Website
      */
     public void openClicked(String name) {
-        Collection<Website> websites = getModel().getDownloadedWebsiteList().values();
+        List<Website> websites = getModel().getAllDownloadedWebsites();
         if(isViewAttached()) {
             String url = null;
             for (Website w : websites) {
