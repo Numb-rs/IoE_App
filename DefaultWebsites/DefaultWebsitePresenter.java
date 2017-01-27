@@ -6,14 +6,14 @@ import java.util.Arrays;
 
 import internetofeveryone.ioe.Data.DataType;
 import internetofeveryone.ioe.Data.Website;
-import internetofeveryone.ioe.Presenter.MvpPresenter;
+import internetofeveryone.ioe.Presenter.BrowsingPresenter;
 
 /**
  * Created by Fabian Martin for 'Internet of Everyone'
  *
  * This class handles the logic and represents the implementation of presenter for the DefaultWebsite fragment
  */
-public class DefaultWebsitePresenter extends MvpPresenter<DefaultWebsiteView> {
+public class DefaultWebsitePresenter extends BrowsingPresenter<DefaultWebsiteView> {
 
     /**
      * Instantiates a new Default website presenter.
@@ -30,7 +30,7 @@ public class DefaultWebsitePresenter extends MvpPresenter<DefaultWebsiteView> {
      * @return array of the names
      */
     public String[] getDefaultWebsiteNames() {
-        Object[] objects = getModel().getDefaultWebsiteList().values().toArray();
+        Object[] objects = getModel().getAllDefaultWebsites().toArray();
         Website[] websites = Arrays.copyOf(objects, objects.length, Website[].class);
         String[] result = new String[websites.length];
         for (int i = 0; i < websites.length; i++) {
@@ -45,7 +45,7 @@ public class DefaultWebsitePresenter extends MvpPresenter<DefaultWebsiteView> {
      * @return array of the URLs
      */
     public String[] getDefaultWebsiteURLs() {
-        Object[] objects = getModel().getDefaultWebsiteList().values().toArray();
+        Object[] objects = getModel().getAllDefaultWebsites().toArray();
         Website[] websites = Arrays.copyOf(objects, objects.length, Website[].class);
         String[] result = new String[websites.length];
         for (int i = 0; i < websites.length; i++) {
@@ -80,8 +80,8 @@ public class DefaultWebsitePresenter extends MvpPresenter<DefaultWebsiteView> {
     public void onClickAddWebsite(String name, String url) {
         // System.out.println("Kommt im Presenter an");
         if(isViewAttached()) {
-            Website website = new Website(name, url, "content"); // TODO: "content" entfernen und mit tatsächlichem content füllen
-            getModel().addDefaultWebsite(website);
+            // TODO: "content" entfernen und mit tatsächlichem content füllen
+            getModel().addDefaultWebsite(name, url, "content");
         } else {
             // ErrorHandling
             // System.out.println("Presenter nicht attached");
@@ -114,9 +114,9 @@ public class DefaultWebsitePresenter extends MvpPresenter<DefaultWebsiteView> {
      * @param url         new URL of the DefaultWebsite
      */
     public void onClickSaveChange(String originalURL, String name, String url) {
-        getModel().removeDefaultWebsite(originalURL);
-        Website website = new Website(name, url, "content"); // TODO: "content" entfernen und mit tatsächlichem content füllen
-        getModel().addDefaultWebsite(website);
+        getModel().deleteDefaultWebsite(originalURL);
+        // TODO: "content" entfernen und mit tatsächlichem content füllen
+        getModel().addDefaultWebsite(name, url, "content");
     }
 
     /**
@@ -125,7 +125,7 @@ public class DefaultWebsitePresenter extends MvpPresenter<DefaultWebsiteView> {
      * @param url url of the DefaultWebsite
      */
     public void onClickDelete(String url) {
-        getModel().removeDefaultWebsite(url);
+        getModel().deleteDefaultWebsite(url);
     }
 
     @Override
