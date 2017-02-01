@@ -1,9 +1,7 @@
 package internetofeveryone.ioe.Model;
 
 import android.content.ContentValues;
-import android.content.Context;
 import android.database.Cursor;
-import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 
 import java.io.BufferedReader;
@@ -17,31 +15,12 @@ import internetofeveryone.ioe.Presenter.ModelObserver;
 
 public abstract class Model {
 
+    private static ArrayList<ModelObserver> observers = null;
 
-    private Context context;
-    private SQLiteDatabase sql;
-    private DataBase db;
-    private ArrayList<ModelObserver> observers = new ArrayList<>();
-
-    public Model(Context context) {
-        this.context = context;
-        db = new DataBase(context);
-
-        try {
-            open();
-        } catch (SQLException e) {
-            // ErrorHandler
+    public Model () {
+        if (observers == null) {
+            observers = new ArrayList<>();
         }
-
-        insertUserCode(readUserCodeFromFile());
-    }
-
-    public void open() throws SQLException {
-        sql = db.getWritableDatabase();
-    }
-
-    public void close() {
-        sql.close();
     }
 
     public void notify(DataType type, String url) {
@@ -54,7 +33,7 @@ public abstract class Model {
         this.observers.add(o);
     }
 
-    public long readUserCodeFromFile() {
+    public long readUserCodeFromFile(SQLiteDatabase sql) {
 
         File file = new File("usercodeApp.txt");
 
@@ -77,11 +56,11 @@ public abstract class Model {
         return 12345L; // Long.valueOf(text.toString());
     }
 
-    public long getUserCode() {
+    public long getUserCode(SQLiteDatabase sql) {
         long userCode = -1;
         Cursor cursor = sql.query(TableData.UserCode.TABLE_USERCODE,
-                new String[] {TableData.UserCode.COLUMN_USERCODE_ID, TableData.UserCode.COLUMN_USERCODE_USERCODE}, null, null, null, null, null);
-        if (cursor != null) {
+                new String[] { TableData.UserCode.COLUMN_USERCODE_USERCODE }, null, null, null, null, null);
+        if (cursor.getCount() != 0) {
             cursor.moveToFirst();
             userCode = Long.valueOf(cursor.getString(0));
             cursor.close();
@@ -89,10 +68,15 @@ public abstract class Model {
         return userCode;
     }
 
-    public boolean insertUserCode(long userCode) {
+    public boolean insertUserCode(long userCode, SQLiteDatabase sql) {
+        if (getUserCode(sql) != -1) {
+            // already inserted
+            return true;
+        }
         ContentValues contentValues = new ContentValues();
         contentValues.put(TableData.UserCode.COLUMN_USERCODE_USERCODE, userCode);
         long result = sql.insert(TableData.UserCode.TABLE_USERCODE, null, contentValues);
+        notify(DataType.USERCODE, "" + userCode);
         return (result != -1);
     }
 

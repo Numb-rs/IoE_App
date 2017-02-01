@@ -45,6 +45,17 @@ public class TableData {
     }
 
     /**
+     * The type Chats.
+     */
+    public static abstract class Chats implements BaseColumns {
+
+        public static final String TABLE_CHATS = "chats_table";
+        public static final String COLUMN_CHATS_ID = "id";
+        public static final String COLUMN_CHATS_USERCODE = "userCode";
+        public static final String COLUMN_CHATS_ISENCRYPTED = "isEncrypted";
+    }
+
+    /**
      * The type Messages.
      */
     public static abstract class Messages implements BaseColumns {

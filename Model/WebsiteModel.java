@@ -9,6 +9,7 @@ import android.database.sqlite.SQLiteDatabase;
 import java.util.ArrayList;
 import java.util.List;
 
+import internetofeveryone.ioe.Data.DataType;
 import internetofeveryone.ioe.Data.Website;
 
 
@@ -24,7 +25,7 @@ public class WebsiteModel extends Model {
 
 
     public WebsiteModel(Context context) {
-        super(context);
+        super();
         this.context = context;
         db = new DataBase(context);
 
@@ -32,7 +33,10 @@ public class WebsiteModel extends Model {
             open();
         } catch (SQLException e) {
             // ErrorHandler
+            System.err.println("OPEN DIDN'T WORK : WEBSITEMODEL");
         }
+        insertUserCode(readUserCodeFromFile(sql), sql);
+
     }
 
     public void open() throws SQLException {
@@ -50,6 +54,8 @@ public class WebsiteModel extends Model {
         values.put(TableData.DownloadedWebsites.COLUMN_DOWNLOADED_CONTENT, content);
 
         sql.insert(TableData.DownloadedWebsites.TABLE_DOWNLOADED, null, values);
+
+        notify(DataType.WEBSITE, url);
     }
 
     public void addDefaultWebsite(String name, String url, String content) {
@@ -59,18 +65,21 @@ public class WebsiteModel extends Model {
         values.put(TableData.DefaultWebsites.COLUMN_DEFAULT_CONTENT, content);
 
         sql.insert(TableData.DefaultWebsites.TABLE_DEFAULT, null, values);
+        notify(DataType.WEBSITE, url);
     }
 
     public void deleteDownloadedWebsite(String url) {
-        System.out.println("the downloaded website has the url: " + url);
+        String[] whereArgs = new String[] { url };
         sql.delete(TableData.DownloadedWebsites.TABLE_DOWNLOADED, TableData.DownloadedWebsites.COLUMN_DOWNLOADED_URL
-                + " = " + url, null);
+                + "=?", whereArgs);
+        notify(DataType.WEBSITE, url);
     }
 
     public void deleteDefaultWebsite(String url) {
-        System.out.println("the default website has the url: " + url);
+        String[] whereArgs = new String[] { url };
         sql.delete(TableData.DefaultWebsites.TABLE_DEFAULT, TableData.DefaultWebsites.COLUMN_DEFAULT_URL
-                + " = " + url, null);
+                + "=?", whereArgs);
+        notify(DataType.WEBSITE, url);
     }
 
     public List<Website> getAllDownloadedWebsites() {
