@@ -113,7 +113,7 @@ public class ContactFragment extends android.support.v4.app.DialogFragment imple
             public void onClick(DialogInterface dialog, int id) {
 
                 String name = ((EditText) view.findViewById(R.id.editText_name)).getText().toString();
-                long userCode = Long.valueOf(((EditText) view.findViewById(R.id.editText_phone_number)).getText().toString());
+                long userCode = Long.valueOf(((EditText) view.findViewById(R.id.editText_user_code)).getText().toString());
                 String key = ((EditText) view.findViewById(R.id.editText_key)).getText().toString();
                 presenter.addContact(name, userCode, key); // notifies the presenter that the user wants to add a new Contact
             }

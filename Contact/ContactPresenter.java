@@ -35,6 +35,7 @@ public class ContactPresenter extends MessagingPresenter<ContactView> {
         String[] result = new String[contacts.length];
         for (int i = 0; i < contacts.length; i++) {
             result[i] = contacts[i].getName();
+            System.out.println("Contactname = " + result[i]);
         }
         return result;
     };
@@ -137,6 +138,8 @@ public class ContactPresenter extends MessagingPresenter<ContactView> {
 
     @Override
     public void update(DataType type, String id) {
+
+        System.out.println("CONTACTPRESENTER: UPDATE");
         if (type.equals(DataType.CONTACT)) {
             if (isViewAttached()) {
                 getView().dataChanged();
