@@ -19,9 +19,10 @@ public class Chat {
      * @param contact
      * @param messageList
      */
-    public Chat(Contact contact, TreeMap<Long, Message> messageList) {
+    public Chat(Contact contact, TreeMap<Long, Message> messageList, boolean encryption) {
         this.contact = contact;
         this.messageList = messageList;
+        this.encryption = encryption;
         contact.setOpenChat(true);
     }
 

@@ -12,6 +12,7 @@ public class Message {
     private String content;
     private long id; // unique identifier the message
     private boolean isEncrypted; // flag that stores if the message is encrypted
+    private boolean isMine; // flag that sotres if the message has been sent by my (it's senderID is equal to my userCode)
 
     /**
      * Instantiates a new Message.
@@ -21,12 +22,13 @@ public class Message {
      * @param content
      * @param isEncrypted
      */
-    public Message(long id, long senderID, long receiverID, String content, boolean isEncrypted) {
+    public Message(long id, long senderID, long receiverID, String content, boolean isEncrypted, long myUserCode) {
         this.id = id;
         this.senderID = senderID;
         this.receiverID = receiverID;
         this.content = content;
         this.isEncrypted = isEncrypted;
+        this.isMine = senderID == myUserCode ? true : false;
     }
 
     /**
@@ -139,6 +141,24 @@ public class Message {
      */
     public void setEncrypted(boolean encrypted) {
         isEncrypted = encrypted;
+    }
+
+    /**
+     * IsMine boolean.
+     *
+     * @return the boolean
+     */
+    public boolean isMine() {
+        return isMine;
+    }
+
+    /**
+     * Sets isMine.
+     *
+     * @param isMine the isMine
+     */
+    public void setIsMine(boolean isMine) {
+        this.isMine = isMine;
     }
 
 }

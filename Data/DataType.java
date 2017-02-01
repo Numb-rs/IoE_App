@@ -25,6 +25,11 @@ public enum DataType {
     /**
      * Contact data type.
      */
-    CONTACT
+    CONTACT,
+
+    /**
+     * Usercode data type.
+     */
+    USERCODE
 
 }
