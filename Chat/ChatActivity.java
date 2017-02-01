@@ -81,6 +81,7 @@ public class ChatActivity extends AppCompatActivity implements ChatView, LoaderM
     public void onClickSend(View view) {
         EditText msgEditText = (EditText) findViewById(R.id.message_to_send);
         String message = msgEditText.getText().toString();
+        msgEditText.setText("");
         presenter.sendMessage(userCode, message);
     }
 
