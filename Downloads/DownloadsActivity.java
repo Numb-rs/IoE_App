@@ -6,6 +6,8 @@ import android.os.Bundle;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
 import android.support.v7.app.AppCompatActivity;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.ListView;
 
 import icepick.Icepick;
@@ -81,8 +83,13 @@ public class DownloadsActivity extends AppCompatActivity implements DownloadsVie
         startActivity(browserIntent);
     }
 
+    /**
+     * updates the ListView
+     */
     public void dataChanged() {
-        adapter.notifyDataSetChanged(); // updates the ListView
+        ListView listView = (ListView)findViewById(R.id.downloads_list);
+        adapter = new DownloadsAdapter(presenter.getDownloadedWebsiteNames(), this);
+        listView.setAdapter(adapter);
     }
 
     @Override
