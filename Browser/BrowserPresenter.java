@@ -23,7 +23,7 @@ public class BrowserPresenter extends BrowsingPresenter<BrowserView> {
      * Keeps track which method of selecting a Website has been used most recently
      * Possible values: NAME, URL
      */
-    private String latest;
+    private String latest = NAME;
     private static final String NAME = "name";
     private static final String URL = "url";
 
@@ -85,7 +85,7 @@ public class BrowserPresenter extends BrowsingPresenter<BrowserView> {
         switch (latest) {
             case NAME:
                 for(Website w : getModel().getAllDefaultWebsites()) {
-                    if (w.getName() == selectedWebsiteName) {
+                    if (w.getName().equals(selectedWebsiteName)) {
                         enterURL(w.getUrl());
                     }
                 }
@@ -106,7 +106,7 @@ public class BrowserPresenter extends BrowsingPresenter<BrowserView> {
         switch (latest) {
             case NAME:
                 for(Website w : getModel().getAllDefaultWebsites()) {
-                    if (w.getName() == selectedWebsiteName) {
+                    if (w.getName().equals(selectedWebsiteName)) {
                         Website website = getModel().getDefaultWebsiteByURL(w.getUrl());
                         getModel().addDownloadedWebsite(website.getName(), website.getUrl(), website.getContent());
                     }

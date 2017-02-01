@@ -1,6 +1,7 @@
 package internetofeveryone.ioe.Browser;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
@@ -8,6 +9,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
@@ -84,6 +87,8 @@ public class BrowserActivity extends AppCompatActivity implements BrowserView, L
      * @param view
      */
     public void onClickOpen(View view) {
+        Animation shake = AnimationUtils.loadAnimation(this, R.anim.shake);
+        findViewById(R.id.open_website).startAnimation(shake);
         presenter.onOpenClicked();
     }
 
@@ -93,6 +98,8 @@ public class BrowserActivity extends AppCompatActivity implements BrowserView, L
      * @param view
      */
     public void onClickDownload(View view) {
+        Animation shake = AnimationUtils.loadAnimation(this, R.anim.shake);
+        findViewById(R.id.download_website).startAnimation(shake);
         presenter.onDownloadClicked();
     }
 
@@ -135,6 +142,13 @@ public class BrowserActivity extends AppCompatActivity implements BrowserView, L
                 presenter.getDefaultWebsiteNames());
         spinnerArrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinner.setAdapter(spinnerArrayAdapter);
+
+        // restore selected Website in dropdown menu
+        SharedPreferences sharedPref = getSharedPreferences("SpinnerPref", MODE_PRIVATE);
+        int spinnerValue = sharedPref.getInt("userChoiceSpinner",-1);
+        if(spinnerValue != -1)
+            // set the value of the spinner
+            spinner.setSelection(spinnerValue);
     }
 
     @Override protected void onSaveInstanceState(Bundle outState) {
@@ -159,6 +173,12 @@ public class BrowserActivity extends AppCompatActivity implements BrowserView, L
 
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                // save selected Website in dropdown menu
+                int userChoice = spinner.getSelectedItemPosition();
+                SharedPreferences sharedPref = getSharedPreferences("SpinnerPref", 0);
+                SharedPreferences.Editor prefEditor = sharedPref.edit();
+                prefEditor.putInt("userChoiceSpinner", userChoice);
+                prefEditor.commit();
                 String chosenWebsite = adapterView.getItemAtPosition(i).toString();
                 presenter.websiteSelectedByName(chosenWebsite);
             }
@@ -174,6 +194,13 @@ public class BrowserActivity extends AppCompatActivity implements BrowserView, L
                 presenter.getDefaultWebsiteNames());
         spinnerArrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinner.setAdapter(spinnerArrayAdapter);
+
+        // restore selected Website in dropdown menu
+        SharedPreferences sharedPref = getSharedPreferences("SpinnerPref", MODE_PRIVATE);
+        int spinnerValue = sharedPref.getInt("userChoiceSpinner",-1);
+        if(spinnerValue != -1)
+            // set the value of the spinner
+            spinner.setSelection(spinnerValue);
 
         txtDescription = (EditText) findViewById(R.id.textView_url);
     }
