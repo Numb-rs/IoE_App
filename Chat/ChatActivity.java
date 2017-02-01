@@ -5,12 +5,14 @@ import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
-import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.ToggleButton;
 
+import java.util.TreeMap;
+
 import icepick.Icepick;
+import internetofeveryone.ioe.Data.Message;
 import internetofeveryone.ioe.Presenter.PresenterLoader;
 import internetofeveryone.ioe.R;
 
@@ -22,12 +24,12 @@ import internetofeveryone.ioe.R;
 public class ChatActivity extends AppCompatActivity implements ChatView, LoaderManager.LoaderCallbacks<ChatPresenter> {
 
     private ChatPresenter presenter;
-    private String contactName; // name of the contact
+    private long userCode; // user code of the contact
     /**
      * Adapter for the ListView
      * It's responsible for displaying data in the list
      */
-    ArrayAdapter<String> adapter;
+    ChatAdapter adapter;
     private static final int LOADER_ID = 104; // unique identification for the ChatActivity-LoaderManager
 
 
@@ -39,9 +41,9 @@ public class ChatActivity extends AppCompatActivity implements ChatView, LoaderM
         getSupportLoaderManager().initLoader(LOADER_ID, null, this); // initialises the LoaderManager
         Icepick.restoreInstanceState(this, savedInstanceState); // restore instance state
         setContentView(R.layout.activity_chat);
-        contactName = getIntent().getStringExtra("contactName");
+        userCode = getIntent().getLongExtra("contactUserCode", -1);
         ToggleButton encryption = (ToggleButton) findViewById(R.id.button_encryption);
-        encryption.setChecked(presenter.isChatEncrypted(contactName));
+        encryption.setChecked(presenter.isChatEncrypted(userCode));
     }
 
     @Override
@@ -68,7 +70,7 @@ public class ChatActivity extends AppCompatActivity implements ChatView, LoaderM
      */
     public void onClickEncryptToggle(View view) {
         ToggleButton encryption = (ToggleButton) findViewById(R.id.button_encryption);
-        presenter.encryptChanged(encryption.isChecked());
+        presenter.encryptChanged(userCode, encryption.isChecked());
     }
 
     /**
@@ -79,7 +81,7 @@ public class ChatActivity extends AppCompatActivity implements ChatView, LoaderM
     public void onClickSend(View view) {
         EditText msgEditText = (EditText) findViewById(R.id.message_to_send);
         String message = msgEditText.getText().toString();
-        presenter.sendMessage(message);
+        presenter.sendMessage(userCode, message);
     }
 
     /**
@@ -87,9 +89,13 @@ public class ChatActivity extends AppCompatActivity implements ChatView, LoaderM
      * so that the user will instantly see the changes
      */
     public void dataChanged() {
-        ListView listView = (ListView)findViewById(R.id.chat_list);
-        adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, presenter.getMessageList());
+        TreeMap<Long, Message> msgList = presenter.getMessageList(userCode);
+        ListView listView = (ListView) findViewById(R.id.chat_list);
+        adapter = new ChatAdapter(msgList, this, userCode);
         listView.setAdapter(adapter);
+        if (msgList.size() > 0) {
+            listView.setSelection(msgList.size() - 1);
+        }
     }
 
     @Override protected void onSaveInstanceState(Bundle outState) {
@@ -113,11 +119,15 @@ public class ChatActivity extends AppCompatActivity implements ChatView, LoaderM
             // ErrorHandling
         }
         presenter.getContact(contactUserCode);
-        getSupportActionBar().setTitle(contactName);
+        getSupportActionBar().setTitle(presenter.getContactName(userCode));
         // sets up ListView after load has finished
         ListView listView = (ListView)findViewById(R.id.chat_list);
-        adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, presenter.getMessageList());
+        TreeMap<Long, Message> msgList = presenter.getMessageList(userCode);
+        adapter = new ChatAdapter(msgList, this, userCode);
         listView.setAdapter(adapter);
+        if (msgList.size() > 0) {
+            listView.setSelection(msgList.size() - 1);
+        }
     }
 
     @Override

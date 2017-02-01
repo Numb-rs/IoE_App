@@ -43,10 +43,8 @@ public class ChatPresenter extends MessagingPresenter<ChatView> {
      *
      * @param userCode the user code
      */
-    public void getContact(long userCode) {
-        contact = getModel().getContactByID(userCode);
-        TreeMap<Long, Message> msgList = getModel().getAllMessagesByContact(userCode); // all Messages for this Chat
-        chat = new Chat(contact, msgList);
+    public Contact getContact(long userCode) {
+        return getModel().getContactByID(userCode);
     }
 
     /**
@@ -54,8 +52,8 @@ public class ChatPresenter extends MessagingPresenter<ChatView> {
      *
      * @param isChecked true if encryption is currently activated, false if not
      */
-    public void encryptChanged(boolean isChecked) {
-        chat.setEncryption(isChecked);
+    public void encryptChanged(long userCode, boolean isChecked) {
+        getModel().updateChat(userCode, isChecked);
     }
 
     /**
@@ -63,8 +61,8 @@ public class ChatPresenter extends MessagingPresenter<ChatView> {
      *
      * @return true if encryption is currently activated, false if not
      */
-    public boolean isChatEncrypted(String contactName) {
-        return chat.isEncrypted();
+    public boolean isChatEncrypted(long userCode) {
+        return getModel().getChatByID(userCode).isEncrypted();
     }
 
     /**
@@ -72,27 +70,31 @@ public class ChatPresenter extends MessagingPresenter<ChatView> {
      *
      * @param msgPassed the message
      */
-    public void sendMessage(String msgPassed) {
+    public void sendMessage(long userCode, String msgPassed) {
         String content = msgPassed;
-        boolean encrypt = chat.isEncrypted();
+        boolean encrypt = getModel().getChatByID(userCode).isEncrypted();
         if (encrypt) {
-            content = Message.encrypt(msgPassed, contact.getKey());
+            content = Message.encrypt(msgPassed, getModel().getContactByID(userCode).getKey());
         }
-        getModel().addMessage(getModel().getUserCode(), contact.getUserCode(), content, encrypt);
+        getModel().addMessage(getModel().getUserCode(), getModel().getContactByID(userCode).getUserCode(), content, encrypt);
     }
 
     /**
      * Gets all messages from the Model
      *
-     * @return array of all messages
+     * @return TreeMap of all messages
      */
-    public String[] getMessageList() {
-        TreeMap<Long, Message> messages = chat.getMessageList();
-        String[] result = new String[messages.size()];
-        for (int i = 0; i < messages.size(); i++) {
-            result[i] = messages.get(i).getContent();
-        }
-        return result;
+    public TreeMap<Long, Message> getMessageList(long userCode) {
+        return getModel().getChatByID(userCode).getMessageList();
+    }
+
+    /**
+     * Gets name of contact from the Model
+     *
+     * @return name
+     */
+    public String getContactName(long userCode) {
+        return getModel().getContactByID(userCode).getName();
     }
 
 }
