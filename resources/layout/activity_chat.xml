@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="0.9">
+
+        <ListView
+            android:id="@+id/chat_list"
+            android:layout_width="match_parent"
+            android:layout_height="459dp"
+            android:layout_above="@+id/form"
+            android:divider="@null"
+            android:dividerHeight="0dp"
+            android:listSelector="@android:color/transparent"
+            android:paddingBottom="5dp"
+            android:transcriptMode="alwaysScroll">
+
+        </ListView>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <EditText
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="7"
+            android:id="@+id/message_to_send" />
+
+        <ToggleButton
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:id="@+id/button_encryption"
+            android:layout_margin="5dp"
+            style="@style/toggleButton"
+            android:background="@drawable/encrypt_toggle_bg"
+            android:onClick="onClickEncryptToggle"/>
+
+        <Button
+            android:background="@drawable/arrow_left"
+            android:rotation="180"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_margin="5dp"
+            android:onClick="onClickSend"
+            android:id="@+id/button_chat_send" />
+
+    </LinearLayout>
+
+</LinearLayout>

@@ -1,0 +1,24 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="10dp">
+
+    <TextView
+        android:id="@+id/contact"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:textSize="25sp"
+        android:text="Name Surname"
+        android:textColor="@android:color/white"/>
+
+
+    <TextView
+        android:id="@+id/lastMsg"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:text="The last Text is about Mushrooms and Stuff..."
+        android:textColor="@android:color/white"/>
+
+
+</LinearLayout>
