@@ -7,7 +7,6 @@ import java.util.List;
 import java.util.TreeMap;
 
 import internetofeveryone.ioe.Data.Chat;
-import internetofeveryone.ioe.Data.Contact;
 import internetofeveryone.ioe.Data.DataType;
 import internetofeveryone.ioe.Data.Message;
 import internetofeveryone.ioe.Presenter.MessagingPresenter;
@@ -30,9 +29,12 @@ public class MessengerPresenter extends MessagingPresenter<MessengerView> {
 
     @Override
     public void update(DataType type, String id) {
-        if (type.equals(DataType.CHAT)) {
+
+        if (type.equals(DataType.CHAT) || type.equals(DataType.MESSAGE)) {
             if (isViewAttached()) {
                 getView().dataChanged();
+            } else {
+                // Error
             }
         }
     }
@@ -71,10 +73,11 @@ public class MessengerPresenter extends MessagingPresenter<MessengerView> {
      */
     public HashMap<String, Chat> getChatList() {
         HashMap<String, Chat> chatList = new HashMap<>();
-        List<Contact> contacts = getModel().getAllContacts();
-        for (Contact c : contacts) {
-            TreeMap<Long, Message> msgList = (getModel().getAllMessagesByContact(c.getUserCode())); // all Messages for this Chat
-            chatList.put(c.getName(), new Chat(c, msgList)); // insert this chat into chatList
+        List<Chat> chats = getModel().getAllChats();
+        for (Chat c : chats) {
+            TreeMap<Long, Message> msgList = (getModel().getAllMessagesByContact(c.getContact().getUserCode()));
+            c.setMessageList(msgList);
+            chatList.put(c.getContact().getName(), c);
         }
         return chatList;
     }

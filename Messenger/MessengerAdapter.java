@@ -75,7 +75,7 @@ public class MessengerAdapter extends BaseAdapter {
 
         viewHolder.tVContact.setText(chat.getContact().getName());
         Message lastMsg = chat.getLastMessage();
-        String lastMessagePreview = lastMsg == null ? "" : lastMsg.getMessage();
+        String lastMessagePreview = lastMsg == null ? "" : lastMsg.getContent();
         viewHolder.tVLastMessage.setText(lastMessagePreview);
 
         return convertView;

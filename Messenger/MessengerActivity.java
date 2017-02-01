@@ -11,10 +11,13 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
 
+import java.util.HashMap;
+
 import icepick.Icepick;
 import internetofeveryone.ioe.AddChat.AddChatFragment;
 import internetofeveryone.ioe.Chat.ChatActivity;
 import internetofeveryone.ioe.Contact.ContactFragment;
+import internetofeveryone.ioe.Data.Chat;
 import internetofeveryone.ioe.Data.Contact;
 import internetofeveryone.ioe.Presenter.PresenterLoader;
 import internetofeveryone.ioe.R;
@@ -29,6 +32,7 @@ public class MessengerActivity extends AppCompatActivity implements MessengerVie
     private ListView listView; // list that contains all open Chats
     private MessengerAdapter adapter;
     private MessengerPresenter presenter;
+    private HashMap<String, Chat> chatList;
     private static final int LOADER_ID = 105; // unique identification for the MainActivity-LoaderManager
 
     @Override
@@ -72,7 +76,6 @@ public class MessengerActivity extends AppCompatActivity implements MessengerVie
     public void openChat(Contact contact) {
 
         Intent intent = new Intent(this, ChatActivity.class);
-        intent.putExtra("contactName", contact.getName());
         intent.putExtra("contactUserCode", contact.getUserCode());
         startActivity(intent);
     }
@@ -81,6 +84,7 @@ public class MessengerActivity extends AppCompatActivity implements MessengerVie
     public void onStart() {
         super.onStart();
         presenter.attachView(this);
+        dataChanged();
     }
 
     @Override
@@ -100,8 +104,8 @@ public class MessengerActivity extends AppCompatActivity implements MessengerVie
      */
     public void dataChanged() {
 
-        listView = (ListView)findViewById(R.id.messenger_list);
-        adapter = new MessengerAdapter(presenter.getChatList(), getApplicationContext());
+        chatList = presenter.getChatList();
+        adapter = new MessengerAdapter(chatList, getApplicationContext());
         listView.setAdapter(adapter);
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -127,9 +131,10 @@ public class MessengerActivity extends AppCompatActivity implements MessengerVie
     public void onLoadFinished(Loader<MessengerPresenter> loader, final MessengerPresenter presenter) {
 
         this.presenter = presenter;
+        chatList = presenter.getChatList();
         // sets up ListView after load is finished
         listView = (ListView) findViewById(R.id.messenger_list);
-        adapter = new MessengerAdapter(presenter.getChatList(), getApplicationContext());
+        adapter = new MessengerAdapter(chatList, getApplicationContext());
         listView.setAdapter(adapter);
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
