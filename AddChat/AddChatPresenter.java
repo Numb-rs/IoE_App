@@ -60,9 +60,11 @@ public class AddChatPresenter extends MessagingPresenter<AddChatView> {
      * @param name name of the contact
      */
     public void addChat(String name) {
+        contactList = getModel().getAllContacts();
         for (Contact c : contactList) {
             if (c.getName().equals(name)) {
-                getModel().updateContact(c.getName(), c.getUserCode(), c.getKey(), true);
+                getModel().updateContact(c.getUserCode(), c.getName(), c.getUserCode(), c.getKey(), true);
+                getModel().addChat(c.getUserCode(), false);
             }
         }
     }
