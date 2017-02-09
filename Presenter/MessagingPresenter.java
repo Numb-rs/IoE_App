@@ -25,7 +25,6 @@ public abstract class MessagingPresenter<V extends MvpView> extends MvpPresenter
      */
     public MessagingPresenter(Context context) {
         super();
-        // System.out.println("Presenter wurde erstellt");
         model = new MessageModel(context);
         registerObserver(model);
     }
