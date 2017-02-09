@@ -1,7 +1,6 @@
 package internetofeveryone.ioe.Browser;
 
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
@@ -9,13 +8,14 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
+import android.view.ViewGroup;
 import android.widget.EditText;
-import android.widget.Spinner;
+import android.widget.ListAdapter;
+import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
+
+import java.util.ArrayList;
 
 import icepick.Icepick;
 import internetofeveryone.ioe.DefaultWebsites.DefaultWebsiteFragment;
@@ -33,12 +33,12 @@ public class BrowserActivity extends AppCompatActivity implements BrowserView, L
     private String url = ""; // URL that gets entered into the EditText
     private EditText txtDescription; // description on how to use the Browser
     private BrowserPresenter presenter;
-    /**
-     * Adapter for the Spinner (dropdown menu)
-     * It's responsible for displaying data in the Spinner
-     */
-    private ArrayAdapter<String> spinnerArrayAdapter;
-    private Spinner spinner; // dropdown menu
+
+    // private ListView searchList;
+    private ListView favoritesList;
+    ArrayList<String> searchEngines = new ArrayList<>();
+    // private SearchAdapter searchAdapter;
+    private FavoritesAdapter favoritesAdapter;
     private static final int LOADER_ID = 106; // unique identification for the BrowserActivity-LoaderManager
 
     @Override
@@ -49,6 +49,8 @@ public class BrowserActivity extends AppCompatActivity implements BrowserView, L
         Icepick.restoreInstanceState(this, savedInstanceState); // restores instance state
         getSupportActionBar().setTitle("Browser");
         setContentView(R.layout.activity_browser);
+        searchEngines.add("Google"); // TODO: find a better place for these two searchengines
+        searchEngines.add("Wikipedia");
     }
 
     @Override
@@ -70,37 +72,65 @@ public class BrowserActivity extends AppCompatActivity implements BrowserView, L
     }
 
     /**
-     * Notifies the presenter that the user has entered a URL in the EditText
+     * Notifies the presenter that the user wants to open a favorite Website
      *
-     * @param view
+     * @param
      */
-    public void onClickEnter(View view) {
-        Toast toast = Toast.makeText(this, R.string.browser_enter_toast, Toast.LENGTH_SHORT);
-        toast.show();
-        url = txtDescription.getText().toString();
-        presenter.websiteSelectedByURL(url);
+    public void onClickOpenSearch(View view) {
+        /*
+        Animation shake = AnimationUtils.loadAnimation(this, R.anim.shake);
+        findViewById(R.id.button_open_website_search).startAnimation(shake); // TODO: animation auf passendes listelement
+        */
+        TextView textView = (TextView) findViewById(R.id.search_website_name);
+        String name = textView.getText().toString();
+        EditText editText = (EditText) findViewById(R.id.editText_searchterm);
+        String searchTerm = editText.getText().toString();
+        presenter.onOpenClickedSearch(name, searchTerm);
     }
 
     /**
-     * Notifies the presenter that the user wants to open a Website
+     * Notifies the presenter that the user wants to download a favorite Website
      *
-     * @param view
+     * @param
      */
-    public void onClickOpen(View view) {
+    public void onClickDownloadSearch(View view) {
+        Toast.makeText(this, "Your Website has been downloaded", Toast.LENGTH_SHORT);
+        /*
         Animation shake = AnimationUtils.loadAnimation(this, R.anim.shake);
-        findViewById(R.id.open_website).startAnimation(shake);
-        presenter.onOpenClicked();
+        findViewById(R.id.button_download_website_search).startAnimation(shake);
+        */
+        TextView textView = (TextView) findViewById(R.id.search_website_name);
+        String name = textView.getText().toString();
+        EditText editText = (EditText) findViewById(R.id.editText_searchterm);
+        String searchTerm = editText.getText().toString();
+        presenter.onDownloadClickedSearch(name, searchTerm);
     }
 
     /**
-     * Notifies the presenter that the user wants to download a Website
+     * Notifies the presenter that the user wants to open a favorite Website
      *
-     * @param view
+     * @param
      */
-    public void onClickDownload(View view) {
+    public void onClickOpenFavorite(String name) {
+        /*
         Animation shake = AnimationUtils.loadAnimation(this, R.anim.shake);
-        findViewById(R.id.download_website).startAnimation(shake);
-        presenter.onDownloadClicked();
+        findViewById(R.id.button_open_website_favorite).startAnimation(shake);
+        */
+        presenter.onOpenClickedFavorite(name);
+    }
+
+    /**
+     * Notifies the presenter that the user wants to download a favorite Website
+     *
+     * @param
+     */
+    public void onClickDownloadFavorite(String name) {
+        Toast.makeText(this, "Your Website has been downloaded", Toast.LENGTH_SHORT);
+        /*
+        Animation shake = AnimationUtils.loadAnimation(this, R.anim.shake);
+        findViewById(R.id.button_download_website_favorite).startAnimation(shake);
+        */
+        presenter.onDownloadClickedFavorite(name);
     }
 
     /**
@@ -112,6 +142,15 @@ public class BrowserActivity extends AppCompatActivity implements BrowserView, L
 
         Intent intent = new Intent(this, WebsiteActivity.class);
         intent.putExtra("URL", url);
+        startActivity(intent);
+    }
+
+    // TODO: javadoc
+    public void sendSearchRequest(String engine, String searchTerm) {
+
+        Intent intent = new Intent(this, WebsiteActivity.class);
+        intent.putExtra("ENGINE", engine);
+        intent.putExtra("SEARCHTERM", searchTerm); // TODO: als konstante auslagern (bei methode obdendrüber auch)
         startActivity(intent);
     }
 
@@ -137,18 +176,17 @@ public class BrowserActivity extends AppCompatActivity implements BrowserView, L
      * and replacing the old one so that the update will be instantly visible to the user
      */
     public void dataChanged() {
+        /*
+        searchList = (ListView)findViewById(R.id.browser_list_search);
+        searchAdapter = new SearchAdapter(searchEngines, this);
+        searchList.setAdapter(searchAdapter);
+        */
+        favoritesList = (ListView)findViewById(R.id.browser_list_favorites);
+        favoritesAdapter = new FavoritesAdapter(presenter.getDefaultWebsiteNames(), this);
+        favoritesList.setAdapter(favoritesAdapter);
 
-        spinnerArrayAdapter = new ArrayAdapter<>(this, R.layout.support_simple_spinner_dropdown_item,
-                presenter.getDefaultWebsiteNames());
-        spinnerArrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spinner.setAdapter(spinnerArrayAdapter);
+        setListViewHeightBasedOnChildren(favoritesList);
 
-        // restore selected Website in dropdown menu
-        SharedPreferences sharedPref = getSharedPreferences("SpinnerPref", MODE_PRIVATE);
-        int spinnerValue = sharedPref.getInt("userChoiceSpinner",-1);
-        if(spinnerValue != -1)
-            // set the value of the spinner
-            spinner.setSelection(spinnerValue);
     }
 
     @Override protected void onSaveInstanceState(Bundle outState) {
@@ -168,46 +206,45 @@ public class BrowserActivity extends AppCompatActivity implements BrowserView, L
     public void onLoadFinished(Loader<BrowserPresenter> loader, final BrowserPresenter presenter) {
 
         this.presenter = presenter;
-        spinner = (Spinner) findViewById(R.id.dropdown_url);
-        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+        /*
+        searchList = (ListView)findViewById(R.id.browser_list_search);
+        searchAdapter = new SearchAdapter(searchEngines, this);
+        searchList.setAdapter(searchAdapter);
+        */
+        favoritesList = (ListView)findViewById(R.id.browser_list_favorites);
+        favoritesAdapter = new FavoritesAdapter(presenter.getDefaultWebsiteNames(), this);
+        favoritesList.setAdapter(favoritesAdapter);
 
-            @Override
-            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                // save selected Website in dropdown menu
-                int userChoice = spinner.getSelectedItemPosition();
-                SharedPreferences sharedPref = getSharedPreferences("SpinnerPref", 0);
-                SharedPreferences.Editor prefEditor = sharedPref.edit();
-                prefEditor.putInt("userChoiceSpinner", userChoice);
-                prefEditor.commit();
-                String chosenWebsite = adapterView.getItemAtPosition(i).toString();
-                presenter.websiteSelectedByName(chosenWebsite);
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> adapterView) {
-                // ErrorHandling
-            }
-        });
-
-        // sets up the spinner after the load has finished
-        spinnerArrayAdapter = new ArrayAdapter<>(this, R.layout.support_simple_spinner_dropdown_item,
-                presenter.getDefaultWebsiteNames());
-        spinnerArrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spinner.setAdapter(spinnerArrayAdapter);
-
-        // restore selected Website in dropdown menu
-        SharedPreferences sharedPref = getSharedPreferences("SpinnerPref", MODE_PRIVATE);
-        int spinnerValue = sharedPref.getInt("userChoiceSpinner",-1);
-        if(spinnerValue != -1)
-            // set the value of the spinner
-            spinner.setSelection(spinnerValue);
-
-        txtDescription = (EditText) findViewById(R.id.textView_url);
+        setListViewHeightBasedOnChildren(favoritesList);
     }
 
     @Override
     public void onLoaderReset(Loader<BrowserPresenter> loader) {
         presenter = null;
 
+    }
+
+    /**** Method for Setting the Height of the ListView dynamically.
+     **** Hack to fix the issue of not showing all the items of the ListView
+     **** when placed inside a ScrollView  ****/
+    public static void setListViewHeightBasedOnChildren(ListView listView) {
+        ListAdapter listAdapter = listView.getAdapter();
+        if (listAdapter == null)
+            return;
+
+        int desiredWidth = View.MeasureSpec.makeMeasureSpec(listView.getWidth(), View.MeasureSpec.UNSPECIFIED);
+        int totalHeight = 0;
+        View view = null;
+        for (int i = 0; i < listAdapter.getCount(); i++) {
+            view = listAdapter.getView(i, view, listView);
+            if (i == 0)
+                view.setLayoutParams(new ViewGroup.LayoutParams(desiredWidth, ViewGroup.LayoutParams.WRAP_CONTENT));
+
+            view.measure(desiredWidth, View.MeasureSpec.UNSPECIFIED);
+            totalHeight += view.getMeasuredHeight();
+        }
+        ViewGroup.LayoutParams params = listView.getLayoutParams();
+        params.height = totalHeight + (listView.getDividerHeight() * (listAdapter.getCount() - 1));
+        listView.setLayoutParams(params);
     }
 }

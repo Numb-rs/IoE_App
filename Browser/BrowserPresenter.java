@@ -1,13 +1,29 @@
 package internetofeveryone.ioe.Browser;
 
 import android.content.Context;
+import android.util.Log;
+
+import com.android.volley.Request;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.VolleyLog;
+import com.android.volley.toolbox.StringRequest;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import internetofeveryone.ioe.Data.DataType;
 import internetofeveryone.ioe.Data.Website;
+import internetofeveryone.ioe.Presenter.AppController;
 import internetofeveryone.ioe.Presenter.BrowsingPresenter;
+
+import static internetofeveryone.ioe.Presenter.AppController.TAG;
 
 /**
  * Created by Fabian Martin for 'Internet of Everyone'
@@ -16,16 +32,9 @@ import internetofeveryone.ioe.Presenter.BrowsingPresenter;
  */
 public class BrowserPresenter extends BrowsingPresenter<BrowserView> {
 
-    private String selectedWebsiteName; // name of the selected Website
-    private String selectedWebsiteURL; // URL of the selected Website
-
-    /**
-     * Keeps track which method of selecting a Website has been used most recently
-     * Possible values: NAME, URL
-     */
-    private String latest = NAME;
-    private static final String NAME = "name";
-    private static final String URL = "url";
+    private static final String GOOGLE = "Google";
+    private static final String WIKI = "Wikipedia";
+    private static final String WEATHER = "Weather";
 
 
 
@@ -53,73 +62,66 @@ public class BrowserPresenter extends BrowsingPresenter<BrowserView> {
         return result;
     }
 
-
     /**
-     * Stores the name that has been selected in the dropdown menu and sets name as the most recently used
-     * method of selecting a Website
-     *
-     * @param name name of the selected Website
+     * Searched for a term in a given search engine
      */
-    public void websiteSelectedByName(String name) {
-
-        selectedWebsiteName = name;
-        latest = NAME;
-    }
-
-    /**
-     * Stores the URL that has been entered by the user and sets URL as the most recently used
-     * method of selecting a Website
-     *
-     * @param url URL as entered by the user
-     */
-    public void websiteSelectedByURL(String url) {
-
-        selectedWebsiteURL = url;
-        latest = URL;
-    }
-
-    /**
-     * Opens the Website that has been selected the most recently
-     */
-    public void onOpenClicked() {
-        switch (latest) {
-            case NAME:
-                for(Website w : getModel().getAllDefaultWebsites()) {
-                    if (w.getName().equals(selectedWebsiteName)) {
-                        enterURL(w.getUrl());
-                    }
-                }
-            break;
-            case URL:
-                enterURL(selectedWebsiteURL);
-            break;
-            default:
-            break;
-        }
-
-    }
-
-    /**
-     * Downloads the Website that has been selected the most recently
-     */
-    public void onDownloadClicked() {
-        switch (latest) {
-            case NAME:
-                for(Website w : getModel().getAllDefaultWebsites()) {
-                    if (w.getName().equals(selectedWebsiteName)) {
-                        Website website = getModel().getDefaultWebsiteByURL(w.getUrl());
-                        getModel().addDownloadedWebsite(website.getName(), website.getUrl(), website.getContent());
-                    }
-                }
+    public void onOpenClickedSearch(String name, String searchTerm) {
+        System.out.println("BrowserPresenter: name: " + name + "searchTerm: " + searchTerm);
+        switch (name) {
+            case GOOGLE:
+            case WEATHER:
+                getView().sendSearchRequest(name, searchTerm);
                 break;
-            case URL:
-                // TODO: "content" mit tatsächliem content ersetzen
-                getModel().addDownloadedWebsite(selectedWebsiteName, selectedWebsiteURL, "content");
+            case WIKI:
+                getView().sendSearchRequest("wiki", searchTerm);
                 break;
             default:
+                // Error Handling
                 break;
         }
+    }
 
+    /**
+     * Downloads the Website that has been selected through a search engine
+     */
+    public void onDownloadClickedSearch(String name, String searchTerm) {
+        switch (name) {
+            case GOOGLE:
+            case WEATHER:
+                downloadSearch(name, searchTerm);
+                break;
+            case WIKI:
+                downloadSearch("wiki", searchTerm);
+                break;
+            default:
+                // Error Handling
+                break;
+        }
+    }
+
+    // TODO: javadoc
+    public void onOpenClickedFavorite(String name) {
+        for (Website w : getModel().getAllDefaultWebsites()) {
+            if (w.getName().equals(name)) {
+                getView().goToURL(w.getUrl());
+            }
+        }
+    }
+
+    public void onDownloadClickedFavorite(String name) {
+        for (Website w : getModel().getAllDefaultWebsites()) {
+            if (w.getName().equals(name)) {
+                downloadFavorite(w.getUrl(), name);
+            }
+        }
+    }
+
+    public void downloadWebsite(String websiteName, String content) {
+        getModel().addDownloadedWebsite(websiteName, websiteName, content);
+    }
+
+    public void downloadWebsite(String websiteName, String url, String content) {
+        getModel().addDownloadedWebsite(websiteName, url, content);
     }
 
 
@@ -134,6 +136,231 @@ public class BrowserPresenter extends BrowsingPresenter<BrowserView> {
             getView().goToURL(url);
         }
     }
+
+    // TODO: javadoc
+    /*
+    public void search(final String engine, final String searchTerm) {
+
+        Log.d(TAG, "Engine passed: " + engine);
+        Log.d(TAG, "Searchterm passed: " + searchTerm);
+
+        // Tag used to cancel the request
+        String tag_json_obj = "json_obj_req";
+
+        String serverURL = "http://jintzo.me/api/request/search"; // TODO: in extra Datei und als Konstante
+
+        StringRequest jsonObjReq = new StringRequest(Request.Method.POST,
+                serverURL,
+                new Response.Listener<String>() {
+
+                    @Override
+                    public void onResponse(String response) {
+                        Log.d(TAG, response);
+                        String parsedResponse = parse(response); // markdown
+                        parsedResponse = parsedResponse.replace("\\" + "n", "  \n");
+                        parsedResponse = parsedResponse.replace("\\" + "\"", "\"");
+                        String content = parsedResponse.substring(1, parsedResponse.length()-1);
+                        getView().openWebsite(content);
+                    }
+                }, new Response.ErrorListener() {
+
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                VolleyLog.d(TAG, "Error: " + error.getMessage());
+            }
+        }) {
+
+            @Override
+            public String getBodyContentType() {
+                return "application/x-www-form-urlencoded; charset=UTF-8";
+            }
+
+            @Override
+            protected Map<String, String> getParams() {
+                Map<String, String> params = new HashMap<>();
+                params.put("searchTerm", searchTerm);
+                params.put("engine", engine);
+                params.put("parameters", "{\"language\": \"en\"}"); // TODO: abhängig von telefonsprache
+                return params;
+            }
+
+        };
+
+        // Adding request to request queue
+        AppController.getInstance().addToRequestQueue(jsonObjReq, tag_json_obj);
+    }
+    */
+
+        // TODO: javadoc
+    public String parse(String jsonLine) {
+        JsonElement jelement = new JsonParser().parse(jsonLine);
+        JsonObject jobject = jelement.getAsJsonObject();
+        JsonArray jarray = jobject.getAsJsonArray("data");
+        for (int i = 0; i < jarray.size(); i++) {
+            System.out.println(i + ": " + jarray.get(i).toString());
+        }
+        jobject = jarray.get(0).getAsJsonObject();
+        JsonObject jobject2 = jobject.getAsJsonObject("attributes");
+        String result = jobject2.get("markdown").toString();
+        return result;
+    }
+
+    public void downloadSearch(final String engine, final String searchTerm) {
+
+        Log.d(TAG, "Engine passed: " + engine);
+        Log.d(TAG, "Searchterm passed: " + searchTerm);
+
+        // Tag used to cancel the request
+        String tag_json_obj = "json_obj_req";
+
+        String serverURL = "http://jintzo.me/api/request/search"; // TODO: in extra Datei und als Konstante
+
+        StringRequest jsonObjReq = new StringRequest(Request.Method.POST,
+                serverURL,
+                new Response.Listener<String>() {
+
+                    @Override
+                    public void onResponse(String response) {
+                        Log.d(TAG, response);
+                        String parsedResponse = parse(response); // markdown
+                        parsedResponse = parsedResponse.replace("\\" + "n", "  \n");
+                        parsedResponse = parsedResponse.replace("\\" + "\"", "\"");
+                        String content = parsedResponse.substring(1, parsedResponse.length()-1);
+                        downloadWebsite(engine + ": " + searchTerm, content);
+                    }
+                }, new Response.ErrorListener() {
+
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                VolleyLog.d(TAG, "Error: " + error.getMessage());
+            }
+        }) {
+
+            @Override
+            public String getBodyContentType() {
+                return "application/x-www-form-urlencoded; charset=UTF-8";
+            }
+
+            @Override
+            protected Map<String, String> getParams() {
+                Map<String, String> params = new HashMap<>();
+                params.put("searchTerm", searchTerm);
+                params.put("engine", engine);
+                params.put("parameters", "{\"language\": \"en\"}"); // TODO: abhängig von telefonsprache
+                return params;
+            }
+
+        };
+
+        // Adding request to request queue
+        AppController.getInstance().addToRequestQueue(jsonObjReq, tag_json_obj);
+
+    }
+
+
+    /**
+     * Sends a website request to the network
+     *
+     * @param urlOfWebsite URL of the requested Website
+     */
+    /*
+    public void openWebsite(final String urlOfWebsite) {
+
+        Log.d(TAG, "Url passed: " + urlOfWebsite);
+
+        // Tag used to cancel the request
+        String tag_json_obj = "json_obj_req";
+
+        String serverURL = "http://jintzo.me/api/request/page"; // TODO: in extra Datei und als Konstante
+
+        StringRequest jsonObjReq = new StringRequest(Request.Method.POST,
+                serverURL,
+                new Response.Listener<String>() {
+
+                    @Override
+                    public void onResponse(String response) {
+                        Log.d(TAG, response);
+                        String parsedResponse = parse(response); // markdown
+                        parsedResponse = parsedResponse.replace("\\" + "n", "  \n");
+                        parsedResponse = parsedResponse.replace("\\" + "\"", "\"");
+                        String content = parsedResponse.substring(1, parsedResponse.length()-1);
+                        getView().openWebsite(content);
+                    }
+                }, new Response.ErrorListener() {
+
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                VolleyLog.d(TAG, "Error: " + error.getMessage());
+            }
+        }) {
+
+            @Override
+            public String getBodyContentType() {
+                return "application/x-www-form-urlencoded; charset=UTF-8";
+            }
+
+            @Override
+            protected Map<String, String> getParams() {
+                Map<String, String> params = new HashMap<>();
+                params.put("url", urlOfWebsite);
+                return params;
+            }
+
+        };
+
+        // Adding request to request queue
+        AppController.getInstance().addToRequestQueue(jsonObjReq, tag_json_obj);
+    }
+    */
+
+    public void downloadFavorite(final String urlOfWebsite, final String name) {
+
+        Log.d(TAG, "Url passed: " + urlOfWebsite);
+
+        // Tag used to cancel the request
+        String tag_json_obj = "json_obj_req";
+
+        String serverURL = "http://jintzo.me/api/request/page"; // TODO: in extra Datei und als Konstante
+
+        StringRequest jsonObjReq = new StringRequest(Request.Method.POST,
+                serverURL,
+                new Response.Listener<String>() {
+
+                    @Override
+                    public void onResponse(String response) {
+                        Log.d(TAG, response);
+                        String parsedResponse = parse(response); // markdown
+                        parsedResponse = parsedResponse.replace("\\" + "n", "  \n");
+                        parsedResponse = parsedResponse.replace("\\" + "\"", "\"");
+                        String content = parsedResponse.substring(1, parsedResponse.length()-1);
+                        downloadWebsite(name, urlOfWebsite, content);
+                    }
+                }, new Response.ErrorListener() {
+
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                VolleyLog.d(TAG, "Error: " + error.getMessage());
+            }
+        }) {
+
+            @Override
+            public String getBodyContentType() {
+                return "application/x-www-form-urlencoded; charset=UTF-8";
+            }
+
+            @Override
+            protected Map<String, String> getParams() {
+                Map<String, String> params = new HashMap<>();
+                params.put("url", urlOfWebsite);
+                return params;
+            }
+
+        };
+
+        // Adding request to request queue
+        AppController.getInstance().addToRequestQueue(jsonObjReq, tag_json_obj);
+    }
+
 
 
     @Override

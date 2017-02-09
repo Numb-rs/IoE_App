@@ -1,5 +1,7 @@
 package internetofeveryone.ioe.Browser;
 
+import android.view.View;
+
 import internetofeveryone.ioe.View.MvpView;
 
 /**
@@ -15,5 +17,12 @@ public interface BrowserView extends MvpView {
      * @param url the URL of the requested Website
      */
     public void goToURL(String url);
+
+    // TODO: javadoc
+    public void onClickOpenSearch(View view);
+    public void onClickDownloadSearch(View view);
+    public void onClickOpenFavorite(String name);
+    public void onClickDownloadFavorite(String name);
+    public void sendSearchRequest(String engine, String searchTerm);
 
 }
