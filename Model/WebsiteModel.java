@@ -50,7 +50,7 @@ public class WebsiteModel extends Model {
     public void addDownloadedWebsite(String name, String url, String content) {
         ContentValues values = new ContentValues();
         values.put(TableData.DownloadedWebsites.COLUMN_DOWNLOADED_NAME, name);
-        values.put(TableData.DownloadedWebsites.COLUMN_DOWNLOADED_URL, url);
+        values.put(TableData.DownloadedWebsites.COLUMN_DOWNLOADED_URL, url); // url for searches is name of engine + spacebar + searchTerm
         values.put(TableData.DownloadedWebsites.COLUMN_DOWNLOADED_CONTENT, content);
 
         sql.insert(TableData.DownloadedWebsites.TABLE_DOWNLOADED, null, values);

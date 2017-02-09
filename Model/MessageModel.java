@@ -258,19 +258,16 @@ public class MessageModel extends Model {
     }
 
     protected Message cursorToMessage(Cursor cursor) {
-        System.out.println("Message: 0 = " + cursor.getLong(0) + ",1 = " + cursor.getLong(1) + ",2 = " + cursor.getLong(2) + ",3 = " + cursor.getString(3) + ",4 = " + Boolean.valueOf(cursor.getString(4)) + ", userCode = " + getUserCode());
         Message msg = new Message(cursor.getLong(0), cursor.getLong(1), cursor.getLong(2), cursor.getString(3), Boolean.valueOf(cursor.getString(4)), getUserCode());
         return msg;
     }
 
     protected Contact cursorToContact(Cursor cursor) {
-        System.out.println("Contact: 0 = " + cursor.getString(0) + ",1 = " + cursor.getLong(1) + ",2 = " + cursor.getString(2) + ",3 = " + Boolean.valueOf(cursor.getString(3)));
         Contact contact = new Contact(cursor.getString(0), cursor.getLong(1), cursor.getString(2), Boolean.valueOf(cursor.getString(3)));
         return contact;
     }
 
     protected Chat cursorToChat(Cursor cursor) {
-        System.out.println("Chat: 0 = " + cursor.getLong(0) + ",1 = " + Boolean.valueOf(cursor.getString(1)));
         Chat chat = new Chat(getContactByID(cursor.getLong(0)), getAllMessagesByContact(cursor.getLong(0)),Boolean.valueOf(cursor.getString(1)));
         return chat;
     }
