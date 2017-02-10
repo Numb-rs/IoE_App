@@ -27,7 +27,7 @@ public class DownloadsPresenter extends BrowsingPresenter<DownloadsView> {
     }
 
     @Override
-    public void update(DataType type, String id) {
+    public void update(DataType type) {
         if (type.equals(DataType.WEBSITE)) {
             if(isViewAttached()) {
                 getView().dataChanged();
@@ -77,13 +77,13 @@ public class DownloadsPresenter extends BrowsingPresenter<DownloadsView> {
     public void openClicked(String name) {
         List<Website> websites = getModel().getAllDownloadedWebsites();
         if(isViewAttached()) {
-            String url = null;
+            String content = null;
             for (Website w : websites) {
                 if (w.getName().equals(name)) {
-                    url = w.getUrl();
+                    content = w.getContent();
                 }
             }
-            getView().openWebsite(url);
+            getView().displayContent(content);
         }
     }
 }
