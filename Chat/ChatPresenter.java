@@ -30,7 +30,7 @@ public class ChatPresenter extends MessagingPresenter<ChatView> {
     }
 
     @Override
-    public void update(DataType type, String id) {
+    public void update(DataType type) {
         if (type.equals(DataType.MESSAGE)) {
             if (isViewAttached()) {
                 getView().dataChanged();
