@@ -28,7 +28,7 @@ public class MessengerPresenter extends MessagingPresenter<MessengerView> {
     }
 
     @Override
-    public void update(DataType type, String id) {
+    public void update(DataType type) {
 
         if (type.equals(DataType.CHAT) || type.equals(DataType.MESSAGE)) {
             if (isViewAttached()) {
@@ -51,20 +51,6 @@ public class MessengerPresenter extends MessagingPresenter<MessengerView> {
             // ErrorHandling
         }
     }
-
-    /**
-     * Sends a request to the view to remove a chat
-     *
-     * @param chat the chat
-     */
-    /*
-    public void onSwipeRight(Chat chat) {
-        if(isViewAttached()) {
-            chat.getContact().setOpenChat(false);
-            getModel().deleteChat(chat);
-        }
-    }
-    */
 
     /**
      * Gets the list of all chats from the Model
