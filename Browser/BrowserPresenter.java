@@ -20,10 +20,10 @@ import java.util.Map;
 
 import internetofeveryone.ioe.Data.DataType;
 import internetofeveryone.ioe.Data.Website;
-import internetofeveryone.ioe.Presenter.AppController;
 import internetofeveryone.ioe.Presenter.BrowsingPresenter;
+import internetofeveryone.ioe.Website.AppController;
 
-import static internetofeveryone.ioe.Presenter.AppController.TAG;
+import static internetofeveryone.ioe.Website.AppController.TAG;
 
 /**
  * Created by Fabian Martin for 'Internet of Everyone'
@@ -35,8 +35,6 @@ public class BrowserPresenter extends BrowsingPresenter<BrowserView> {
     private static final String GOOGLE = "Google";
     private static final String WIKI = "Wikipedia";
     private static final String WEATHER = "Weather";
-
-
 
     /**
      * Instantiates a new Browser presenter.
@@ -66,7 +64,6 @@ public class BrowserPresenter extends BrowsingPresenter<BrowserView> {
      * Searched for a term in a given search engine
      */
     public void onOpenClickedSearch(String name, String searchTerm) {
-        System.out.println("BrowserPresenter: name: " + name + "searchTerm: " + searchTerm);
         switch (name) {
             case GOOGLE:
             case WEATHER:
@@ -111,17 +108,56 @@ public class BrowserPresenter extends BrowsingPresenter<BrowserView> {
     public void onDownloadClickedFavorite(String name) {
         for (Website w : getModel().getAllDefaultWebsites()) {
             if (w.getName().equals(name)) {
-                downloadFavorite(w.getUrl(), name);
+                downloadWithoutSearch(w.getUrl(), name);
             }
         }
     }
 
+    public void onOpenClickedURL(String url) {
+        getView().goToURL(url);
+    }
+
+    public void onDownloadClickedURL(String url) {
+        String name = url.replace("http://www.", "");
+        name = name.replace("https://www.", "");
+        if (name.endsWith("/")) {
+            name = name.substring(0, name.length()-1);
+        }
+        downloadWithoutSearch(url, name);
+    }
+
     public void downloadWebsite(String websiteName, String content) {
-        getModel().addDownloadedWebsite(websiteName, websiteName, content);
+        boolean success = getModel().addDownloadedWebsite(websiteName, websiteName, content);
+        if (!success) {
+            if (isViewAttached()) {
+                getView().displayMessage("You've already downloaded this website"); // TODO: auslagern
+            } else {
+                // error handling
+            }
+        } else {
+            if (isViewAttached()) {
+                getView().displayMessage("Your Website has been downloaded"); // TODO: auslagern
+            } else {
+                // error handling
+            }
+        }
     }
 
     public void downloadWebsite(String websiteName, String url, String content) {
-        getModel().addDownloadedWebsite(websiteName, url, content);
+        boolean success = getModel().addDownloadedWebsite(websiteName, url, content);
+        if (!success) {
+            if (isViewAttached()) {
+                getView().displayMessage("You've already downloaded this website"); // TODO: auslagern
+            } else {
+                // error handling
+            }
+        } else {
+            if (isViewAttached()) {
+                getView().displayMessage("Your Website has been downloaded"); // TODO: auslagern
+            } else {
+                // error handling
+            }
+        }
     }
 
 
@@ -137,72 +173,19 @@ public class BrowserPresenter extends BrowsingPresenter<BrowserView> {
         }
     }
 
-    // TODO: javadoc
-    /*
-    public void search(final String engine, final String searchTerm) {
-
-        Log.d(TAG, "Engine passed: " + engine);
-        Log.d(TAG, "Searchterm passed: " + searchTerm);
-
-        // Tag used to cancel the request
-        String tag_json_obj = "json_obj_req";
-
-        String serverURL = "http://jintzo.me/api/request/search"; // TODO: in extra Datei und als Konstante
-
-        StringRequest jsonObjReq = new StringRequest(Request.Method.POST,
-                serverURL,
-                new Response.Listener<String>() {
-
-                    @Override
-                    public void onResponse(String response) {
-                        Log.d(TAG, response);
-                        String parsedResponse = parse(response); // markdown
-                        parsedResponse = parsedResponse.replace("\\" + "n", "  \n");
-                        parsedResponse = parsedResponse.replace("\\" + "\"", "\"");
-                        String content = parsedResponse.substring(1, parsedResponse.length()-1);
-                        getView().openWebsite(content);
-                    }
-                }, new Response.ErrorListener() {
-
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                VolleyLog.d(TAG, "Error: " + error.getMessage());
-            }
-        }) {
-
-            @Override
-            public String getBodyContentType() {
-                return "application/x-www-form-urlencoded; charset=UTF-8";
-            }
-
-            @Override
-            protected Map<String, String> getParams() {
-                Map<String, String> params = new HashMap<>();
-                params.put("searchTerm", searchTerm);
-                params.put("engine", engine);
-                params.put("parameters", "{\"language\": \"en\"}"); // TODO: abhängig von telefonsprache
-                return params;
-            }
-
-        };
-
-        // Adding request to request queue
-        AppController.getInstance().addToRequestQueue(jsonObjReq, tag_json_obj);
-    }
-    */
-
         // TODO: javadoc
     public String parse(String jsonLine) {
-        JsonElement jelement = new JsonParser().parse(jsonLine);
-        JsonObject jobject = jelement.getAsJsonObject();
-        JsonArray jarray = jobject.getAsJsonArray("data");
-        for (int i = 0; i < jarray.size(); i++) {
-            System.out.println(i + ": " + jarray.get(i).toString());
+        try {
+            JsonElement jelement = new JsonParser().parse(jsonLine);
+            JsonObject jobject = jelement.getAsJsonObject();
+            JsonArray jarray = jobject.getAsJsonArray("data");
+            jobject = jarray.get(0).getAsJsonObject();
+            JsonObject jobject2 = jobject.getAsJsonObject("attributes");
+            String result = jobject2.get("markdown").toString();
+            return result;
+        } catch (Exception e) {
+            return "Error: This is not a valid website"; // TODO: errormessage auslagern in strings.xml
         }
-        jobject = jarray.get(0).getAsJsonObject();
-        JsonObject jobject2 = jobject.getAsJsonObject("attributes");
-        String result = jobject2.get("markdown").toString();
-        return result;
     }
 
     public void downloadSearch(final String engine, final String searchTerm) {
@@ -223,6 +206,12 @@ public class BrowserPresenter extends BrowsingPresenter<BrowserView> {
                     public void onResponse(String response) {
                         Log.d(TAG, response);
                         String parsedResponse = parse(response); // markdown
+                        if (parsedResponse.equals("Error: This is not a valid website")) { // TODO: text auslagern, zeile drunter auch
+                            if (isViewAttached()) {
+                                getView().displayMessage("This is not a valid website"); // TODO: auslagern
+                            }
+                            return;
+                        }
                         parsedResponse = parsedResponse.replace("\\" + "n", "  \n");
                         parsedResponse = parsedResponse.replace("\\" + "\"", "\"");
                         String content = parsedResponse.substring(1, parsedResponse.length()-1);
@@ -257,14 +246,7 @@ public class BrowserPresenter extends BrowsingPresenter<BrowserView> {
 
     }
 
-
-    /**
-     * Sends a website request to the network
-     *
-     * @param urlOfWebsite URL of the requested Website
-     */
-    /*
-    public void openWebsite(final String urlOfWebsite) {
+    public void downloadWithoutSearch(final String urlOfWebsite, final String name) {
 
         Log.d(TAG, "Url passed: " + urlOfWebsite);
 
@@ -281,55 +263,12 @@ public class BrowserPresenter extends BrowsingPresenter<BrowserView> {
                     public void onResponse(String response) {
                         Log.d(TAG, response);
                         String parsedResponse = parse(response); // markdown
-                        parsedResponse = parsedResponse.replace("\\" + "n", "  \n");
-                        parsedResponse = parsedResponse.replace("\\" + "\"", "\"");
-                        String content = parsedResponse.substring(1, parsedResponse.length()-1);
-                        getView().openWebsite(content);
-                    }
-                }, new Response.ErrorListener() {
-
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                VolleyLog.d(TAG, "Error: " + error.getMessage());
-            }
-        }) {
-
-            @Override
-            public String getBodyContentType() {
-                return "application/x-www-form-urlencoded; charset=UTF-8";
-            }
-
-            @Override
-            protected Map<String, String> getParams() {
-                Map<String, String> params = new HashMap<>();
-                params.put("url", urlOfWebsite);
-                return params;
-            }
-
-        };
-
-        // Adding request to request queue
-        AppController.getInstance().addToRequestQueue(jsonObjReq, tag_json_obj);
-    }
-    */
-
-    public void downloadFavorite(final String urlOfWebsite, final String name) {
-
-        Log.d(TAG, "Url passed: " + urlOfWebsite);
-
-        // Tag used to cancel the request
-        String tag_json_obj = "json_obj_req";
-
-        String serverURL = "http://jintzo.me/api/request/page"; // TODO: in extra Datei und als Konstante
-
-        StringRequest jsonObjReq = new StringRequest(Request.Method.POST,
-                serverURL,
-                new Response.Listener<String>() {
-
-                    @Override
-                    public void onResponse(String response) {
-                        Log.d(TAG, response);
-                        String parsedResponse = parse(response); // markdown
+                        if (parsedResponse.equals("Error: This is not a valid website")) { // TODO: text auslagern, zeile drunter auch
+                            if (isViewAttached()) {
+                                getView().displayMessage("This is not a valid website"); // TODO: auslagern
+                            }
+                            return;
+                        }
                         parsedResponse = parsedResponse.replace("\\" + "n", "  \n");
                         parsedResponse = parsedResponse.replace("\\" + "\"", "\"");
                         String content = parsedResponse.substring(1, parsedResponse.length()-1);
@@ -351,7 +290,7 @@ public class BrowserPresenter extends BrowsingPresenter<BrowserView> {
             @Override
             protected Map<String, String> getParams() {
                 Map<String, String> params = new HashMap<>();
-                params.put("url", urlOfWebsite);
+                params.put("url", urlOfWebsite); // TODO: auslagern
                 return params;
             }
 
@@ -364,7 +303,7 @@ public class BrowserPresenter extends BrowsingPresenter<BrowserView> {
 
 
     @Override
-    public void update(DataType type, String id) {
+    public void update(DataType type) {
         if (type.equals(DataType.WEBSITE)) {
             if (isViewAttached()) {
                 getView().dataChanged();

@@ -24,5 +24,6 @@ public interface BrowserView extends MvpView {
     public void onClickOpenFavorite(String name);
     public void onClickDownloadFavorite(String name);
     public void sendSearchRequest(String engine, String searchTerm);
+    public void displayMessage(String text);
 
 }
