@@ -17,7 +17,6 @@ public class WebsiteModel extends Model {
 
     private SQLiteDatabase sql;
     private DataBase db;
-    private Context context;
     private String[] downloadColumns = { TableData.DownloadedWebsites.COLUMN_DOWNLOADED_NAME,
             TableData.DownloadedWebsites.COLUMN_DOWNLOADED_URL, TableData.DownloadedWebsites.COLUMN_DOWNLOADED_CONTENT };
     private String[] defaultColumns = { TableData.DefaultWebsites.COLUMN_DEFAULT_NAME,
@@ -26,14 +25,12 @@ public class WebsiteModel extends Model {
 
     public WebsiteModel(Context context) {
         super();
-        this.context = context;
         db = new DataBase(context);
 
         try {
             open();
         } catch (SQLException e) {
             // ErrorHandler
-            System.err.println("OPEN DIDN'T WORK : WEBSITEMODEL");
         }
         insertUserCode(readUserCodeFromFile(sql), sql);
 
@@ -47,7 +44,10 @@ public class WebsiteModel extends Model {
         sql.close();
     }
 
-    public void addDownloadedWebsite(String name, String url, String content) {
+    public boolean addDownloadedWebsite(String name, String url, String content) {
+        if (getDownloadedWebsiteByURL(url) != null) {
+            return false;
+        }
         ContentValues values = new ContentValues();
         values.put(TableData.DownloadedWebsites.COLUMN_DOWNLOADED_NAME, name);
         values.put(TableData.DownloadedWebsites.COLUMN_DOWNLOADED_URL, url); // url for searches is name of engine + spacebar + searchTerm
@@ -55,31 +55,36 @@ public class WebsiteModel extends Model {
 
         sql.insert(TableData.DownloadedWebsites.TABLE_DOWNLOADED, null, values);
 
-        notify(DataType.WEBSITE, url);
+        notify(DataType.WEBSITE);
+        return true;
     }
 
-    public void addDefaultWebsite(String name, String url, String content) {
+    public boolean addDefaultWebsite(String name, String url, String content) {
+        if (getDefaultWebsiteByURL(url) != null) {
+            return false;
+        }
         ContentValues values = new ContentValues();
         values.put(TableData.DefaultWebsites.COLUMN_DEFAULT_NAME, name);
         values.put(TableData.DefaultWebsites.COLUMN_DEFAULT_URL, url);
         values.put(TableData.DefaultWebsites.COLUMN_DEFAULT_CONTENT, content);
 
         sql.insert(TableData.DefaultWebsites.TABLE_DEFAULT, null, values);
-        notify(DataType.WEBSITE, url);
+        notify(DataType.WEBSITE);
+        return true;
     }
 
     public void deleteDownloadedWebsite(String url) {
         String[] whereArgs = new String[] { url };
         sql.delete(TableData.DownloadedWebsites.TABLE_DOWNLOADED, TableData.DownloadedWebsites.COLUMN_DOWNLOADED_URL
                 + "=?", whereArgs);
-        notify(DataType.WEBSITE, url);
+        notify(DataType.WEBSITE);
     }
 
     public void deleteDefaultWebsite(String url) {
         String[] whereArgs = new String[] { url };
         sql.delete(TableData.DefaultWebsites.TABLE_DEFAULT, TableData.DefaultWebsites.COLUMN_DEFAULT_URL
                 + "=?", whereArgs);
-        notify(DataType.WEBSITE, url);
+        notify(DataType.WEBSITE);
     }
 
     public List<Website> getAllDownloadedWebsites() {
@@ -91,7 +96,9 @@ public class WebsiteModel extends Model {
             cursor.moveToFirst();
             while (!cursor.isAfterLast()) {
                 Website website = cursorToWebsite(cursor);
-                websites.add(website);
+                if (website != null) {
+                    websites.add(website);
+                }
                 cursor.moveToNext();
             }
             cursor.close();
@@ -108,7 +115,9 @@ public class WebsiteModel extends Model {
             cursor.moveToFirst();
             while (!cursor.isAfterLast()) {
                 Website website = cursorToWebsite(cursor);
-                websites.add(website);
+                if (website != null) {
+                    websites.add(website);
+                }
                 cursor.moveToNext();
             }
             cursor.close();
@@ -121,10 +130,16 @@ public class WebsiteModel extends Model {
                 TableData.DownloadedWebsites.COLUMN_DOWNLOADED_URL + " = ?",
                 new String[] { url }, null, null, null);
         if (cursor != null) {
-            cursor.moveToFirst();
+            if(!cursor.moveToFirst()) {
+                return null;
+            }
+        }
+        if (cursor.getCount() == 0) {
+            return null;
         }
 
         Website website = cursorToWebsite(cursor);
+        cursor.close();
         return website;
     }
 
@@ -133,10 +148,13 @@ public class WebsiteModel extends Model {
                 TableData.DefaultWebsites.COLUMN_DEFAULT_URL + " = ?",
                 new String[] { url }, null, null, null);
         if (cursor != null) {
-            cursor.moveToFirst();
+            if(!cursor.moveToFirst()) {
+                return null;
+            }
         }
 
         Website website = cursorToWebsite(cursor);
+        cursor.close();
         return website;
     }
 

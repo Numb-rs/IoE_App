@@ -20,7 +20,6 @@ public class MessageModel extends Model {
 
     private SQLiteDatabase sql;
     private DataBase db;
-    private Context context;
     private String[] messageColumns = { TableData.Messages.COLUMN_MESSAGES_ID,
             TableData.Messages.COLUMN_MESSAGES_SENDERID, TableData.Messages.COLUMN_MESSAGES_RECEIVERID,
             TableData.Messages.COLUMN_MESSAGES_CONTENT, TableData.Messages.COLUMN_MESSAGES_ISENCRYPTED };
@@ -30,7 +29,6 @@ public class MessageModel extends Model {
 
     public MessageModel(Context context) {
         super();
-        this.context = context;
         db = new DataBase(context);
 
         try {
@@ -58,10 +56,13 @@ public class MessageModel extends Model {
         values.put(TableData.Messages.COLUMN_MESSAGES_ISENCRYPTED, String.valueOf(isEncrypted));
 
         long id = sql.insert(TableData.Messages.TABLE_MESSAGES, null, values);
-        notify(DataType.MESSAGE, "" + id);
+        notify(DataType.MESSAGE);
     }
 
-    public void addContact(String name, long userCode, String key, boolean openChat) {
+    public boolean addContact(String name, long userCode, String key, boolean openChat) {
+        if (getContactByID(userCode) != null) {
+            return false;
+        }
 
         ContentValues values = new ContentValues();
         values.put(TableData.Contacts.COLUMN_CONTACTS_NAME, name);
@@ -70,25 +71,30 @@ public class MessageModel extends Model {
         values.put(TableData.Contacts.COLUMN_CONTACTS_OPENCHAT, String.valueOf(openChat));
 
         sql.insert(TableData.Contacts.TABLE_CONTACTS, null, values);
-        notify(DataType.CONTACT, "" + userCode);
+        notify(DataType.CONTACT);
+        return true;
     }
 
 
-    public void addChat(long userCode, boolean isEncrypted) {
+    public boolean addChat(long userCode, boolean isEncrypted) {
+        if (getChatByID(userCode) != null) {
+            return false;
+        }
 
         ContentValues values = new ContentValues();
         values.put(TableData.Chats.COLUMN_CHATS_USERCODE, userCode);
         values.put(TableData.Chats.COLUMN_CHATS_ISENCRYPTED, String.valueOf(isEncrypted));
 
         sql.insert(TableData.Chats.TABLE_CHATS, null, values);
-        notify(DataType.CHAT, "" + userCode);
+        notify(DataType.CHAT);
+        return true;
     }
 
 
     public void deleteMessage(long id) {
         sql.delete(TableData.Messages.TABLE_MESSAGES, TableData.Messages.COLUMN_MESSAGES_ID
                 + " = " + id, null);
-        notify(DataType.MESSAGE, "" + id);
+        notify(DataType.MESSAGE);
     }
 
     public void deleteContact(long userCode) { // TODO: ERROR abfangen zB wenn eintrag nicht unique ist
@@ -96,14 +102,22 @@ public class MessageModel extends Model {
                 + " = " + userCode, null);
         if (numRowsChanged != 0) {
             deleteChat(userCode);
+            deleteAllMessagesForContact(userCode);
         }
-        notify(DataType.CONTACT, "" + userCode);
+        notify(DataType.CONTACT);
     }
 
     public void deleteChat(long userCode) {
         sql.delete(TableData.Chats.TABLE_CHATS, TableData.Chats.COLUMN_CHATS_USERCODE
                 + " = " + userCode, null);
-        notify(DataType.CHAT, "" + userCode);
+        notify(DataType.CHAT);
+    }
+
+    public void deleteAllMessagesForContact(long userCode) {
+        TreeMap<Long, Message> messages = getAllMessagesByContact(userCode);
+        for (Long id : messages.keySet()) {
+            deleteMessage(id);
+        }
     }
 
     public List<Message> getAllMessages() {
@@ -115,7 +129,9 @@ public class MessageModel extends Model {
             cursor.moveToFirst();
             while (!cursor.isAfterLast()) {
                 Message msg = cursorToMessage(cursor);
-                messages.add(msg);
+                if (msg != null) {
+                    messages.add(msg);
+                }
                 cursor.moveToNext();
             }
             cursor.close();
@@ -132,7 +148,9 @@ public class MessageModel extends Model {
             cursor.moveToFirst();
             while (!cursor.isAfterLast()) {
                 Contact contact = cursorToContact(cursor);
-                contacts.add(contact);
+                if (contact != null) {
+                    contacts.add(contact);
+                }
                 cursor.moveToNext();
             }
             cursor.close();
@@ -149,7 +167,9 @@ public class MessageModel extends Model {
             cursor.moveToFirst();
             while (!cursor.isAfterLast()) {
                 Chat chat = cursorToChat(cursor);
-                chats.add(chat);
+                if (chat != null) {
+                    chats.add(chat);
+                }
                 cursor.moveToNext();
             }
             cursor.close();
@@ -162,10 +182,13 @@ public class MessageModel extends Model {
                 TableData.Messages.COLUMN_MESSAGES_ID + " = ?",
                 new String[] { String.valueOf(id) }, null, null, null);
         if (cursor != null) {
-            cursor.moveToFirst();
+            if(!cursor.moveToFirst()) {
+                return null;
+            }
         }
 
         Message msg = cursorToMessage(cursor);
+        cursor.close();
         return msg;
     }
 
@@ -174,10 +197,13 @@ public class MessageModel extends Model {
                 TableData.Contacts.COLUMN_CONTACTS_USERCODE + " = ?",
                 new String[] { String.valueOf(userCode) }, null, null, null);
         if (cursor != null) {
-            cursor.moveToFirst();
+            if(!cursor.moveToFirst()) {
+                return null;
+            }
         }
 
         Contact contact = cursorToContact(cursor);
+        cursor.close();
         return contact;
     }
 
@@ -186,10 +212,13 @@ public class MessageModel extends Model {
                 TableData.Chats.COLUMN_CHATS_USERCODE + " = ?",
                 new String[] { String.valueOf(userCode) }, null, null, null);
         if (cursor != null) {
-            cursor.moveToFirst();
+            if(!cursor.moveToFirst()) {
+                return null;
+            }
         }
 
         Chat chat = cursorToChat(cursor);
+        cursor.close();
         return chat;
     }
 
@@ -240,7 +269,8 @@ public class MessageModel extends Model {
         contentValues.put(TableData.Contacts.COLUMN_CONTACTS_KEY, key);
         contentValues.put(TableData.Contacts.COLUMN_CONTACTS_OPENCHAT, String.valueOf(openChat));
         sql.update(TableData.Contacts.TABLE_CONTACTS, contentValues, "userCode =  ?", new String[] {String.valueOf(userCode)});
-        notify(DataType.CONTACT, "" + userCode);
+        notify(DataType.CONTACT);
+        notify(DataType.CHAT);
         return true;
     }
 
@@ -249,7 +279,7 @@ public class MessageModel extends Model {
         contentValues.put(TableData.Chats.COLUMN_CHATS_USERCODE, String.valueOf(userCode));
         contentValues.put(TableData.Chats.COLUMN_CHATS_ISENCRYPTED, String.valueOf(isEncrypted));
         sql.update(TableData.Chats.TABLE_CHATS, contentValues, "userCode =  ?", new String[] {String.valueOf(userCode)});
-        notify(DataType.CHAT, "" + userCode);
+        notify(DataType.CHAT);
         return true;
     }
 

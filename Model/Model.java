@@ -23,9 +23,9 @@ public abstract class Model {
         }
     }
 
-    public void notify(DataType type, String url) {
+    public void notify(DataType type) {
         for (ModelObserver o : observers) {
-            o.update(type, url);
+            o.update(type);
         }
     }
 
@@ -76,7 +76,7 @@ public abstract class Model {
         ContentValues contentValues = new ContentValues();
         contentValues.put(TableData.UserCode.COLUMN_USERCODE_USERCODE, userCode);
         long result = sql.insert(TableData.UserCode.TABLE_USERCODE, null, contentValues);
-        notify(DataType.USERCODE, "" + userCode);
+        notify(DataType.USERCODE);
         return (result != -1);
     }
 
