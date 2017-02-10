@@ -80,8 +80,7 @@ public class ContactPresenter extends MessagingPresenter<ContactView> {
      */
     public void onClickSaveChange(long originalContactUserCode, long currentContactUserCode, String currentContactName, String currentContactKey) {
         boolean hasOpenChat = getModel().getContactByID(originalContactUserCode).hasOpenChat();
-        getModel().deleteContact(originalContactUserCode);
-        getModel().addContact(currentContactName, currentContactUserCode, currentContactKey, hasOpenChat);
+        getModel().updateContact(originalContactUserCode, currentContactName, currentContactUserCode, currentContactKey, hasOpenChat);
     }
 
     /**
@@ -137,9 +136,8 @@ public class ContactPresenter extends MessagingPresenter<ContactView> {
     }
 
     @Override
-    public void update(DataType type, String id) {
+    public void update(DataType type) {
 
-        System.out.println("CONTACTPRESENTER: UPDATE");
         if (type.equals(DataType.CONTACT)) {
             if (isViewAttached()) {
                 getView().dataChanged();

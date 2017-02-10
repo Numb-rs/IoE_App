@@ -13,8 +13,10 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import icepick.Icepick;
+import internetofeveryone.ioe.Messenger.MessengerActivity;
 import internetofeveryone.ioe.Presenter.PresenterLoader;
 import internetofeveryone.ioe.R;
 
@@ -163,7 +165,12 @@ public class ContactFragment extends android.support.v4.app.DialogFragment imple
             public void onClick(DialogInterface dialog, int id) {
                 currentContactName = currentNameEditText.getText().toString();
                 currentContactKey = currentKeyEditText.getText().toString();
-                currentContactUserCode = Long.valueOf(currentUserCodeEditText.getText().toString());
+                try {
+                    currentContactUserCode = Long.valueOf(currentUserCodeEditText.getText().toString());
+                } catch (NumberFormatException e) {
+                    Toast.makeText(getContext(), "The user code has to be a number", Toast.LENGTH_SHORT).show();
+                    return;
+                }
                 // notifies the presenter that the user wants to save the changes
                 presenter.onClickSaveChange(originalContactUserCode, currentContactUserCode, currentContactName, currentContactKey);
             }
@@ -202,6 +209,12 @@ public class ContactFragment extends android.support.v4.app.DialogFragment imple
     @Override
     public void onPause() {
         super.onPause();
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        ((MessengerActivity)getActivity()).dataChanged();
     }
 
     @Override public void onSaveInstanceState(Bundle outState) {
