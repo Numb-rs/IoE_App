@@ -1,14 +1,19 @@
 package internetofeveryone.ioe.Website;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
 import android.support.v7.app.AppCompatActivity;
+import android.webkit.WebView;
+import android.webkit.WebViewClient;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import icepick.Icepick;
 import internetofeveryone.ioe.Presenter.PresenterLoader;
 import internetofeveryone.ioe.R;
+import us.feras.mdv.MarkdownView;
 
 
 /**
@@ -39,25 +44,27 @@ public class WebsiteActivity extends AppCompatActivity implements WebsiteView, L
      * @param content of the website
      */
     public void displayWebsite(String content) {
-        // TODO: display the content
-        textView.setText(content);
+        MarkdownView markdownView = new MarkdownView(this);
+        markdownView.setWebViewClient(new WebViewClient()
+        {
+            // Override URL
+            public boolean shouldOverrideUrlLoading(WebView view, String url)
+            {
+                openNewPage(url);
+                return true;
+            }
+        });
+        setContentView(markdownView);
+        markdownView.loadMarkdown(content);
     }
 
     /**
-     * Displays an error message to the user
+     * Displays a message to the user
      */
-    public void displayErrorMessage() {
-        textView.setText(R.string.error_message_website);
+    public void displayMessage(String text) {
+        Toast.makeText(this, text, Toast.LENGTH_SHORT).show();
     }
 
-    /**
-     * Notifies the presenter that a link has been clicked
-     *
-     * @param url URL of the new Website
-     */
-    public void onClickLink(String url) {
-        presenter.linkClicked(url);
-    }
 
     @Override
     public void dataChanged() {}
@@ -95,13 +102,26 @@ public class WebsiteActivity extends AppCompatActivity implements WebsiteView, L
 
         this.presenter = presenter;
         String urlPassed = getIntent().getStringExtra("URL");
-        presenter.onURLPassed(urlPassed);
+        String enginePassed = getIntent().getStringExtra("ENGINE");
+        String searchTermPassed = getIntent().getStringExtra("SEARCHTERM");
+        if (urlPassed != null) {
+            presenter.onURLPassed(urlPassed);
+        } else {
+            presenter.onSearchRequest(enginePassed, searchTermPassed);
+        }
     }
 
     @Override
     public void onLoaderReset(Loader<WebsitePresenter> loader) {
         presenter = null;
 
+    }
+
+    // TODO: javadoc
+    public void openNewPage(String url) {
+        Intent intent = new Intent(this, WebsiteActivity.class);
+        intent.putExtra("URL", url);
+        startActivity(intent);
     }
 }
 
