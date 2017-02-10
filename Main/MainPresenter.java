@@ -58,6 +58,6 @@ public class MainPresenter extends BrowsingPresenter<MainView> {
     }
 
     @Override
-    public void update(DataType type, String id) { } // doesn't have to update anything
+    public void update(DataType type) { } // doesn't have to update anything
 
 }
