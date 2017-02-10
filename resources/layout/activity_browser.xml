@@ -1,112 +1,159 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/activity_browser"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:paddingBottom="@dimen/activity_vertical_margin"
-    android:paddingLeft="@dimen/activity_horizontal_margin"
-    android:paddingRight="@dimen/activity_horizontal_margin"
-    android:paddingTop="@dimen/activity_vertical_margin"
-    tools:context="internetofeveryone.ioe.Browser.BrowserActivity">
-
-    <Button
-        android:text="@string/button_enter"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/button_enter"
-        android:onClick="onClickEnter"
-        android:layout_alignBaseline="@+id/textView_url"
-        android:layout_alignBottom="@+id/textView_url"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true" />
-
-    <Spinner
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/dropdown_url"
-        android:layout_marginTop="96dp"
-        android:layout_below="@+id/textView"
-        android:layout_centerHorizontal="true" />
-
-    <TextView
-        android:id="@+id/textView"
-        android:layout_marginTop="17dp"
-        android:layout_height="wrap_content"
-        android:layout_width="wrap_content"
-        android:text="@string/tutorial_browser"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true">
-
-    </TextView>
-
-    <EditText
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:inputType="textPersonName"
-        android:hint="URL"
-        android:id="@+id/textView_url"
-        android:layout_marginTop="91dp"
-        android:layout_below="@+id/dropdown_url"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        android:layout_toLeftOf="@+id/button_enter"
-        android:layout_toStartOf="@+id/button_enter" />
+    android:layout_height="match_parent">
 
     <RelativeLayout
+        android:id="@+id/activity_browser"
         android:layout_width="match_parent"
-        android:layout_height="120dp"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        android:layout_marginRight="15dp"
-        android:layout_marginLeft="15dp">
+        android:layout_height="match_parent"
+        android:paddingBottom="@dimen/activity_vertical_margin"
+        tools:context="internetofeveryone.ioe.Browser.BrowserActivity">
 
         <Button
-            android:background="@drawable/download"
-            android:layout_width="50dp"
-            android:layout_height="50dp"
-            android:id="@+id/download_website"
-            android:onClick="onClickDownload"
-            android:layout_marginBottom="10dp"
-            android:layout_marginLeft="50dp"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentBottom="true" />
-
-        <Button
+            android:id="@+id/button_url_open"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
             android:background="@drawable/arrow_right"
-            android:layout_width="50dp"
-            android:layout_height="50dp"
-            android:id="@+id/open_website"
-            android:onClick="onClickOpen"
-            android:layout_marginRight="50dp"
-            android:layout_below="@+id/textView2"
+            android:onClick="onClickOpenURL"
             android:layout_alignParentRight="true"
             android:layout_alignParentEnd="true"
-            android:layout_marginEnd="50dp" />
+            android:layout_marginRight="10dp"
+            android:layout_marginTop="5dp"/>
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Open"
-            android:layout_above="@id/open_website"
-            android:layout_alignParentRight="true"
-            android:layout_marginRight="50dp"
-            android:layout_marginBottom="10dp"
-            android:textSize="20sp" />
+        <Button
+            android:id="@+id/button_url_download"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:background="@drawable/download"
+            android:onClick="onClickDownloadURL"
+            android:layout_toLeftOf="@+id/button_url_open"
+            android:layout_toStartOf="@+id/button_url_open"
+            android:layout_marginRight="5dp"
+            android:layout_marginLeft="5dp"
+            android:layout_marginTop="5dp"/>
 
-        <TextView
-            android:layout_width="wrap_content"
+        <EditText
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Download"
-            android:layout_above="@id/download_website"
+            android:hint="URL"
+            android:id="@+id/editText_browser_url"
+            android:layout_alignParentTop="true"
             android:layout_alignParentLeft="true"
-            android:layout_marginBottom="10dp"
-            android:layout_marginLeft="30dp"
-            android:textSize="20sp"
-            android:id="@+id/textView2" />
+            android:layout_alignParentStart="true"
+            android:layout_toLeftOf="@+id/button_url_download"
+            android:layout_toStartOf="@+id/button_url_download"
+            android:layout_marginRight="5dp"
+            android:layout_marginTop="5dp"/>
 
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:layout_marginTop="45dp">
+
+            <TextView
+                android:id="@+id/textview_search"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/search"
+                android:layout_marginLeft="5dp"
+                android:layout_marginRight="5dp"
+                android:gravity="center"
+                android:textSize="30sp"/>
+
+            <LinearLayout
+                android:layout_below="@id/textview_search"
+                android:id="@+id/search_one"
+                android:layout_width="match_parent"
+                android:orientation="vertical"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true"
+                android:layout_height="wrap_content"
+                android:layout_margin="5dp"
+                android:layout_marginLeft="20dp"
+                android:layout_marginRight="20dp">
+
+                <TextView
+                    android:id="@+id/search_website_name"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Wikipedia"
+                    android:textColor="@android:color/white"
+                    android:textSize="25sp"
+                    android:layout_centerVertical="true"/>
+
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <Button
+                        android:layout_width="40dp"
+                        android:layout_height="40dp"
+                        android:id="@+id/button_open_website_search"
+                        android:background="@drawable/arrow_right"
+                        android:onClick="onClickOpenSearch"
+                        android:layout_alignParentTop="true"
+                        android:layout_alignParentRight="true"
+                        android:layout_alignParentEnd="true"
+                        android:layout_marginRight="5dp"/>
+
+                    <Button
+                        android:layout_width="40dp"
+                        android:layout_height="40dp"
+                        android:id="@+id/button_download_website_search"
+                        android:background="@drawable/download"
+                        android:onClick="onClickDownloadSearch"
+                        android:layout_alignParentTop="true"
+                        android:layout_toLeftOf="@+id/button_open_website_search"
+                        android:layout_toStartOf="@+id/button_open_website_search"
+                        android:layout_marginLeft="5dp"
+                        android:layout_marginRight="5dp"/>
+
+                    <EditText
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:hint="@string/search_term"
+                        android:textSize="20sp"
+                        android:layout_alignParentTop="true"
+                        android:layout_alignParentLeft="true"
+                        android:layout_alignParentStart="true"
+                        android:id="@+id/editText_searchterm"
+                        android:layout_toLeftOf="@+id/button_download_website_search"
+                        android:layout_toStartOf="@+id/button_download_website_search"
+                        android:layout_marginRight="5dp"/>
+
+
+                </RelativeLayout>
+
+            </LinearLayout>
+
+            <TextView
+                android:layout_below="@id/search_one"
+                android:id="@+id/textview_favorites"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/favorites"
+                android:layout_marginLeft="5dp"
+                android:layout_marginRight="5dp"
+                android:gravity="center"
+                android:textSize="30sp"/>
+
+            <ListView
+                android:layout_below="@id/textview_favorites"
+                android:id="@+id/browser_list_favorites"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="5dp"
+                android:layout_marginRight="5dp">
+            </ListView>
+
+        </RelativeLayout>
 
     </RelativeLayout>
-</RelativeLayout>
+
+</ScrollView>
