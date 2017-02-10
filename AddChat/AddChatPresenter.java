@@ -28,7 +28,7 @@ public class AddChatPresenter extends MessagingPresenter<AddChatView> {
     }
 
     @Override
-    public void update(DataType type, String id) {
+    public void update(DataType type) {
         if (type.equals(DataType.CONTACT)) {
             if (isViewAttached()) {
                 getView().dataChanged();
