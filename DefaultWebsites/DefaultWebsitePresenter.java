@@ -1,6 +1,7 @@
 package internetofeveryone.ioe.DefaultWebsites;
 
 import android.content.Context;
+import android.widget.Toast;
 
 import java.util.Arrays;
 
@@ -15,6 +16,7 @@ import internetofeveryone.ioe.Presenter.BrowsingPresenter;
  */
 public class DefaultWebsitePresenter extends BrowsingPresenter<DefaultWebsiteView> {
 
+    Context context;
     /**
      * Instantiates a new Default website presenter.
      *
@@ -22,6 +24,7 @@ public class DefaultWebsitePresenter extends BrowsingPresenter<DefaultWebsiteVie
      */
     public DefaultWebsitePresenter(Context context) {
         super(context);
+        this.context = context;
     }
 
     /**
@@ -78,13 +81,13 @@ public class DefaultWebsitePresenter extends BrowsingPresenter<DefaultWebsiteVie
      * @param url url of the Website
      */
     public void onClickAddWebsite(String name, String url) {
-        // System.out.println("Kommt im Presenter an");
         if(isViewAttached()) {
-            // TODO: "content" entfernen und mit tatsächlichem content füllen
-            getModel().addDefaultWebsite(name, url, "content");
+            boolean success = getModel().addDefaultWebsite(name, url, "");
+            if (!success) {
+                Toast.makeText(context, "You've already downloaded this website", Toast.LENGTH_SHORT); // TODO: auslagern
+            }
         } else {
             // ErrorHandling
-            // System.out.println("Presenter nicht attached");
         }
     }
 
@@ -115,8 +118,7 @@ public class DefaultWebsitePresenter extends BrowsingPresenter<DefaultWebsiteVie
      */
     public void onClickSaveChange(String originalURL, String name, String url) {
         getModel().deleteDefaultWebsite(originalURL);
-        // TODO: "content" entfernen und mit tatsächlichem content füllen
-        getModel().addDefaultWebsite(name, url, "content");
+        getModel().addDefaultWebsite(name, url, "");
     }
 
     /**
@@ -129,7 +131,7 @@ public class DefaultWebsitePresenter extends BrowsingPresenter<DefaultWebsiteVie
     }
 
     @Override
-    public void update(DataType type, String id) {
+    public void update(DataType type) {
         if (type.equals(DataType.WEBSITE)) {
             if (isViewAttached()) {
                 getView().dataChanged();
