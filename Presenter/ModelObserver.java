@@ -13,7 +13,6 @@ public interface ModelObserver {
      * Update the observer.
      *
      * @param type the data type that has changed
-     * @param id   the id of the element that has changed
      */
-    public void update(DataType type, String id);
+    public void update(DataType type);
 }
