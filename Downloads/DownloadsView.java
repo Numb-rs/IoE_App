@@ -25,8 +25,8 @@ public interface DownloadsView extends MvpView {
 
     /**
      * Opens a Website
-     * @param url URL of the Website
+     * @param content Content of the Website
      */
-    public void openWebsite(String url);
+    public void displayContent(String content);
 
 }

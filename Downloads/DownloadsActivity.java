@@ -1,18 +1,18 @@
 package internetofeveryone.ioe.Downloads;
 
-import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
 import android.support.v7.app.AppCompatActivity;
-import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
+import android.webkit.WebView;
+import android.webkit.WebViewClient;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import icepick.Icepick;
 import internetofeveryone.ioe.Presenter.PresenterLoader;
 import internetofeveryone.ioe.R;
+import us.feras.mdv.MarkdownView;
 
 /**
  * Created by Fabian Martin for 'Internet of Everyone'
@@ -76,11 +76,21 @@ public class DownloadsActivity extends AppCompatActivity implements DownloadsVie
 
     /**
      * Opens a Website
-     * @param url URL of the Website
+     * @param content Content of the Website
      */
-    public void openWebsite(String url) {
-        Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
-        startActivity(browserIntent);
+    public void displayContent(String content) {
+        MarkdownView markdownView = new MarkdownView(this);
+        markdownView.setWebViewClient(new WebViewClient()
+        {
+            // Override URL
+            public boolean shouldOverrideUrlLoading(WebView view, String url)
+            {
+                Toast.makeText(DownloadsActivity.this, "Links are not supported in offline version", Toast.LENGTH_SHORT).show();
+                return true;
+            }
+        });
+        setContentView(markdownView);
+        markdownView.loadMarkdown(content);
     }
 
     /**
