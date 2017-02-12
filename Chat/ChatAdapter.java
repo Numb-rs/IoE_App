@@ -18,7 +18,7 @@ public class ChatAdapter extends BaseAdapter {
 
     private final ArrayList<Message> data;
     private Context context;
-    private long contactUserCode;
+    private String contactUserCode;
 
     /**
      * Instantiates a new ChatAdapter.
@@ -26,7 +26,7 @@ public class ChatAdapter extends BaseAdapter {
      * @param chatList data
      * @param context
      */
-    public ChatAdapter(TreeMap<Long, Message> chatList, Context context, long contactUserCode) {
+    public ChatAdapter(TreeMap<Long, Message> chatList, Context context, String contactUserCode) {
         this.context = context;
         this.contactUserCode = contactUserCode;
         data = new ArrayList<>();
@@ -61,7 +61,7 @@ public class ChatAdapter extends BaseAdapter {
             viewHolder = new ChatAdapter.ViewHolder();
             LayoutInflater inflater = LayoutInflater.from(parent.getContext());
             // If receiver is the other person (the message has been sent by me) align to right
-            if ((data.get(position)).getReceiverID() == contactUserCode) {
+            if ((data.get(position)).getReceiverID().equals(contactUserCode)) {
                 convertView = inflater.inflate(R.layout.item_chat_right, parent, false);
             }
             // If not mine then align to left

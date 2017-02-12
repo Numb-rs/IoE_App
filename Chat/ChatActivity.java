@@ -24,7 +24,7 @@ import internetofeveryone.ioe.R;
 public class ChatActivity extends AppCompatActivity implements ChatView, LoaderManager.LoaderCallbacks<ChatPresenter> {
 
     private ChatPresenter presenter;
-    private long userCode; // user code of the contact
+    private String userCode; // user code of the contact
     /**
      * Adapter for the ListView
      * It's responsible for displaying data in the list
@@ -41,7 +41,7 @@ public class ChatActivity extends AppCompatActivity implements ChatView, LoaderM
         getSupportLoaderManager().initLoader(LOADER_ID, null, this); // initialises the LoaderManager
         Icepick.restoreInstanceState(this, savedInstanceState); // restore instance state
         setContentView(R.layout.activity_chat);
-        userCode = getIntent().getLongExtra("contactUserCode", -1);
+        userCode = getIntent().getStringExtra("contactUserCode");
         ToggleButton encryption = (ToggleButton) findViewById(R.id.button_encryption);
         encryption.setChecked(presenter.isChatEncrypted(userCode));
     }
@@ -50,6 +50,7 @@ public class ChatActivity extends AppCompatActivity implements ChatView, LoaderM
     public void onStart() {
         super.onStart();
         presenter.attachView(this);
+        presenter.fetchMessagesFromServer();
     }
 
     @Override
@@ -115,10 +116,7 @@ public class ChatActivity extends AppCompatActivity implements ChatView, LoaderM
     public void onLoadFinished(Loader<ChatPresenter> loader, ChatPresenter presenter) {
 
         this.presenter = presenter;
-        long contactUserCode = getIntent().getLongExtra("contactUserCode", -1);
-        if (contactUserCode == -1) {
-            // ErrorHandling
-        }
+        String contactUserCode = getIntent().getStringExtra("contactUserCode");
         presenter.getContact(contactUserCode);
         getSupportActionBar().setTitle(presenter.getContactName(userCode));
         // sets up ListView after load has finished
