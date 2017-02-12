@@ -24,7 +24,6 @@ public abstract class BrowsingPresenter<V extends MvpView> extends MvpPresenter 
      * @param context
      */
     public BrowsingPresenter(Context context) {
-        // System.out.println("Presenter wurde erstellt");
         model = new WebsiteModel(context);
         registerObserver(model);
     }

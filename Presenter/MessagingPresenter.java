@@ -1,11 +1,14 @@
 package internetofeveryone.ioe.Presenter;
 
 import android.content.Context;
+import android.os.AsyncTask;
 import android.support.annotation.NonNull;
+import android.util.Log;
 
 import java.lang.ref.WeakReference;
 
 import internetofeveryone.ioe.Model.MessageModel;
+import internetofeveryone.ioe.Requests.TcpClient;
 import internetofeveryone.ioe.View.MvpView;
 
 /**
@@ -17,6 +20,8 @@ public abstract class MessagingPresenter<V extends MvpView> extends MvpPresenter
 
     private MessageModel model;
     private WeakReference<V> view;
+    private TcpClient tcpClient;
+    private static final String TAG = "MessagingPresenter";
 
     /**
      * Instantiates a new MessagePresenter.
@@ -73,5 +78,53 @@ public abstract class MessagingPresenter<V extends MvpView> extends MvpPresenter
      */
     public MessageModel getModel() {
         return model;
+    }
+
+    /**
+     * starts request to fetch new messages from server
+     */
+    public void fetchMessagesFromServer() {
+
+        new Connect().execute("");
+
+        if (tcpClient != null) {
+            tcpClient.sendMessage("MSGPULL\0" + getModel().getUserCode() + "\0" + getModel().getSessionHash()  + "\u0004");
+        }
+    }
+
+    public class Connect extends AsyncTask<String, String, TcpClient> {
+
+        @Override
+        protected TcpClient doInBackground(String... message) {
+
+            // we create a TCPClient object
+            tcpClient = new TcpClient(new TcpClient.OnMessageReceived() {
+
+                @Override
+                public void messageReceived(String message) {
+                    publishProgress(message);
+                }
+            });
+
+            tcpClient.run();
+            return null;
+        }
+
+        @Override
+        protected void onProgressUpdate(String... values) {
+
+            super.onProgressUpdate(values);
+
+            String response = values[0];
+            Log.d(TAG, "response " + response);
+
+            String[] data = response.split("\0");
+            for (int i = 0; i < data.length; i = 3*i) {
+                String myUserCode = getModel().getUserCode();
+                getModel().addMessage(data[i], myUserCode, data[i+2], Boolean.valueOf(data[i+1]));
+            }
+
+            tcpClient.stopClient();
+        }
     }
 }
