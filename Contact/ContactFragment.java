@@ -31,7 +31,7 @@ public class ContactFragment extends android.support.v4.app.DialogFragment imple
     private View view;
     private ListView listView; // list of all Contact names
     private String[] contactNames; // names of all contacts
-    private Long[] contactUserCodes; // userCodes of all contacts
+    private String[] contactUserCodes; // userCodes of all contacts
     private String[] contactKeys; // keys of all contacts
     /**
      * Adapter for the ListView
@@ -39,10 +39,10 @@ public class ContactFragment extends android.support.v4.app.DialogFragment imple
      */
     private ArrayAdapter<String> adapter;
     private String originalContactName; // name of the contact before editing
-    private long originalContactUserCode; // user code of the contact before editing
+    private String originalContactUserCode; // user code of the contact before editing
     private String originalContactKey; // key of the contact before editing
     private String currentContactName = ""; // changed name of the contact
-    private long currentContactUserCode; // changed user code of the contact
+    private String currentContactUserCode; // changed user code of the contact
     private String currentContactKey = ""; // changed key of the contact
     private AlertDialog.Builder builder;
     private static final int LOADER_ID = 106; // unique identification for the ContactFragment-LoaderManager
@@ -115,7 +115,7 @@ public class ContactFragment extends android.support.v4.app.DialogFragment imple
             public void onClick(DialogInterface dialog, int id) {
 
                 String name = ((EditText) view.findViewById(R.id.editText_name)).getText().toString();
-                long userCode = Long.valueOf(((EditText) view.findViewById(R.id.editText_user_code)).getText().toString());
+                String userCode = ((EditText) view.findViewById(R.id.editText_user_code)).getText().toString();
                 String key = ((EditText) view.findViewById(R.id.editText_key)).getText().toString();
                 presenter.addContact(name, userCode, key); // notifies the presenter that the user wants to add a new Contact
             }
@@ -156,7 +156,7 @@ public class ContactFragment extends android.support.v4.app.DialogFragment imple
         originalContactUserCode = contactUserCodes[pos];
         originalContactKey = contactKeys[pos];
         currentNameEditText.setText(originalContactName);
-        currentUserCodeEditText.setText("" + originalContactUserCode);
+        currentUserCodeEditText.setText(originalContactUserCode);
         currentKeyEditText.setText(originalContactKey);
 
         // add action buttons
@@ -166,7 +166,7 @@ public class ContactFragment extends android.support.v4.app.DialogFragment imple
                 currentContactName = currentNameEditText.getText().toString();
                 currentContactKey = currentKeyEditText.getText().toString();
                 try {
-                    currentContactUserCode = Long.valueOf(currentUserCodeEditText.getText().toString());
+                    currentContactUserCode = currentUserCodeEditText.getText().toString();
                 } catch (NumberFormatException e) {
                     Toast.makeText(getContext(), "The user code has to be a number", Toast.LENGTH_SHORT).show();
                     return;

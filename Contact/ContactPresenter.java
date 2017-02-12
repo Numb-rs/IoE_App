@@ -45,10 +45,10 @@ public class ContactPresenter extends MessagingPresenter<ContactView> {
      *
      * @return array of all the user codes
      */
-    public Long[] getContactUserCodes(){
+    public String[] getContactUserCodes(){
         Object[] objects = getModel().getAllContacts().toArray();
         Contact[] contacts = Arrays.copyOf(objects, objects.length, Contact[].class);
-        Long[] result = new Long[contacts.length];
+        String[] result = new String[contacts.length];
         for (int i = 0; i < contacts.length; i++) {
             result[i] = contacts[i].getUserCode();
         }
@@ -78,7 +78,7 @@ public class ContactPresenter extends MessagingPresenter<ContactView> {
      * @param currentContactName      changed name
      * @param currentContactKey       changed key
      */
-    public void onClickSaveChange(long originalContactUserCode, long currentContactUserCode, String currentContactName, String currentContactKey) {
+    public void onClickSaveChange(String originalContactUserCode, String currentContactUserCode, String currentContactName, String currentContactKey) {
         boolean hasOpenChat = getModel().getContactByID(originalContactUserCode).hasOpenChat();
         getModel().updateContact(originalContactUserCode, currentContactName, currentContactUserCode, currentContactKey, hasOpenChat);
     }
@@ -90,7 +90,7 @@ public class ContactPresenter extends MessagingPresenter<ContactView> {
      * @param userCode user code
      * @param key      key
      */
-    public void addContact(String name, long userCode, String key) {
+    public void addContact(String name, String userCode, String key) {
         getModel().addContact(name, userCode, key, false);
     }
 
@@ -127,7 +127,7 @@ public class ContactPresenter extends MessagingPresenter<ContactView> {
      *
      * @param userCode user code for the contact that is to be removed
      */
-    public void onClickDelete(long userCode) {
+    public void onClickDelete(String userCode) {
         getModel().deleteContact(userCode);
     }
 
