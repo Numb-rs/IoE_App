@@ -32,7 +32,6 @@ public class WebsiteModel extends Model {
         } catch (SQLException e) {
             // ErrorHandler
         }
-        insertUserCode(readUserCodeFromFile(sql), sql);
 
     }
 
@@ -172,5 +171,7 @@ public class WebsiteModel extends Model {
         return website;
     }
 
-
+    public SQLiteDatabase getSql() {
+        return sql;
+    }
 }

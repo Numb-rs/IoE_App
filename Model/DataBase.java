@@ -30,6 +30,9 @@ import static internetofeveryone.ioe.Model.TableData.Messages.COLUMN_MESSAGES_IS
 import static internetofeveryone.ioe.Model.TableData.Messages.COLUMN_MESSAGES_RECEIVERID;
 import static internetofeveryone.ioe.Model.TableData.Messages.COLUMN_MESSAGES_SENDERID;
 import static internetofeveryone.ioe.Model.TableData.Messages.TABLE_MESSAGES;
+import static internetofeveryone.ioe.Model.TableData.SessionHash.COLUMN_SESSIONHASH_ID;
+import static internetofeveryone.ioe.Model.TableData.SessionHash.COLUMN_SESSIONHASH_SESSIONHASH;
+import static internetofeveryone.ioe.Model.TableData.SessionHash.TABLE_SESSIONHASH;
 import static internetofeveryone.ioe.Model.TableData.UserCode.COLUMN_USERCODE_ID;
 import static internetofeveryone.ioe.Model.TableData.UserCode.COLUMN_USERCODE_USERCODE;
 import static internetofeveryone.ioe.Model.TableData.UserCode.TABLE_USERCODE;
@@ -80,6 +83,11 @@ public class DataBase extends SQLiteOpenHelper {
             + COLUMN_USERCODE_USERCODE + " TEXT UNIQUE "
             +");";
 
+    private static final String SQL_CREATE_SESSIONHASH = "CREATE TABLE " + TableData.SessionHash.TABLE_SESSIONHASH + "("
+            + COLUMN_SESSIONHASH_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
+            + COLUMN_SESSIONHASH_SESSIONHASH + " TEXT UNIQUE "
+            +");";
+
     /**
      * Instantiates a new Data base.
      *
@@ -97,6 +105,7 @@ public class DataBase extends SQLiteOpenHelper {
         db.execSQL(SQL_CREATE_CHATS);
         db.execSQL(SQL_CREATE_MESSAGES);
         db.execSQL(SQL_CREATE_USERCODE);
+        db.execSQL(SQL_CREATE_SESSIONHASH);
     }
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
@@ -107,6 +116,7 @@ public class DataBase extends SQLiteOpenHelper {
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_CHATS);
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_MESSAGES);
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_USERCODE);
+        db.execSQL("DROP TABLE IF EXISTS " + TABLE_SESSIONHASH);
 
         // recreate the tables
         onCreate(db);

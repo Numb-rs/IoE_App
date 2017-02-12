@@ -77,4 +77,14 @@ public class TableData {
         public static final String COLUMN_USERCODE_ID = "id";
         public static final String COLUMN_USERCODE_USERCODE = "userCode";
     }
+
+    /**
+     * The type Session hash.
+     */
+    public static abstract class SessionHash implements BaseColumns {
+
+        public static final String TABLE_SESSIONHASH = "sessionhash_table";
+        public static final String COLUMN_SESSIONHASH_ID = "id";
+        public static final String COLUMN_SESSIONHASH_SESSIONHASH = "sessionHash";
+    }
 }
