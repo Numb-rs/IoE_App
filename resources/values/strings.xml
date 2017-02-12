@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">IoE</string>
+    <string name="app_name">Internet of Everyone</string>
     <string name="edit_message">Enter a message</string>
     <string name="button_messages">Messages</string>
     <string name="button_downloads">Downloads</string>
@@ -15,7 +15,7 @@
     <string name="button_enter">Enter</string>
     <string name="button_add_contact">Add Contact</string>
     <string name="button_add_chat">Add Chat</string>
-    <string name="phone_number">Phone Number</string>
+    <string name="user_code">User Code</string>
     <string name="save">Save</string>
     <string name="cancel">Cancel</string>
     <string name="name">Name</string>
@@ -30,6 +30,16 @@
     <string name="edit_default_websites_title">Edit default Websites</string>
     <string name="edit_default_website_title">Edit default Website</string>
     <string name="add_default_website_title">Add new default Website</string>
+    <string name="browser_enter_toast">Great choice!</string>
+    <string name="search">Search</string>
+    <string name="favorites">Favorites</string>
+    <string name="search_term">Search term</string>
+    <string name="please_enter_search_term">Please enter a search term</string>
+    <string name="already_downloaded_website">You\'ve already downloaded this website</string>
+    <string name="website_download_success">Your Website has been downloaded</string>
+    <string name="not_a_valid_website">Error: This is not a valid website</string>
+    <string name="not_valid_website_without_error">This is not a valid website</string>
+    <string name="please_wait_app_configuration">Please wait while the App is being configured..</string>
     <string-array name="languages">
         <item>German</item>
         <item>English</item>
