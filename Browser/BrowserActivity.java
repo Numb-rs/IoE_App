@@ -20,7 +20,6 @@ import internetofeveryone.ioe.DefaultWebsites.DefaultWebsiteFragment;
 import internetofeveryone.ioe.Presenter.PresenterLoader;
 import internetofeveryone.ioe.R;
 import internetofeveryone.ioe.Website.WebsiteActivity;
-// TODO: abfangen, wenn der user eine invalide url eingibt (zB durch prüfen des statuscodes der serverresponse)
 /**
  * Created by Fabian Martin for 'Internet of Everyone'
  *
@@ -32,6 +31,9 @@ public class BrowserActivity extends AppCompatActivity implements BrowserView, L
     private ListView favoritesList;
     private FavoritesAdapter favoritesAdapter;
     private static final int LOADER_ID = 106; // unique identification for the BrowserActivity-LoaderManager
+    public static final String ENGINE = "ENGINE";
+    public static final String SEARCHTERM = "SEARCHTERM";
+    public static final String URL = "URL";
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -85,7 +87,7 @@ public class BrowserActivity extends AppCompatActivity implements BrowserView, L
         EditText editText = (EditText) findViewById(R.id.editText_searchterm);
         String searchTerm = editText.getText().toString();
         if (searchTerm.equals("")) {
-            Toast.makeText(this, "Please enter a search term", Toast.LENGTH_SHORT).show(); // TODO: text auslagern in strings.xmk
+            Toast.makeText(this, R.string.please_enter_search_term, Toast.LENGTH_SHORT).show();
             return;
         }
         presenter.onDownloadClickedSearch(name, searchTerm);
@@ -141,16 +143,21 @@ public class BrowserActivity extends AppCompatActivity implements BrowserView, L
     public void goToURL(String url) {
 
         Intent intent = new Intent(this, WebsiteActivity.class);
-        intent.putExtra("URL", url);
+        intent.putExtra(URL, url);
         startActivity(intent);
     }
 
-    // TODO: javadoc
+    /**
+     *  Notifies the presenter that the user wants to start a search
+     *
+     * @param engine search engine
+     * @param searchTerm
+     */
     public void sendSearchRequest(String engine, String searchTerm) {
 
         Intent intent = new Intent(this, WebsiteActivity.class);
-        intent.putExtra("ENGINE", engine);
-        intent.putExtra("SEARCHTERM", searchTerm); // TODO: als konstante auslagern (bei methode obdendrüber auch)
+        intent.putExtra(ENGINE, engine);
+        intent.putExtra(SEARCHTERM, searchTerm);
         startActivity(intent);
     }
 

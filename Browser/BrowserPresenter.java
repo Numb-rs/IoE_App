@@ -1,29 +1,25 @@
 package internetofeveryone.ioe.Browser;
 
 import android.content.Context;
+import android.os.AsyncTask;
 import android.util.Log;
 
-import com.android.volley.Request;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
 import com.android.volley.VolleyLog;
-import com.android.volley.toolbox.StringRequest;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
+import java.util.Locale;
 
 import internetofeveryone.ioe.Data.DataType;
 import internetofeveryone.ioe.Data.Website;
 import internetofeveryone.ioe.Presenter.BrowsingPresenter;
-import internetofeveryone.ioe.Website.AppController;
+import internetofeveryone.ioe.R;
+import internetofeveryone.ioe.Requests.TcpClient;
 
-import static internetofeveryone.ioe.Website.AppController.TAG;
 
 /**
  * Created by Fabian Martin for 'Internet of Everyone'
@@ -35,6 +31,11 @@ public class BrowserPresenter extends BrowsingPresenter<BrowserView> {
     private static final String GOOGLE = "Google";
     private static final String WIKI = "Wikipedia";
     private static final String WEATHER = "Weather";
+    private String name; // name of the downloaded website
+    private String url; // url of the downloaded website
+    private static final String TAG = "BrowserPresenter";
+    private Context context;
+    private TcpClient tcpClient;
 
     /**
      * Instantiates a new Browser presenter.
@@ -43,6 +44,7 @@ public class BrowserPresenter extends BrowsingPresenter<BrowserView> {
      */
     public BrowserPresenter(Context context) {
         super(context);
+        this.context = context;
     }
 
     /**
@@ -55,7 +57,6 @@ public class BrowserPresenter extends BrowsingPresenter<BrowserView> {
         ArrayList<String> result = new ArrayList<>();
         for (Website w : websites) {
             result.add(w.getName());
-            // System.out.println("Name of Def.Website: " + w.getName());
         }
         return result;
     }
@@ -96,7 +97,10 @@ public class BrowserPresenter extends BrowsingPresenter<BrowserView> {
         }
     }
 
-    // TODO: javadoc
+    /**
+     * Opens the favorite website that has been clicked on
+     * @param name of the website
+     */
     public void onOpenClickedFavorite(String name) {
         for (Website w : getModel().getAllDefaultWebsites()) {
             if (w.getName().equals(name)) {
@@ -105,6 +109,10 @@ public class BrowserPresenter extends BrowsingPresenter<BrowserView> {
         }
     }
 
+    /**
+     * Downloads the favorite website that has been clicked on
+     * @param name of the website
+     */
     public void onDownloadClickedFavorite(String name) {
         for (Website w : getModel().getAllDefaultWebsites()) {
             if (w.getName().equals(name)) {
@@ -127,39 +135,25 @@ public class BrowserPresenter extends BrowsingPresenter<BrowserView> {
     }
 
     public void downloadWebsite(String websiteName, String content) {
-        boolean success = getModel().addDownloadedWebsite(websiteName, websiteName, content);
-        if (!success) {
-            if (isViewAttached()) {
-                getView().displayMessage("You've already downloaded this website"); // TODO: auslagern
-            } else {
-                // error handling
-            }
-        } else {
-            if (isViewAttached()) {
-                getView().displayMessage("Your Website has been downloaded"); // TODO: auslagern
-            } else {
-                // error handling
-            }
-        }
+        downloadWebsite(websiteName, websiteName, content);
     }
 
     public void downloadWebsite(String websiteName, String url, String content) {
         boolean success = getModel().addDownloadedWebsite(websiteName, url, content);
         if (!success) {
             if (isViewAttached()) {
-                getView().displayMessage("You've already downloaded this website"); // TODO: auslagern
+                getView().displayMessage(context.getString(R.string.already_downloaded_website));
             } else {
                 // error handling
             }
         } else {
             if (isViewAttached()) {
-                getView().displayMessage("Your Website has been downloaded"); // TODO: auslagern
+                getView().displayMessage(context.getString(R.string.website_download_success));
             } else {
                 // error handling
             }
         }
     }
-
 
     /**
      * Sends a request to the view to open the Website with the given URL
@@ -173,7 +167,11 @@ public class BrowserPresenter extends BrowsingPresenter<BrowserView> {
         }
     }
 
-        // TODO: javadoc
+    /**
+     * parses the response from the request and returns only the markdown value
+     * @param jsonLine
+     * @return
+     */
     public String parse(String jsonLine) {
         try {
             JsonElement jelement = new JsonParser().parse(jsonLine);
@@ -184,123 +182,51 @@ public class BrowserPresenter extends BrowsingPresenter<BrowserView> {
             String result = jobject2.get("markdown").toString();
             return result;
         } catch (Exception e) {
-            return "Error: This is not a valid website"; // TODO: errormessage auslagern in strings.xml
+            return context.getString(R.string.not_a_valid_website);
         }
     }
 
+    /**
+     * sends a search request
+     * @param engine
+     * @param searchTerm
+     */
     public void downloadSearch(final String engine, final String searchTerm) {
 
-        Log.d(TAG, "Engine passed: " + engine);
-        Log.d(TAG, "Searchterm passed: " + searchTerm);
+        Log.d(VolleyLog.TAG, "Engine passed: " + engine);
+        Log.d(VolleyLog.TAG, "Searchterm passed: " + searchTerm);
 
-        // Tag used to cancel the request
-        String tag_json_obj = "json_obj_req";
+        String languageParameter = "{\"language\": \"" + Locale.getDefault().getDisplayLanguage() + "\"}";
+        name = engine + ": " + searchTerm;
+        url = name;
 
-        String serverURL = "http://jintzo.me/api/request/search"; // TODO: in extra Datei und als Konstante
+        new Connect().execute("");
 
-        StringRequest jsonObjReq = new StringRequest(Request.Method.POST,
-                serverURL,
-                new Response.Listener<String>() {
-
-                    @Override
-                    public void onResponse(String response) {
-                        Log.d(TAG, response);
-                        String parsedResponse = parse(response); // markdown
-                        if (parsedResponse.equals("Error: This is not a valid website")) { // TODO: text auslagern, zeile drunter auch
-                            if (isViewAttached()) {
-                                getView().displayMessage("This is not a valid website"); // TODO: auslagern
-                            }
-                            return;
-                        }
-                        parsedResponse = parsedResponse.replace("\\" + "n", "  \n");
-                        parsedResponse = parsedResponse.replace("\\" + "\"", "\"");
-                        String content = parsedResponse.substring(1, parsedResponse.length()-1);
-                        downloadWebsite(engine + ": " + searchTerm, content);
-                    }
-                }, new Response.ErrorListener() {
-
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                VolleyLog.d(TAG, "Error: " + error.getMessage());
-            }
-        }) {
-
-            @Override
-            public String getBodyContentType() {
-                return "application/x-www-form-urlencoded; charset=UTF-8";
-            }
-
-            @Override
-            protected Map<String, String> getParams() {
-                Map<String, String> params = new HashMap<>();
-                params.put("searchTerm", searchTerm);
-                params.put("engine", engine);
-                params.put("parameters", "{\"language\": \"en\"}"); // TODO: abhängig von telefonsprache
-                return params;
-            }
-
-        };
-
-        // Adding request to request queue
-        AppController.getInstance().addToRequestQueue(jsonObjReq, tag_json_obj);
+        if (tcpClient != null) {
+            tcpClient.sendMessage("WEBSRCH\0" + searchTerm + "\0" + engine + "\0" + languageParameter + "\u0004");
+        }
 
     }
 
+    /**
+     * sends a website request
+     * @param urlOfWebsite
+     * @param name
+     */
     public void downloadWithoutSearch(final String urlOfWebsite, final String name) {
 
         Log.d(TAG, "Url passed: " + urlOfWebsite);
 
-        // Tag used to cancel the request
-        String tag_json_obj = "json_obj_req";
+        this.name = name;
+        url = urlOfWebsite;
 
-        String serverURL = "http://jintzo.me/api/request/page"; // TODO: in extra Datei und als Konstante
+        new Connect().execute("");
 
-        StringRequest jsonObjReq = new StringRequest(Request.Method.POST,
-                serverURL,
-                new Response.Listener<String>() {
+        if (tcpClient != null) {
+            tcpClient.sendMessage("WEBREQU\0" + urlOfWebsite + "\u0004");
+        }
 
-                    @Override
-                    public void onResponse(String response) {
-                        Log.d(TAG, response);
-                        String parsedResponse = parse(response); // markdown
-                        if (parsedResponse.equals("Error: This is not a valid website")) { // TODO: text auslagern, zeile drunter auch
-                            if (isViewAttached()) {
-                                getView().displayMessage("This is not a valid website"); // TODO: auslagern
-                            }
-                            return;
-                        }
-                        parsedResponse = parsedResponse.replace("\\" + "n", "  \n");
-                        parsedResponse = parsedResponse.replace("\\" + "\"", "\"");
-                        String content = parsedResponse.substring(1, parsedResponse.length()-1);
-                        downloadWebsite(name, urlOfWebsite, content);
-                    }
-                }, new Response.ErrorListener() {
-
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                VolleyLog.d(TAG, "Error: " + error.getMessage());
-            }
-        }) {
-
-            @Override
-            public String getBodyContentType() {
-                return "application/x-www-form-urlencoded; charset=UTF-8";
-            }
-
-            @Override
-            protected Map<String, String> getParams() {
-                Map<String, String> params = new HashMap<>();
-                params.put("url", urlOfWebsite); // TODO: auslagern
-                return params;
-            }
-
-        };
-
-        // Adding request to request queue
-        AppController.getInstance().addToRequestQueue(jsonObjReq, tag_json_obj);
     }
-
-
 
     @Override
     public void update(DataType type) {
@@ -308,6 +234,53 @@ public class BrowserPresenter extends BrowsingPresenter<BrowserView> {
             if (isViewAttached()) {
                 getView().dataChanged();
             }
+        }
+    }
+
+    public class Connect extends AsyncTask<String, String, TcpClient> {
+
+        @Override
+        protected TcpClient doInBackground(String... message) {
+
+            // we create a TCPClient object
+            tcpClient = new TcpClient(new TcpClient.OnMessageReceived() {
+
+                @Override
+                public void messageReceived(String message) {
+                    publishProgress(message);
+                }
+            });
+
+            tcpClient.run();
+            return null;
+        }
+
+        @Override
+        protected void onProgressUpdate(String... values) {
+
+            super.onProgressUpdate(values);
+
+            String response = values[0];
+            Log.d(TAG, "response " + response);
+
+            String parsedResponse = parse(response); // markdown
+
+            if (parsedResponse.equals((context.getString(R.string.not_a_valid_website)))) {
+                if (isViewAttached()) {
+                    getView().displayMessage(context.getString(R.string.not_valid_website_without_error));
+                } else {
+                    // error handling
+                }
+                tcpClient.stopClient();
+                return;
+            }
+
+            // change links and line breaks into the right format for MarkdownView
+            parsedResponse = parsedResponse.replace("\\" + "n", "  \n");
+            parsedResponse = parsedResponse.replace("\\" + "\"", "\"");
+            String content = parsedResponse.substring(1, parsedResponse.length()-1);
+            downloadWebsite(name, url, content);
+            tcpClient.stopClient();
         }
     }
 }

@@ -18,12 +18,41 @@ public interface BrowserView extends MvpView {
      */
     public void goToURL(String url);
 
-    // TODO: javadoc
+    /**
+     * Notifies the presenter that the user wants to start a search request
+     * @param view
+     */
     public void onClickOpenSearch(View view);
+
+    /**
+     * Notifies the presenter that the user wants to download a search request
+     * @param view
+     */
     public void onClickDownloadSearch(View view);
+
+    /**
+     * Notifies the presenter that the user wants to open a favorite website
+     * @param name
+     */
     public void onClickOpenFavorite(String name);
+
+    /**
+     * Notifies the presenter that the user wants to download a favorite website
+     * @param name
+     */
     public void onClickDownloadFavorite(String name);
+
+    /**
+     * sends a search request
+      * @param engine
+     * @param searchTerm
+     */
     public void sendSearchRequest(String engine, String searchTerm);
+
+    /**
+     * displays a mesasge to the user
+     * @param text
+     */
     public void displayMessage(String text);
 
 }
