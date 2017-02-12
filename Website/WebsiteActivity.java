@@ -11,6 +11,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import icepick.Icepick;
+import internetofeveryone.ioe.Browser.BrowserActivity;
 import internetofeveryone.ioe.Presenter.PresenterLoader;
 import internetofeveryone.ioe.R;
 import us.feras.mdv.MarkdownView;
@@ -101,9 +102,9 @@ public class WebsiteActivity extends AppCompatActivity implements WebsiteView, L
     public void onLoadFinished(Loader<WebsitePresenter> loader, WebsitePresenter presenter) {
 
         this.presenter = presenter;
-        String urlPassed = getIntent().getStringExtra("URL");
-        String enginePassed = getIntent().getStringExtra("ENGINE");
-        String searchTermPassed = getIntent().getStringExtra("SEARCHTERM");
+        String urlPassed = getIntent().getStringExtra(BrowserActivity.URL);
+        String enginePassed = getIntent().getStringExtra(BrowserActivity.ENGINE);
+        String searchTermPassed = getIntent().getStringExtra(BrowserActivity.SEARCHTERM);
         if (urlPassed != null) {
             presenter.onURLPassed(urlPassed);
         } else {
@@ -117,10 +118,13 @@ public class WebsiteActivity extends AppCompatActivity implements WebsiteView, L
 
     }
 
-    // TODO: javadoc
+    /**
+     * opens a new website
+     * @param url of the new website
+     */
     public void openNewPage(String url) {
         Intent intent = new Intent(this, WebsiteActivity.class);
-        intent.putExtra("URL", url);
+        intent.putExtra(BrowserActivity.URL, url);
         startActivity(intent);
     }
 }
