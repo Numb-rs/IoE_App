@@ -24,4 +24,14 @@ public interface MainView extends MvpView {
      */
     public void goToBrowser();
 
+    /**
+     * displays loading message
+     */
+    public void displayLoader();
+
+    /**
+     * closes loading message
+     */
+    public void closeLoader();
+
 }

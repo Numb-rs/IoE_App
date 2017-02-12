@@ -1,5 +1,6 @@
 package internetofeveryone.ioe.Main;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.LoaderManager;
@@ -23,6 +24,7 @@ public class MainActivity extends AppCompatActivity implements MainView, LoaderM
 
     private MainPresenter presenter;
     private static final int LOADER_ID = 101; // unique identification for the MainActivity-LoaderManager
+    private ProgressDialog progressDialog;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -31,6 +33,11 @@ public class MainActivity extends AppCompatActivity implements MainView, LoaderM
         getSupportLoaderManager().initLoader(LOADER_ID, null, this); // initialises the LoaderManager
         Icepick.restoreInstanceState(this, savedInstanceState); // restores instance state
         setContentView(R.layout.activity_main);
+        progressDialog = new ProgressDialog(this);
+        progressDialog.setMessage(getString(R.string.please_wait_app_configuration));
+        progressDialog.setIndeterminate(true);
+        progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+        progressDialog.setCancelable(false);
     }
 
     @Override
@@ -38,6 +45,7 @@ public class MainActivity extends AppCompatActivity implements MainView, LoaderM
 
         super.onStart();
         presenter.attachView(this);
+        presenter.setUp();
     }
 
     @Override
@@ -123,13 +131,26 @@ public class MainActivity extends AppCompatActivity implements MainView, LoaderM
     @Override
     public void onLoadFinished(Loader<MainPresenter> loader, MainPresenter presenter) {
         this.presenter = presenter;
-
     }
 
     @Override
     public void onLoaderReset(Loader<MainPresenter> loader) {
         presenter = null;
 
+    }
+
+    /**
+     * displays loading message
+     */
+    public void displayLoader() {
+        progressDialog.show();
+    }
+
+    /**
+     * closes loading message
+     */
+    public void closeLoader() {
+        progressDialog.dismiss();
     }
 
 
