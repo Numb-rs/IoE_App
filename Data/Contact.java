@@ -8,7 +8,7 @@ package internetofeveryone.ioe.Data;
 public class Contact {
 
     private String name; // name of the contact
-    private long userCode; // user code of the contact as unique identifier
+    private String userCode; // user code of the contact as unique identifier
     private String key; // key for encryption
     private boolean openChat; // flag that stores if there's currently an open chat with this contact
 
@@ -19,7 +19,7 @@ public class Contact {
      * @param userCode
      * @param key
      */
-    public Contact(String name, long userCode, String key, boolean openChat) {
+    public Contact(String name, String userCode, String key, boolean openChat) {
         this.name = name;
         this.userCode = userCode;
         this.key = key;
@@ -49,7 +49,7 @@ public class Contact {
      *
      * @return the user code
      */
-    public long getUserCode() {
+    public String getUserCode() {
         return userCode;
     }
 
@@ -58,7 +58,7 @@ public class Contact {
      *
      * @param userCode the user code
      */
-    public void serUserCode(long userCode) {
+    public void serUserCode(String userCode) {
         this.userCode = userCode;
     }
 

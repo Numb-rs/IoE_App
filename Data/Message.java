@@ -1,5 +1,17 @@
 package internetofeveryone.ioe.Data;
 
+import java.io.UnsupportedEncodingException;
+import java.security.InvalidKeyException;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.util.Arrays;
+
+import javax.crypto.BadPaddingException;
+import javax.crypto.Cipher;
+import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.NoSuchPaddingException;
+import javax.crypto.spec.SecretKeySpec;
+
 /**
  * Created by Fabian Martin for 'Internet of Everyone'
  *
@@ -7,8 +19,8 @@ package internetofeveryone.ioe.Data;
  */
 public class Message {
 
-    private long senderID; // user code of the sender
-    private long receiverID; // user code of the receiver
+    private String senderID; // user code of the sender
+    private String receiverID; // user code of the receiver
     private String content;
     private long id; // unique identifier the message
     private boolean isEncrypted; // flag that stores if the message is encrypted
@@ -22,13 +34,13 @@ public class Message {
      * @param content
      * @param isEncrypted
      */
-    public Message(long id, long senderID, long receiverID, String content, boolean isEncrypted, long myUserCode) {
+    public Message(long id, String senderID, String receiverID, String content, boolean isEncrypted, String myUserCode) {
         this.id = id;
         this.senderID = senderID;
         this.receiverID = receiverID;
         this.content = content;
         this.isEncrypted = isEncrypted;
-        this.isMine = senderID == myUserCode ? true : false;
+        this.isMine = senderID.equals(myUserCode);
     }
 
     /**
@@ -38,8 +50,17 @@ public class Message {
      * @param key     the key
      * @return the encrypted message
      */
-    public static String encrypt(String message, String key) {
-        return message + " (encrypted with " + key + ")"; // TODO: add logic
+    public static String encrypt(String message, String key) throws UnsupportedEncodingException, NoSuchAlgorithmException, InvalidKeyException, BadPaddingException, IllegalBlockSizeException, NoSuchPaddingException {
+        Cipher cipher = Cipher.getInstance("AES");
+        byte[] keyBytes = key.getBytes("UTF-8");
+        MessageDigest sha = MessageDigest.getInstance("SHA-1");
+        keyBytes = sha.digest(keyBytes);
+        keyBytes = Arrays.copyOf(keyBytes, 16); // use only first 128 bit
+        SecretKeySpec secretKeySpec = new SecretKeySpec(keyBytes, "AES");
+        cipher.init(Cipher.ENCRYPT_MODE, secretKeySpec);
+
+        byte[] inputBytes = message.getBytes();
+        return new String(cipher.doFinal(inputBytes), "UTF-8");
     }
 
     /**
@@ -49,8 +70,18 @@ public class Message {
      * @param key     the key
      * @return the decrypted message
      */
-    public static String decrypt(String message, String key) {
-        return message; // TODO: add logic
+    public static String decrypt(String message, String key) throws BadPaddingException, IllegalBlockSizeException, UnsupportedEncodingException, NoSuchAlgorithmException, InvalidKeyException, NoSuchPaddingException {
+        Cipher cipher = Cipher.getInstance("AES");
+        byte[] keyBytes = key.getBytes("UTF-8");
+        MessageDigest sha = MessageDigest.getInstance("SHA-1");
+        keyBytes = sha.digest(keyBytes);
+        keyBytes = Arrays.copyOf(keyBytes, 16); // use only first 128 bit
+        SecretKeySpec secretKeySpec = new SecretKeySpec(keyBytes, "AES");
+        cipher.init(Cipher.ENCRYPT_MODE, secretKeySpec);
+
+        byte[] recoveredBytes =
+                cipher.doFinal(message.getBytes());
+        return new String(recoveredBytes, "UTF-8");
     }
 
     /**
@@ -58,7 +89,7 @@ public class Message {
      *
      * @return the sender id
      */
-    public long getSenderID() {
+    public String getSenderID() {
         return senderID;
     }
 
@@ -67,7 +98,7 @@ public class Message {
      *
      * @param senderID the sender id
      */
-    public void setSenderID(long senderID) {
+    public void setSenderID(String senderID) {
         this.senderID = senderID;
     }
 
@@ -76,7 +107,7 @@ public class Message {
      *
      * @return the receiver id
      */
-    public long getReceiverID() {
+    public String getReceiverID() {
         return receiverID;
     }
 
@@ -85,7 +116,7 @@ public class Message {
      *
      * @param receiverID the receiver id
      */
-    public void setReceiverID(long receiverID) {
+    public void setReceiverID(String receiverID) {
         this.receiverID = receiverID;
     }
 
