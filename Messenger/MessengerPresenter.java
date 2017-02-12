@@ -18,6 +18,8 @@ import internetofeveryone.ioe.Presenter.MessagingPresenter;
  */
 public class MessengerPresenter extends MessagingPresenter<MessengerView> {
 
+    public static final String TAG = "MessengerPresenter";
+
     /**
      * Instantiates a new MessengerPresenter.
      *
@@ -67,6 +69,5 @@ public class MessengerPresenter extends MessagingPresenter<MessengerView> {
         }
         return chatList;
     }
-
 
 }

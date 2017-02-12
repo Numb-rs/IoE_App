@@ -84,6 +84,7 @@ public class MessengerActivity extends AppCompatActivity implements MessengerVie
     public void onStart() {
         super.onStart();
         presenter.attachView(this);
+        presenter.fetchMessagesFromServer();
         dataChanged();
     }
 
