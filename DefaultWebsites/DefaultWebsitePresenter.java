@@ -8,6 +8,7 @@ import java.util.Arrays;
 import internetofeveryone.ioe.Data.DataType;
 import internetofeveryone.ioe.Data.Website;
 import internetofeveryone.ioe.Presenter.BrowsingPresenter;
+import internetofeveryone.ioe.R;
 
 /**
  * Created by Fabian Martin for 'Internet of Everyone'
@@ -84,7 +85,7 @@ public class DefaultWebsitePresenter extends BrowsingPresenter<DefaultWebsiteVie
         if(isViewAttached()) {
             boolean success = getModel().addDefaultWebsite(name, url, "");
             if (!success) {
-                Toast.makeText(context, "You've already downloaded this website", Toast.LENGTH_SHORT); // TODO: auslagern
+                Toast.makeText(context, context.getString(R.string.already_downloaded_website), Toast.LENGTH_SHORT);
             }
         } else {
             // ErrorHandling
