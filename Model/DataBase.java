@@ -37,11 +37,15 @@ import static internetofeveryone.ioe.Model.TableData.UserCode.COLUMN_USERCODE_ID
 import static internetofeveryone.ioe.Model.TableData.UserCode.COLUMN_USERCODE_USERCODE;
 import static internetofeveryone.ioe.Model.TableData.UserCode.TABLE_USERCODE;
 
+/**
+ * This class creates and managaes the database
+ */
 public class DataBase extends SQLiteOpenHelper {
 
     private static final String DATABASE_NAME = "Database.db";
     private static final int DATABASE_VERSION = 1;
 
+    // strings to create the tables
     private static final String SQL_CREATE_DOWNLOADED = "CREATE TABLE " + TableData.DownloadedWebsites.TABLE_DOWNLOADED + "("
             + COLUMN_DOWNLOADED_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
             + COLUMN_DOWNLOADED_NAME + " TEXT NOT NULL, "

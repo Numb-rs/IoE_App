@@ -9,27 +9,52 @@ import java.util.ArrayList;
 import internetofeveryone.ioe.Data.DataType;
 import internetofeveryone.ioe.Presenter.ModelObserver;
 
+/**
+ * The type Model.
+ */
 public abstract class Model {
 
     private static ArrayList<ModelObserver> observers = null;
+    /**
+     * The default user code
+     */
     public static final String DEFAULTUSERCODE = "0-0";
 
+    /**
+     * Instantiates a new Model.
+     */
     public Model () {
         if (observers == null) {
             observers = new ArrayList<>();
         }
     }
 
+    /**
+     * Notifies all ModelObservers that a change in the database occurred
+     *
+     * @param type the type
+     */
     public void notify(DataType type) {
         for (ModelObserver o : observers) {
             o.update(type);
         }
     }
 
+    /**
+     * Adds an observer to the observerlist
+     *
+     * @param o the o
+     */
     public void addObserver(ModelObserver o) {
         this.observers.add(o);
     }
 
+    /**
+     * Gets my user code from database
+     *
+     * @param sql the sql
+     * @return the user code
+     */
     public String getUserCode(SQLiteDatabase sql) {
         String userCode = DEFAULTUSERCODE;
         Cursor cursor = sql.query(TableData.UserCode.TABLE_USERCODE,
@@ -42,6 +67,12 @@ public abstract class Model {
         return userCode;
     }
 
+    /**
+     * Gets my session hash from database
+     *
+     * @param sql the sql
+     * @return the session hash
+     */
     public String getSessionHash(SQLiteDatabase sql) {
         String sessionHash = "";
         Cursor cursor = sql.query(TableData.SessionHash.TABLE_SESSIONHASH,
@@ -54,6 +85,13 @@ public abstract class Model {
         return sessionHash;
     }
 
+    /**
+     * Inserts user code in the databse
+     *
+     * @param userCode the user code
+     * @param sql      the sql
+     * @return the boolean
+     */
     public boolean insertUserCode(String userCode, SQLiteDatabase sql) {
         if (!getUserCode(sql).equals(DEFAULTUSERCODE)) {
             // already inserted
@@ -66,6 +104,13 @@ public abstract class Model {
         return (result != -1);
     }
 
+    /**
+     * Inserts session hash in the database
+     *
+     * @param sessionHash the session hash
+     * @param sql         the sql
+     * @return the boolean
+     */
     public boolean insertSessionHash(String sessionHash, SQLiteDatabase sql) {
         ContentValues contentValues = new ContentValues();
         contentValues.put(TableData.SessionHash.COLUMN_SESSIONHASH_SESSIONHASH, sessionHash);

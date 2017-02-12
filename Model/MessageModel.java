@@ -16,6 +16,9 @@ import internetofeveryone.ioe.Data.Contact;
 import internetofeveryone.ioe.Data.DataType;
 import internetofeveryone.ioe.Data.Message;
 
+/**
+ * The model for all message related data
+ */
 public class MessageModel extends Model {
 
     private SQLiteDatabase sql;
@@ -27,6 +30,11 @@ public class MessageModel extends Model {
             TableData.Contacts.COLUMN_CONTACTS_KEY, TableData.Contacts.COLUMN_CONTACTS_OPENCHAT };
     private String[] chatColumns = { TableData.Chats.COLUMN_CHATS_USERCODE, TableData.Chats.COLUMN_CHATS_ISENCRYPTED };
 
+    /**
+     * Instantiates a new Message model.
+     *
+     * @param context the context
+     */
     public MessageModel(Context context) {
         super();
         db = new DataBase(context);
@@ -38,14 +46,30 @@ public class MessageModel extends Model {
         }
     }
 
+    /**
+     * Opens the database
+     *
+     * @throws SQLException the sql exception
+     */
     public void open() throws SQLException {
         sql = db.getWritableDatabase();
     }
 
+    /**
+     * Closes the database
+     */
     public void close() {
         sql.close();
     }
 
+    /**
+     * Adds a message to the database
+     *
+     * @param senderID    the sender id
+     * @param receiverID  the receiver id
+     * @param content     the content
+     * @param isEncrypted the is encrypted
+     */
     public void addMessage(String senderID, String receiverID, String content, boolean isEncrypted) {
 
         ContentValues values = new ContentValues();
@@ -58,6 +82,15 @@ public class MessageModel extends Model {
         notify(DataType.MESSAGE);
     }
 
+    /**
+     * Adds a contact to the database
+     *
+     * @param name     the name
+     * @param userCode the user code
+     * @param key      the key
+     * @param openChat the open chat
+     * @return the boolean
+     */
     public boolean addContact(String name, String userCode, String key, boolean openChat) {
         if (getContactByID(userCode) != null) {
             return false;
@@ -75,6 +108,13 @@ public class MessageModel extends Model {
     }
 
 
+    /**
+     * Adds a chat to the database
+     *
+     * @param userCode    the user code
+     * @param isEncrypted the is encrypted
+     * @return the boolean
+     */
     public boolean addChat(String userCode, boolean isEncrypted) {
         if (getChatByID(userCode) != null) {
             return false;
@@ -90,12 +130,22 @@ public class MessageModel extends Model {
     }
 
 
+    /**
+     * Deletes a message from the database
+     *
+     * @param id the id
+     */
     public void deleteMessage(long id) {
         sql.delete(TableData.Messages.TABLE_MESSAGES, TableData.Messages.COLUMN_MESSAGES_ID
                 + " = " + id, null);
         notify(DataType.MESSAGE);
     }
 
+    /**
+     * Deletes a contact from the database
+     *
+     * @param userCode the user code
+     */
     public void deleteContact(String userCode) {
         int numRowsChanged = sql.delete(TableData.Contacts.TABLE_CONTACTS, TableData.Contacts.COLUMN_CONTACTS_USERCODE
                 + " = " + userCode, null);
@@ -106,12 +156,22 @@ public class MessageModel extends Model {
         notify(DataType.CONTACT);
     }
 
+    /**
+     * Deletes a chat from the database
+     *
+     * @param userCode the user code
+     */
     public void deleteChat(String userCode) {
         sql.delete(TableData.Chats.TABLE_CHATS, TableData.Chats.COLUMN_CHATS_USERCODE
                 + " = " + userCode, null);
         notify(DataType.CHAT);
     }
 
+    /**
+     * Deletes all messages for a specific contact from the database
+     *
+     * @param userCode the user code
+     */
     public void deleteAllMessagesForContact(String userCode) {
         TreeMap<Long, Message> messages = getAllMessagesByContact(userCode);
         for (Long id : messages.keySet()) {
@@ -119,6 +179,11 @@ public class MessageModel extends Model {
         }
     }
 
+    /**
+     * Gets all messages from the database
+     *
+     * @return the all messages
+     */
     public List<Message> getAllMessages() {
         List<Message> messages = new ArrayList<>();
 
@@ -138,6 +203,11 @@ public class MessageModel extends Model {
         return messages;
     }
 
+    /**
+     * Gets all contacts from the database
+     *
+     * @return the all contacts
+     */
     public List<Contact> getAllContacts() {
         List<Contact> contacts = new ArrayList<>();
 
@@ -157,6 +227,11 @@ public class MessageModel extends Model {
         return contacts;
     }
 
+    /**
+     * Gets all chats from the database
+     *
+     * @return the all chats
+     */
     public List<Chat> getAllChats() {
         List<Chat> chats = new ArrayList<>();
 
@@ -176,6 +251,12 @@ public class MessageModel extends Model {
         return chats;
     }
 
+    /**
+     * Gets message by id from the database
+     *
+     * @param id the id
+     * @return the message by id
+     */
     public Message getMessageByID(long id) {
         Cursor cursor = sql.query(TableData.Messages.TABLE_MESSAGES, messageColumns,
                 TableData.Messages.COLUMN_MESSAGES_ID + " = ?",
@@ -191,6 +272,12 @@ public class MessageModel extends Model {
         return msg;
     }
 
+    /**
+     * Gets contact by id from the database
+     *
+     * @param userCode the user code
+     * @return the contact by id
+     */
     public Contact getContactByID(String userCode) {
         Cursor cursor = sql.query(TableData.Contacts.TABLE_CONTACTS, contactColumns,
                 TableData.Contacts.COLUMN_CONTACTS_USERCODE + " = ?",
@@ -206,6 +293,12 @@ public class MessageModel extends Model {
         return contact;
     }
 
+    /**
+     * Gets chat by id from the database
+     *
+     * @param userCode the user code
+     * @return the chat by id
+     */
     public Chat getChatByID(String userCode) {
         Cursor cursor = sql.query(TableData.Chats.TABLE_CHATS, chatColumns,
                 TableData.Chats.COLUMN_CHATS_USERCODE + " = ?",
@@ -221,6 +314,12 @@ public class MessageModel extends Model {
         return chat;
     }
 
+    /**
+     * Gets all messages for a specific contact from the database
+     *
+     * @param userCode the user code
+     * @return the all messages by contact
+     */
     public TreeMap<Long, Message> getAllMessagesByContact(String userCode) {
         HashSet<Message> messages = new HashSet<>();
 
@@ -261,6 +360,16 @@ public class MessageModel extends Model {
         return sortedMessageList;
     }
 
+    /**
+     * Updates a contact in the database
+     *
+     * @param userCode    the original user code
+     * @param name        the name
+     * @param newUserCode the new user code
+     * @param key         the key
+     * @param openChat    the open chat
+     * @return the boolean
+     */
     public boolean updateContact(String userCode, String name, String newUserCode, String key, boolean openChat) {
         ContentValues contentValues = new ContentValues();
         contentValues.put(TableData.Contacts.COLUMN_CONTACTS_NAME, name);
@@ -273,6 +382,13 @@ public class MessageModel extends Model {
         return true;
     }
 
+    /**
+     * Updates a chat in the databasse
+     *
+     * @param userCode    the user code
+     * @param isEncrypted the is encrypted
+     * @return the boolean
+     */
     public boolean updateChat(String userCode, boolean isEncrypted) {
         ContentValues contentValues = new ContentValues();
         contentValues.put(TableData.Chats.COLUMN_CHATS_USERCODE, userCode);
@@ -282,29 +398,62 @@ public class MessageModel extends Model {
         return true;
     }
 
+    /**
+     * Gets user code.
+     *
+     * @return the user code
+     */
     public String getUserCode() {
         return super.getUserCode(sql);
     }
 
+    /**
+     * Gets session hash.
+     *
+     * @return the session hash
+     */
     public String getSessionHash() {
         return super.getSessionHash(sql);
     }
 
+    /**
+     * Converts cursor to Message
+     *
+     * @param cursor the cursor
+     * @return the message
+     */
     protected Message cursorToMessage(Cursor cursor) {
         Message msg = new Message(cursor.getLong(0), cursor.getString(1), cursor.getString(2), cursor.getString(3), Boolean.valueOf(cursor.getString(4)), getUserCode());
         return msg;
     }
 
+    /**
+     * Converts cursor to Contact
+     *
+     * @param cursor the cursor
+     * @return the contact
+     */
     protected Contact cursorToContact(Cursor cursor) {
         Contact contact = new Contact(cursor.getString(0), cursor.getString(1), cursor.getString(2), Boolean.valueOf(cursor.getString(3)));
         return contact;
     }
 
+    /**
+     * Converts cursor to Chat
+     *
+     * @param cursor the cursor
+     * @return the chat
+     */
     protected Chat cursorToChat(Cursor cursor) {
         Chat chat = new Chat(getContactByID(cursor.getString(0)), getAllMessagesByContact(cursor.getString(0)),Boolean.valueOf(cursor.getString(1)));
         return chat;
     }
 
+    /**
+     * Gets sql database
+     *
+     * @return the sql
+     */
     public SQLiteDatabase getSql() {
         return sql;
     }

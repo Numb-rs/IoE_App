@@ -13,6 +13,9 @@ import internetofeveryone.ioe.Data.DataType;
 import internetofeveryone.ioe.Data.Website;
 
 
+/**
+ * The model for all website related data
+ */
 public class WebsiteModel extends Model {
 
     private SQLiteDatabase sql;
@@ -23,6 +26,11 @@ public class WebsiteModel extends Model {
             TableData.DefaultWebsites.COLUMN_DEFAULT_URL, TableData.DefaultWebsites.COLUMN_DEFAULT_CONTENT };
 
 
+    /**
+     * Instantiates a new Website model.
+     *
+     * @param context the context
+     */
     public WebsiteModel(Context context) {
         super();
         db = new DataBase(context);
@@ -35,14 +43,30 @@ public class WebsiteModel extends Model {
 
     }
 
+    /**
+     * Opens the database
+     *
+     * @throws SQLException the sql exception
+     */
     public void open() throws SQLException {
         sql = db.getWritableDatabase();
     }
 
+    /**
+     * Closes the database
+     */
     public void close() {
         sql.close();
     }
 
+    /**
+     * Adds a downloaded website to the database
+     *
+     * @param name    the name
+     * @param url     the url
+     * @param content the content
+     * @return the boolean
+     */
     public boolean addDownloadedWebsite(String name, String url, String content) {
         if (getDownloadedWebsiteByURL(url) != null) {
             return false;
@@ -58,6 +82,14 @@ public class WebsiteModel extends Model {
         return true;
     }
 
+    /**
+     * Adds a default website to the database
+     *
+     * @param name    the name
+     * @param url     the url
+     * @param content the content
+     * @return the boolean
+     */
     public boolean addDefaultWebsite(String name, String url, String content) {
         if (getDefaultWebsiteByURL(url) != null) {
             return false;
@@ -72,6 +104,11 @@ public class WebsiteModel extends Model {
         return true;
     }
 
+    /**
+     * Deletes a downloaded website from the database
+     *
+     * @param url the url
+     */
     public void deleteDownloadedWebsite(String url) {
         String[] whereArgs = new String[] { url };
         sql.delete(TableData.DownloadedWebsites.TABLE_DOWNLOADED, TableData.DownloadedWebsites.COLUMN_DOWNLOADED_URL
@@ -79,6 +116,11 @@ public class WebsiteModel extends Model {
         notify(DataType.WEBSITE);
     }
 
+    /**
+     * Deletes a default website from the database
+     *
+     * @param url the url
+     */
     public void deleteDefaultWebsite(String url) {
         String[] whereArgs = new String[] { url };
         sql.delete(TableData.DefaultWebsites.TABLE_DEFAULT, TableData.DefaultWebsites.COLUMN_DEFAULT_URL
@@ -86,6 +128,11 @@ public class WebsiteModel extends Model {
         notify(DataType.WEBSITE);
     }
 
+    /**
+     * Gets all downloaded websites from the database
+     *
+     * @return the all downloaded websites
+     */
     public List<Website> getAllDownloadedWebsites() {
         List<Website> websites = new ArrayList<>();
 
@@ -105,6 +152,11 @@ public class WebsiteModel extends Model {
         return websites;
     }
 
+    /**
+     * Gets all default websites from the database
+     *
+     * @return the all default websites
+     */
     public List<Website> getAllDefaultWebsites() {
         List<Website> websites = new ArrayList<>();
 
@@ -124,6 +176,12 @@ public class WebsiteModel extends Model {
         return websites;
     }
 
+    /**
+     * Gets downloaded website by url from the database
+     *
+     * @param url the url
+     * @return the downloaded website by url
+     */
     public Website getDownloadedWebsiteByURL(String url) {
         Cursor cursor = sql.query(TableData.DownloadedWebsites.TABLE_DOWNLOADED, downloadColumns,
                 TableData.DownloadedWebsites.COLUMN_DOWNLOADED_URL + " = ?",
@@ -142,6 +200,12 @@ public class WebsiteModel extends Model {
         return website;
     }
 
+    /**
+     * Gets default website by url from the database
+     *
+     * @param url the url
+     * @return the default website by url
+     */
     public Website getDefaultWebsiteByURL(String url) {
         Cursor cursor = sql.query(TableData.DefaultWebsites.TABLE_DEFAULT, defaultColumns,
                 TableData.DefaultWebsites.COLUMN_DEFAULT_URL + " = ?",
@@ -157,6 +221,15 @@ public class WebsiteModel extends Model {
         return website;
     }
 
+    /**
+     * Updates downloaded website in the database
+     *
+     * @param name    the name
+     * @param oldURL  the old url
+     * @param newURL  the new url
+     * @param content the content
+     * @return the boolean
+     */
     public boolean updateDownloadedWebsite(String name, String oldURL, String newURL, String content) {
         ContentValues contentValues = new ContentValues();
         contentValues.put(TableData.DownloadedWebsites.COLUMN_DOWNLOADED_NAME, name);
@@ -166,11 +239,22 @@ public class WebsiteModel extends Model {
         return true;
     }
 
+    /**
+     * Converts cursor to website
+     *
+     * @param cursor the cursor
+     * @return the website
+     */
     protected Website cursorToWebsite(Cursor cursor) {
         Website website = new Website(cursor.getString(0), cursor.getString(1), cursor.getString(2));
         return website;
     }
 
+    /**
+     * Gets sql database
+     *
+     * @return the sql
+     */
     public SQLiteDatabase getSql() {
         return sql;
     }
