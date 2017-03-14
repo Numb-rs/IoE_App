@@ -34,6 +34,8 @@ public class MessengerActivity extends AppCompatActivity implements MessengerVie
     private MessengerPresenter presenter;
     private HashMap<String, Chat> chatList;
     private static final int LOADER_ID = 105; // unique identification for the MainActivity-LoaderManager
+    private AddChatFragment addChatFragment;
+    private ContactFragment contactFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,7 +44,7 @@ public class MessengerActivity extends AppCompatActivity implements MessengerVie
         getSupportLoaderManager().initLoader(LOADER_ID, null, this); // initialises the LoaderManager
         Icepick.restoreInstanceState(this, savedInstanceState); // restore instance state
         setContentView(R.layout.activity_messenger);
-        getSupportActionBar().setTitle("Chats");
+        getSupportActionBar().setTitle("Chats"); // TODO: constant
     }
 
     @Override
@@ -57,12 +59,12 @@ public class MessengerActivity extends AppCompatActivity implements MessengerVie
 
         int id = item.getItemId();
         if (id == R.id.add_chat_option) { // if chat option from the menu is selected
-            AddChatFragment fragment = new AddChatFragment();
-            fragment.show(getSupportFragmentManager(), "AddChat"); // open new fragment to add a new chat
+            addChatFragment = new AddChatFragment();
+            addChatFragment.show(getSupportFragmentManager(), "AddChat"); // open new fragment to add a new chat TODO: constant
 
         } else if (id == R.id.add_contact_option) { // if contact option from the menu is selected
-            ContactFragment fragment = new ContactFragment();
-            fragment.show(getSupportFragmentManager(), "Contact"); // open new fragment to edit contacts
+            contactFragment = new ContactFragment();
+            contactFragment.show(getSupportFragmentManager(), "Contact"); // open new fragment to edit contacts TODO: constant
 
         }
         return super.onOptionsItemSelected(item);
@@ -76,7 +78,7 @@ public class MessengerActivity extends AppCompatActivity implements MessengerVie
     public void openChat(Contact contact) {
 
         Intent intent = new Intent(this, ChatActivity.class);
-        intent.putExtra("contactUserCode", contact.getUserCode());
+        intent.putExtra("contactUserCode", contact.getUserCode()); // TODO: constant
         startActivity(intent);
     }
 
@@ -116,7 +118,7 @@ public class MessengerActivity extends AppCompatActivity implements MessengerVie
         });
     }
 
-    @Override protected void onSaveInstanceState(Bundle outState) {
+    @Override public void onSaveInstanceState(Bundle outState) {
 
         super.onSaveInstanceState(outState);
         Icepick.saveInstanceState(this, outState); // save instance state
@@ -148,5 +150,21 @@ public class MessengerActivity extends AppCompatActivity implements MessengerVie
     @Override
     public void onLoaderReset(Loader<MessengerPresenter> loader) {
         presenter = null;
+    }
+
+    public MessengerAdapter getAdapter() {
+        return adapter;
+    }
+
+    public void setAdapter(MessengerAdapter adapter) {
+        this.adapter = adapter;
+    }
+
+    public AddChatFragment getAddChatFragment() {
+        return addChatFragment;
+    }
+
+    public ContactFragment getContactFragment() {
+        return contactFragment;
     }
 }
