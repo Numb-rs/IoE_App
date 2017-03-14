@@ -38,7 +38,7 @@ public class WebsiteModel extends Model {
         try {
             open();
         } catch (SQLException e) {
-            // ErrorHandler
+            // ErrorHandler TODO: Errorhandling
         }
 
     }
@@ -236,6 +236,7 @@ public class WebsiteModel extends Model {
         contentValues.put(TableData.DownloadedWebsites.COLUMN_DOWNLOADED_URL, newURL);
         contentValues.put(TableData.DownloadedWebsites.COLUMN_DOWNLOADED_CONTENT, content);
         sql.update(TableData.DownloadedWebsites.TABLE_DOWNLOADED, contentValues, "url =  ?", new String[] {oldURL});
+        notify(DataType.WEBSITE);
         return true;
     }
 

@@ -21,6 +21,18 @@ import internetofeveryone.ioe.Data.Message;
  */
 public class MessageModel extends Model {
 
+    public DataBase getDb() {
+        return db;
+    }
+
+    public void setDb(DataBase db) {
+        this.db = db;
+    }
+
+    public void setSql(SQLiteDatabase sql) {
+        this.sql = sql;
+    }
+
     private SQLiteDatabase sql;
     private DataBase db;
     private String[] messageColumns = { TableData.Messages.COLUMN_MESSAGES_ID,
@@ -69,8 +81,9 @@ public class MessageModel extends Model {
      * @param receiverID  the receiver id
      * @param content     the content
      * @param isEncrypted the is encrypted
+     * @return id the message id
      */
-    public void addMessage(String senderID, String receiverID, String content, boolean isEncrypted) {
+    public long addMessage(String senderID, String receiverID, String content, boolean isEncrypted) { // TODO: does it still work? if not: replace long return type with void
 
         ContentValues values = new ContentValues();
         values.put(TableData.Messages.COLUMN_MESSAGES_SENDERID, senderID);
@@ -80,6 +93,7 @@ public class MessageModel extends Model {
 
         long id = sql.insert(TableData.Messages.TABLE_MESSAGES, null, values);
         notify(DataType.MESSAGE);
+        return id;
     }
 
     /**
@@ -135,10 +149,11 @@ public class MessageModel extends Model {
      *
      * @param id the id
      */
-    public void deleteMessage(long id) {
-        sql.delete(TableData.Messages.TABLE_MESSAGES, TableData.Messages.COLUMN_MESSAGES_ID
+    public int deleteMessage(long id) {
+        int amount = sql.delete(TableData.Messages.TABLE_MESSAGES, TableData.Messages.COLUMN_MESSAGES_ID
                 + " = " + id, null);
         notify(DataType.MESSAGE);
+        return amount;
     }
 
     /**
@@ -146,14 +161,15 @@ public class MessageModel extends Model {
      *
      * @param userCode the user code
      */
-    public void deleteContact(String userCode) {
+    public int deleteContact(String userCode) {
         int numRowsChanged = sql.delete(TableData.Contacts.TABLE_CONTACTS, TableData.Contacts.COLUMN_CONTACTS_USERCODE
-                + " = " + userCode, null);
+                + " =? ", new String[] {userCode});
         if (numRowsChanged != 0) {
             deleteChat(userCode);
             deleteAllMessagesForContact(userCode);
         }
         notify(DataType.CONTACT);
+        return numRowsChanged;
     }
 
     /**
@@ -161,10 +177,11 @@ public class MessageModel extends Model {
      *
      * @param userCode the user code
      */
-    public void deleteChat(String userCode) {
-        sql.delete(TableData.Chats.TABLE_CHATS, TableData.Chats.COLUMN_CHATS_USERCODE
-                + " = " + userCode, null);
+    public int deleteChat(String userCode) {
+        int amount = sql.delete(TableData.Chats.TABLE_CHATS, TableData.Chats.COLUMN_CHATS_USERCODE
+                + " =? ", new String[] {userCode});
         notify(DataType.CHAT);
+        return amount;
     }
 
     /**
@@ -326,11 +343,12 @@ public class MessageModel extends Model {
         Cursor cursorReceive = sql.query(TableData.Messages.TABLE_MESSAGES, messageColumns,
                 TableData.Messages.COLUMN_MESSAGES_RECEIVERID + " = ?",
                 new String[] { userCode }, null, null, null);
+
         if (cursorReceive != null) {
             cursorReceive.moveToFirst();
             while (!cursorReceive.isAfterLast()) {
                 Message msg = cursorToMessage(cursorReceive);
-                if (msg.getReceiverID().equals(getUserCode()) || msg.getSenderID().equals(getUserCode())) {
+                if (msg.getReceiverID().equals(userCode) || msg.getSenderID().equals(userCode)) {
                     messages.add(msg);
                 }
                 cursorReceive.moveToNext();
@@ -345,7 +363,7 @@ public class MessageModel extends Model {
             cursorSend.moveToFirst();
             while (!cursorSend.isAfterLast()) {
                 Message msg = cursorToMessage(cursorSend);
-                if (msg.getReceiverID().equals(getUserCode()) || msg.getSenderID().equals(getUserCode())) {
+                if (msg.getReceiverID().equals(userCode) || msg.getSenderID().equals(userCode)) {
                     messages.add(msg);
                 }
                 cursorSend.moveToNext();
