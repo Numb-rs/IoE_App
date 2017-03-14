@@ -80,6 +80,10 @@ public abstract class MessagingPresenter<V extends MvpView> extends MvpPresenter
         return model;
     }
 
+    public void setModel(MessageModel model) {
+        this.model = model;
+    }
+
     /**
      * starts request to fetch new messages from server
      */

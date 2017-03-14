@@ -74,4 +74,7 @@ public abstract class BrowsingPresenter<V extends MvpView> extends MvpPresenter 
         return model;
     }
 
+    public void setModel(WebsiteModel model) {
+        this.model = model;
+    }
 }
