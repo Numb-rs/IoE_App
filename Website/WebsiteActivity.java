@@ -27,6 +27,7 @@ public class WebsiteActivity extends AppCompatActivity implements WebsiteView, L
     private WebsitePresenter presenter;
     private TextView textView;
     private static final int LOADER_ID = 108; // unique identification for the WebsiteActivity-LoaderManager
+    private MarkdownView markdownView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,7 +46,7 @@ public class WebsiteActivity extends AppCompatActivity implements WebsiteView, L
      * @param content of the website
      */
     public void displayWebsite(String content) {
-        MarkdownView markdownView = new MarkdownView(this);
+        markdownView = new MarkdownView(this);
         markdownView.setWebViewClient(new WebViewClient()
         {
             // Override URL
@@ -87,7 +88,7 @@ public class WebsiteActivity extends AppCompatActivity implements WebsiteView, L
         super.onPause();
     }
 
-    @Override protected void onSaveInstanceState(Bundle outState) {
+    @Override public void onSaveInstanceState(Bundle outState) {
 
         super.onSaveInstanceState(outState);
         Icepick.saveInstanceState(this, outState); // saves instance state
@@ -126,6 +127,10 @@ public class WebsiteActivity extends AppCompatActivity implements WebsiteView, L
         Intent intent = new Intent(this, WebsiteActivity.class);
         intent.putExtra(BrowserActivity.URL, url);
         startActivity(intent);
+    }
+
+    public MarkdownView getMarkdownView() {
+        return markdownView;
     }
 }
 
