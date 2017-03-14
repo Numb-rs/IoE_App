@@ -31,6 +31,8 @@ public class DownloadsPresenter extends BrowsingPresenter<DownloadsView> {
         if (type.equals(DataType.WEBSITE)) {
             if(isViewAttached()) {
                 getView().dataChanged();
+            } else {
+                attachView(new DownloadsActivity());
             }
         }
     }
@@ -42,7 +44,7 @@ public class DownloadsPresenter extends BrowsingPresenter<DownloadsView> {
      */
     public ArrayList<String> getDownloadedWebsiteNames() {
         if (getModel().getAllDownloadedWebsites() == null) {
-            return new ArrayList<String>(); // just momentarily
+            return new ArrayList<>(); // TODO: just momentarily
         }
         List<Website> websites = getModel().getAllDownloadedWebsites();
         ArrayList<String> result = new ArrayList<>();

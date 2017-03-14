@@ -28,6 +28,7 @@ public class DownloadsActivity extends AppCompatActivity implements DownloadsVie
      */
     private DownloadsAdapter adapter;
     private static final int LOADER_ID = 102; // unique identification for the DownloadsActivity-LoaderManager
+    private MarkdownView markdownView;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -35,7 +36,7 @@ public class DownloadsActivity extends AppCompatActivity implements DownloadsVie
         super.onCreate(savedInstanceState);
         getSupportLoaderManager().initLoader(LOADER_ID, null, this); // initialises the LoaderManager
         Icepick.restoreInstanceState(this, savedInstanceState); // restores instance state
-        getSupportActionBar().setTitle("Downloads");
+        getSupportActionBar().setTitle("Downloads"); // TODO: constant
         setContentView(R.layout.activity_downloads);
     }
 
@@ -79,7 +80,7 @@ public class DownloadsActivity extends AppCompatActivity implements DownloadsVie
      * @param content Content of the Website
      */
     public void displayContent(String content) {
-        MarkdownView markdownView = new MarkdownView(this);
+        markdownView = new MarkdownView(this);
         markdownView.setWebViewClient(new WebViewClient()
         {
             // Override URL
@@ -123,8 +124,25 @@ public class DownloadsActivity extends AppCompatActivity implements DownloadsVie
 
     }
 
-    @Override protected void onSaveInstanceState(Bundle outState) {
+    @Override public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         Icepick.saveInstanceState(this, outState); // save instance state
+    }
+
+
+    public DownloadsAdapter getAdapter() {
+        return adapter;
+    }
+
+    public void setAdapter(DownloadsAdapter adapter) {
+        this.adapter = adapter;
+    }
+
+    public MarkdownView getMarkdownView() {
+        return markdownView;
+    }
+
+    public void setMarkdownView(MarkdownView markdownView) {
+        this.markdownView = markdownView;
     }
 }
