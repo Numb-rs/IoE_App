@@ -28,6 +28,8 @@ public class DefaultWebsiteFragment extends android.support.v4.app.DialogFragmen
 
 
     private DefaultWebsitePresenter presenter;
+    private Dialog addDialog;
+    private Dialog editDialog;
     private View view;
     private ListView listView; // list of all DefaultWebsite names
     private String currentName = ""; // name that has been entered by the user
@@ -121,9 +123,9 @@ public class DefaultWebsiteFragment extends android.support.v4.app.DialogFragmen
                 presenter.onClickCancel(); // notifies the presenter that the user wants to cancel
             }
         });
-        Dialog d = builder2.create();
-        d.show();
-        return d;
+        addDialog = builder2.create();
+        addDialog.show();
+        return addDialog;
     }
 
     /**
@@ -172,9 +174,9 @@ public class DefaultWebsiteFragment extends android.support.v4.app.DialogFragmen
                 presenter.onClickCancel(); // notifies the presenter that the user wants to cancel
             }
         });
-        Dialog d = builder3.create();
-        d.show();
-        return d;
+        editDialog = builder3.create();
+        editDialog.show();
+        return editDialog;
 
     }
 
@@ -252,4 +254,19 @@ public class DefaultWebsiteFragment extends android.support.v4.app.DialogFragmen
         });
     }
 
+    public ArrayAdapter<String> getAdapter() {
+        return adapter;
+    }
+
+    public void setAdapter(ArrayAdapter<String> adapter) {
+        this.adapter = adapter;
+    }
+
+    public Dialog getAddDialog() {
+        return addDialog;
+    }
+
+    public Dialog getEditDialog() {
+        return editDialog;
+    }
 }
