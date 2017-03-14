@@ -29,7 +29,8 @@ public class ChatActivity extends AppCompatActivity implements ChatView, LoaderM
      * Adapter for the ListView
      * It's responsible for displaying data in the list
      */
-    ChatAdapter adapter;
+    private ChatAdapter adapter;
+    private ToggleButton encryption;
     private static final int LOADER_ID = 104; // unique identification for the ChatActivity-LoaderManager
 
 
@@ -37,19 +38,31 @@ public class ChatActivity extends AppCompatActivity implements ChatView, LoaderM
     protected void onCreate(Bundle savedInstanceState) {
 
         super.onCreate(savedInstanceState);
-        presenter = new ChatPresenter(this);
         getSupportLoaderManager().initLoader(LOADER_ID, null, this); // initialises the LoaderManager
         Icepick.restoreInstanceState(this, savedInstanceState); // restore instance state
         setContentView(R.layout.activity_chat);
-        userCode = getIntent().getStringExtra("contactUserCode");
-        ToggleButton encryption = (ToggleButton) findViewById(R.id.button_encryption);
-        encryption.setChecked(presenter.isChatEncrypted(userCode));
+        userCode = getIntent().getStringExtra("contactUserCode"); // TODO: constant
+        encryption = (ToggleButton) findViewById(R.id.button_encryption);
     }
 
     @Override
     public void onStart() {
         super.onStart();
         presenter.attachView(this);
+
+        String contactUserCode = getIntent().getStringExtra("contactUserCode"); // TODO: constant
+        presenter.getContact(contactUserCode);
+        getSupportActionBar().setTitle(presenter.getContactName(userCode));
+        // sets up ListView after load has finished
+        ListView listView = (ListView)findViewById(R.id.chat_list);
+        TreeMap<Long, Message> msgList = presenter.getMessageList(userCode);
+        adapter = new ChatAdapter(msgList, this, userCode);
+        listView.setAdapter(adapter);
+        if (msgList.size() > 0) {
+            listView.setSelection(msgList.size() - 1);
+        }
+
+        encryption.setChecked(presenter.isChatEncrypted(userCode));
         presenter.fetchMessagesFromServer();
     }
 
@@ -100,7 +113,7 @@ public class ChatActivity extends AppCompatActivity implements ChatView, LoaderM
         }
     }
 
-    @Override protected void onSaveInstanceState(Bundle outState) {
+    @Override public void onSaveInstanceState(Bundle outState) {
 
         super.onSaveInstanceState(outState);
         Icepick.saveInstanceState(this, outState); // save instance state
@@ -114,19 +127,7 @@ public class ChatActivity extends AppCompatActivity implements ChatView, LoaderM
 
     @Override
     public void onLoadFinished(Loader<ChatPresenter> loader, ChatPresenter presenter) {
-
         this.presenter = presenter;
-        String contactUserCode = getIntent().getStringExtra("contactUserCode");
-        presenter.getContact(contactUserCode);
-        getSupportActionBar().setTitle(presenter.getContactName(userCode));
-        // sets up ListView after load has finished
-        ListView listView = (ListView)findViewById(R.id.chat_list);
-        TreeMap<Long, Message> msgList = presenter.getMessageList(userCode);
-        adapter = new ChatAdapter(msgList, this, userCode);
-        listView.setAdapter(adapter);
-        if (msgList.size() > 0) {
-            listView.setSelection(msgList.size() - 1);
-        }
     }
 
     @Override
@@ -135,4 +136,19 @@ public class ChatActivity extends AppCompatActivity implements ChatView, LoaderM
 
     }
 
+    public ChatAdapter getAdapter() {
+        return adapter;
+    }
+
+    public void setAdapter(ChatAdapter adapter) {
+        this.adapter = adapter;
+    }
+
+    public String getUserCode() {
+        return userCode;
+    }
+
+    public void setUserCode(String userCode) {
+        this.userCode = userCode;
+    }
 }
