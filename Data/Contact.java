@@ -54,11 +54,11 @@ public class Contact {
     }
 
     /**
-     * Ser user code.
+     * Set user code.
      *
      * @param userCode the user code
      */
-    public void serUserCode(String userCode) {
+    public void setUserCode(String userCode) {
         this.userCode = userCode;
     }
 
