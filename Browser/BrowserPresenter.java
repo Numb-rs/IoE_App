@@ -34,13 +34,13 @@ public class BrowserPresenter extends BrowsingPresenter<BrowserView> {
     private String name; // name of the downloaded website
     private String url; // url of the downloaded website
     private static final String TAG = "BrowserPresenter";
-    private Context context;
+    private final Context context;
     private TcpClient tcpClient;
 
     /**
      * Instantiates a new Browser presenter.
      *
-     * @param context
+     * @param context the context
      */
     public BrowserPresenter(Context context) {
         super(context);
@@ -74,7 +74,6 @@ public class BrowserPresenter extends BrowsingPresenter<BrowserView> {
                 getView().sendSearchRequest("wiki", searchTerm);
                 break;
             default:
-                // Error Handling
                 break;
         }
     }
@@ -92,7 +91,6 @@ public class BrowserPresenter extends BrowsingPresenter<BrowserView> {
                 downloadSearch("wiki", searchTerm);
                 break;
             default:
-                // Error Handling
                 break;
         }
     }
@@ -144,13 +142,15 @@ public class BrowserPresenter extends BrowsingPresenter<BrowserView> {
             if (isViewAttached()) {
                 getView().displayMessage(context.getString(R.string.already_downloaded_website));
             } else {
-                // error handling
+                attachView(new BrowserActivity());
+                downloadWebsite(websiteName, url, content);
             }
         } else {
             if (isViewAttached()) {
                 getView().displayMessage(context.getString(R.string.website_download_success));
             } else {
-                // error handling
+                attachView(new BrowserActivity());
+                downloadWebsite(websiteName, url, content);
             }
         }
     }
@@ -164,23 +164,25 @@ public class BrowserPresenter extends BrowsingPresenter<BrowserView> {
 
         if(isViewAttached()) {
             getView().goToURL(url);
+        } else {
+            attachView(new BrowserActivity());
+            getView().goToURL(url);
         }
     }
 
     /**
      * parses the response from the request and returns only the markdown value
-     * @param jsonLine
-     * @return
+     * @param jsonLine json response
+     * @return parsed response
      */
-    public String parse(String jsonLine) {
+    private String parse(String jsonLine) {
         try {
             JsonElement jelement = new JsonParser().parse(jsonLine);
             JsonObject jobject = jelement.getAsJsonObject();
             JsonArray jarray = jobject.getAsJsonArray("data");
             jobject = jarray.get(0).getAsJsonObject();
             JsonObject jobject2 = jobject.getAsJsonObject("attributes");
-            String result = jobject2.get("markdown").toString();
-            return result;
+            return jobject2.get("markdown").toString();
         } catch (Exception e) {
             return context.getString(R.string.not_a_valid_website);
         }
@@ -188,10 +190,10 @@ public class BrowserPresenter extends BrowsingPresenter<BrowserView> {
 
     /**
      * sends a search request
-     * @param engine
-     * @param searchTerm
+     * @param engine search engine
+     * @param searchTerm search term
      */
-    public void downloadSearch(final String engine, final String searchTerm) {
+    private void downloadSearch(final String engine, final String searchTerm) {
 
         Log.d(VolleyLog.TAG, "Engine passed: " + engine);
         Log.d(VolleyLog.TAG, "Searchterm passed: " + searchTerm);
@@ -210,10 +212,10 @@ public class BrowserPresenter extends BrowsingPresenter<BrowserView> {
 
     /**
      * sends a website request
-     * @param urlOfWebsite
-     * @param name
+     * @param urlOfWebsite url of website
+     * @param name name of website
      */
-    public void downloadWithoutSearch(final String urlOfWebsite, final String name) {
+    private void downloadWithoutSearch(final String urlOfWebsite, final String name) {
 
         Log.d(TAG, "Url passed: " + urlOfWebsite);
 
@@ -237,7 +239,7 @@ public class BrowserPresenter extends BrowsingPresenter<BrowserView> {
         }
     }
 
-    public class Connect extends AsyncTask<String, String, TcpClient> {
+    private class Connect extends AsyncTask<String, String, TcpClient> {
 
         @Override
         protected TcpClient doInBackground(String... message) {
@@ -269,7 +271,7 @@ public class BrowserPresenter extends BrowsingPresenter<BrowserView> {
                 if (isViewAttached()) {
                     getView().displayMessage(context.getString(R.string.not_valid_website_without_error));
                 } else {
-                    // error handling
+                    attachView(new BrowserActivity());
                 }
                 tcpClient.stopClient();
                 return;

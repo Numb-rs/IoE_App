@@ -19,13 +19,13 @@ import internetofeveryone.ioe.R;
  */
 public class FavoritesAdapter extends BaseAdapter {
     private final ArrayList<String> data;
-    private Context context;
+    private final Context context;
 
     /**
      * Instantiates a new DownloadsAdapter.
      *
      * @param favorites data
-     * @param context
+     * @param context the context
      */
     public FavoritesAdapter(ArrayList<String> favorites, Context context) {
         this.context = context;
@@ -75,14 +75,16 @@ public class FavoritesAdapter extends BaseAdapter {
             viewHolder = (ViewHolder) convertView.getTag();
         }
 
-        viewHolder.tvWebsiteName.setText(name);
+        String newName = name;
+        if (newName.length() > 20) {
+            newName = newName.substring(0, 17) + "...";
+        }
+        viewHolder.tvWebsiteName.setText(newName);
         viewHolder.downloadButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 if(context instanceof BrowserView){
                     ((BrowserView)context).onClickDownloadFavorite(name);
-                } else {
-                    // ErrorHandling
                 }
             }
         });viewHolder.openButton.setOnClickListener(new View.OnClickListener() {
@@ -90,8 +92,6 @@ public class FavoritesAdapter extends BaseAdapter {
             public void onClick(View view) {
                 if(context instanceof BrowserView){
                     ((BrowserView)context).onClickOpenFavorite(name);
-                } else {
-                    // ErrorHandling
                 }
             }
         });

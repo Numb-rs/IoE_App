@@ -20,6 +20,7 @@ import internetofeveryone.ioe.DefaultWebsites.DefaultWebsiteFragment;
 import internetofeveryone.ioe.Presenter.PresenterLoader;
 import internetofeveryone.ioe.R;
 import internetofeveryone.ioe.Website.WebsiteActivity;
+
 /**
  * Created by Fabian Martin for 'Internet of Everyone'
  *
@@ -34,6 +35,7 @@ public class BrowserActivity extends AppCompatActivity implements BrowserView, L
     public static final String ENGINE = "ENGINE";
     public static final String SEARCHTERM = "SEARCHTERM";
     public static final String URL = "URL";
+    private DefaultWebsiteFragment fragment;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -41,7 +43,9 @@ public class BrowserActivity extends AppCompatActivity implements BrowserView, L
         super.onCreate(savedInstanceState);
         getSupportLoaderManager().initLoader(LOADER_ID, null, this); // initialises LoaderManager
         Icepick.restoreInstanceState(this, savedInstanceState); // restores instance state
-        getSupportActionBar().setTitle("Browser");
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().setTitle(R.string.title_activity_browser);
+        }
         setContentView(R.layout.activity_browser);
     }
 
@@ -57,7 +61,7 @@ public class BrowserActivity extends AppCompatActivity implements BrowserView, L
 
         int id = item.getItemId();
         if (id == R.id.change_default_websites) { // if the default website option from the menu gets clicked
-            DefaultWebsiteFragment fragment = new DefaultWebsiteFragment();
+            fragment = new DefaultWebsiteFragment();
             fragment.show(getSupportFragmentManager(), "changeDefaultWebsites"); // shows DefaultWebsiteFragment
         }
         return super.onOptionsItemSelected(item);
@@ -66,7 +70,7 @@ public class BrowserActivity extends AppCompatActivity implements BrowserView, L
     /**
      * Notifies the presenter that the user wants to open a favorite Website
      *
-     * @param
+     * @param view the view
      */
     public void onClickOpenSearch(View view) {
         TextView textView = (TextView) findViewById(R.id.search_website_name);
@@ -79,7 +83,7 @@ public class BrowserActivity extends AppCompatActivity implements BrowserView, L
     /**
      * Notifies the presenter that the user wants to download a favorite Website
      *
-     * @param
+     * @param view the view
      */
     public void onClickDownloadSearch(View view) {
         TextView textView = (TextView) findViewById(R.id.search_website_name);
@@ -96,7 +100,7 @@ public class BrowserActivity extends AppCompatActivity implements BrowserView, L
     /**
      * Notifies the presenter that the user wants to open a favorite Website
      *
-     * @param
+     * @param name favorite website name
      */
     public void onClickOpenFavorite(String name) {
         presenter.onOpenClickedFavorite(name);
@@ -105,7 +109,7 @@ public class BrowserActivity extends AppCompatActivity implements BrowserView, L
     /**
      * Notifies the presenter that the user wants to download a favorite Website
      *
-     * @param
+     * @param name favorite website name
      */
     public void onClickDownloadFavorite(String name) {
         presenter.onDownloadClickedFavorite(name);
@@ -114,7 +118,7 @@ public class BrowserActivity extends AppCompatActivity implements BrowserView, L
     /**
      * Notifies the presenter that the user wants to open a Website by URL
      *
-     * @param
+     * @param view the view
      */
     public void onClickOpenURL(View view) {
         EditText editText = (EditText) findViewById(R.id.editText_browser_url);
@@ -126,7 +130,7 @@ public class BrowserActivity extends AppCompatActivity implements BrowserView, L
     /**
      * Notifies the presenter that the user wants to download a Website by URL
      *
-     * @param
+     * @param view the view
      */
     public void onClickDownloadURL(View view) {
         EditText editText = (EditText) findViewById(R.id.editText_browser_url);
@@ -151,7 +155,7 @@ public class BrowserActivity extends AppCompatActivity implements BrowserView, L
      *  Notifies the presenter that the user wants to start a search
      *
      * @param engine search engine
-     * @param searchTerm
+     * @param searchTerm search term
      */
     public void sendSearchRequest(String engine, String searchTerm) {
 
@@ -183,11 +187,6 @@ public class BrowserActivity extends AppCompatActivity implements BrowserView, L
      * and replacing the old one so that the update will be instantly visible to the user
      */
     public void dataChanged() {
-        /*
-        searchList = (ListView)findViewById(R.id.browser_list_search);
-        searchAdapter = new SearchAdapter(searchEngines, this);
-        searchList.setAdapter(searchAdapter);
-        */
         favoritesList = (ListView)findViewById(R.id.browser_list_favorites);
         favoritesAdapter = new FavoritesAdapter(presenter.getDefaultWebsiteNames(), this);
         favoritesList.setAdapter(favoritesAdapter);
@@ -196,7 +195,7 @@ public class BrowserActivity extends AppCompatActivity implements BrowserView, L
 
     }
 
-    @Override protected void onSaveInstanceState(Bundle outState) {
+    @Override public void onSaveInstanceState(Bundle outState) {
 
         super.onSaveInstanceState(outState);
         Icepick.saveInstanceState(this, outState); // saves instance state
@@ -236,7 +235,7 @@ public class BrowserActivity extends AppCompatActivity implements BrowserView, L
     /* Sets the Height of the ListView dynamically.
     * Fixes issue of not showing all the items of the ListView when placed inside a ScrollView
     */
-    public static void setListViewHeightBasedOnChildren(ListView listView) {
+    private static void setListViewHeightBasedOnChildren(ListView listView) {
         ListAdapter listAdapter = listView.getAdapter();
         if (listAdapter == null)
             return;
@@ -255,5 +254,17 @@ public class BrowserActivity extends AppCompatActivity implements BrowserView, L
         ViewGroup.LayoutParams params = listView.getLayoutParams();
         params.height = totalHeight + (listView.getDividerHeight() * (listAdapter.getCount() - 1));
         listView.setLayoutParams(params);
+    }
+
+    public FavoritesAdapter getFavoritesAdapter() {
+        return favoritesAdapter;
+    }
+
+    public void setFavoritesAdapter(FavoritesAdapter favoritesAdapter) {
+        this.favoritesAdapter = favoritesAdapter;
+    }
+
+    public DefaultWebsiteFragment getFragment() {
+        return fragment;
     }
 }

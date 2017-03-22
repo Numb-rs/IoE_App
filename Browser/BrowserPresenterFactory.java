@@ -13,12 +13,12 @@ public class BrowserPresenterFactory implements PresenterFactory<BrowserPresente
     /**
      * The Context.
      */
-    Context context;
+    private final Context context;
 
     /**
      * Instantiates a new BrowserPresenterFactory.
      *
-     * @param context
+     * @param context the context
      */
     public BrowserPresenterFactory(Context context) {
         this.context = context;
