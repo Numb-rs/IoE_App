@@ -3,6 +3,7 @@ package internetofeveryone.ioe.Contact;
 import android.app.Dialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
 import android.support.v7.app.AlertDialog;
@@ -31,16 +32,12 @@ public class ContactFragment extends android.support.v4.app.DialogFragment imple
     private View view;
     private ListView listView; // list of all Contact names
     private String[] contactNames; // names of all contacts
-    private String[] contactUserCodes; // userCodes of all contacts
-    private String[] contactKeys; // keys of all contacts
     /**
      * Adapter for the ListView
      * It's responsible for displaying data in the list
      */
     private ArrayAdapter<String> adapter;
-    private String originalContactName; // name of the contact before editing
     private String originalContactUserCode; // user code of the contact before editing
-    private String originalContactKey; // key of the contact before editing
     private String currentContactName = ""; // changed name of the contact
     private String currentContactUserCode; // changed user code of the contact
     private String currentContactKey = ""; // changed key of the contact
@@ -48,6 +45,7 @@ public class ContactFragment extends android.support.v4.app.DialogFragment imple
     private static final int LOADER_ID = 106; // unique identification for the ContactFragment-LoaderManager
 
 
+    @NonNull
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
 
@@ -149,12 +147,12 @@ public class ContactFragment extends android.support.v4.app.DialogFragment imple
         final EditText currentUserCodeEditText = (EditText) view.findViewById(R.id.editText_current_contact_usercode);
         final EditText currentKeyEditText = (EditText) view.findViewById(R.id.editText_current_contact_key);
 
-        contactUserCodes = presenter.getContactUserCodes();
-        contactKeys = presenter.getContactKeys();
+        String[] contactUserCodes = presenter.getContactUserCodes();
+        String[] contactKeys = presenter.getContactKeys();
 
-        originalContactName = contactNames[pos];
+        String originalContactName = contactNames[pos];
         originalContactUserCode = contactUserCodes[pos];
-        originalContactKey = contactKeys[pos];
+        String originalContactKey = contactKeys[pos];
         currentNameEditText.setText(originalContactName);
         currentUserCodeEditText.setText(originalContactUserCode);
         currentKeyEditText.setText(originalContactKey);
@@ -207,11 +205,6 @@ public class ContactFragment extends android.support.v4.app.DialogFragment imple
     }
 
     @Override
-    public void onPause() {
-        super.onPause();
-    }
-
-    @Override
     public void onDestroy() {
         super.onDestroy();
         ((MessengerActivity)getActivity()).dataChanged();
@@ -247,7 +240,7 @@ public class ContactFragment extends android.support.v4.app.DialogFragment imple
         builder.setPositiveButton(R.string.button_add, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int id) {
-                presenter.onClickAdd(); // notifies the presenter that the user wants to add a new contaact
+                presenter.onClickAdd(); // notifies the presenter that the user wants to add a new contact
             }
         });
         builder.setNegativeButton(R.string.exit, new DialogInterface.OnClickListener() {
@@ -279,4 +272,11 @@ public class ContactFragment extends android.support.v4.app.DialogFragment imple
         });
     }
 
+    public ArrayAdapter<String> getAdapter() {
+        return adapter;
+    }
+
+    public void setAdapter(ArrayAdapter<String> adapter) {
+        this.adapter = adapter;
+    }
 }

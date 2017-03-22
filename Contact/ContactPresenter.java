@@ -18,7 +18,7 @@ public class ContactPresenter extends MessagingPresenter<ContactView> {
     /**
      * Instantiates a new ContactPresenter.
      *
-     * @param context
+     * @param context the context
      */
     public ContactPresenter(Context context) {
         super(context);
@@ -35,17 +35,16 @@ public class ContactPresenter extends MessagingPresenter<ContactView> {
         String[] result = new String[contacts.length];
         for (int i = 0; i < contacts.length; i++) {
             result[i] = contacts[i].getName();
-            System.out.println("Contactname = " + result[i]);
         }
         return result;
-    };
+    }
 
     /**
      * Get the user codes of all contacts from the Model
      *
      * @return array of all the user codes
      */
-    public String[] getContactUserCodes(){
+    public String[] getContactUserCodes() {
         Object[] objects = getModel().getAllContacts().toArray();
         Contact[] contacts = Arrays.copyOf(objects, objects.length, Contact[].class);
         String[] result = new String[contacts.length];
@@ -94,10 +93,6 @@ public class ContactPresenter extends MessagingPresenter<ContactView> {
         getModel().addContact(name, userCode, key, false);
     }
 
-    public void onClickCancel() {
-        // may add sth here later
-    }
-
     /**
      * Sends a request to the view to open a new Dialog where users can edit the Contact
      *
@@ -107,7 +102,8 @@ public class ContactPresenter extends MessagingPresenter<ContactView> {
         if(isViewAttached()) {
             getView().onEditContact(pos);
         } else {
-            // ErrorHandling
+            attachView(new ContactFragment());
+            onClickContact(pos);
         }
     }
 
@@ -118,8 +114,23 @@ public class ContactPresenter extends MessagingPresenter<ContactView> {
         if(isViewAttached()) {
             getView().onAddContact();
         } else {
-            // ErrorHandling
+            attachView(new ContactFragment());
+            onClickAdd();
         }
+    }
+
+    /**
+     * May add sth here in later versions
+     */
+    public void onClickExit() {
+
+    }
+
+    /**
+     * May add sth here in later versions
+     */
+    public void onClickCancel() {
+
     }
 
     /**
@@ -131,18 +142,12 @@ public class ContactPresenter extends MessagingPresenter<ContactView> {
         getModel().deleteContact(userCode);
     }
 
-    public void onClickExit() {
-        // may add sth here later
-    }
-
     @Override
     public void update(DataType type) {
 
         if (type.equals(DataType.CONTACT)) {
             if (isViewAttached()) {
                 getView().dataChanged();
-            } else {
-                // ErrorHandling
             }
         }
     }

@@ -9,14 +9,14 @@ import internetofeveryone.ioe.View.MvpView;
  *
  * This interface represents the view for the Contact fragment
  */
-public interface ContactView extends MvpView {
+interface ContactView extends MvpView {
 
     /**
      * Opens a new AlertDialog that allows users to add a new Contact
      *
      * @return AlertDialog
      */
-    public Dialog onAddContact();
+    Dialog onAddContact();
 
     /**
      * Opens a new AlertDialog that allows users to edit a Contact
@@ -24,6 +24,6 @@ public interface ContactView extends MvpView {
      * @param pos position of the Contact that has been selected
      * @return AlertDialog
      */
-    public Dialog onEditContact(int pos);
+    Dialog onEditContact(int pos);
 
 }
