@@ -4,6 +4,7 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
 import android.view.LayoutInflater;
@@ -35,22 +36,20 @@ public class DefaultWebsiteFragment extends android.support.v4.app.DialogFragmen
     private String currentName = ""; // name that has been entered by the user
     private String currentURL = ""; // URL that has been entered by the user
     private String[] defaultWebsiteNames; // names of all DefaultWebsites
-    private String[] defaultWebsiteURLs; // URLs of all DefaultWebsites
     /**
      * Adapter for the ListView
      * It's responsible for displaying data in the list
      */
     private ArrayAdapter<String> adapter;
     private String originalURL; // URL of the DefaultWebsite before editing
-    private String originalName; // name of the DefaultWebsite before editing
-    private AlertDialog.Builder builder;
     private static final int LOADER_ID = 107; // unique identification for the DefaultWebsiteFragment-LoaderManager
 
+    @NonNull
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
 
         Icepick.restoreInstanceState(this, savedInstanceState); // restores instance state
-        builder = new AlertDialog.Builder(getActivity());
+        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         LayoutInflater inflater = getActivity().getLayoutInflater();
         builder.setTitle(R.string.edit_default_website_title);
         view = inflater.inflate(R.layout.fragment_default_websites, null);
@@ -145,9 +144,9 @@ public class DefaultWebsiteFragment extends android.support.v4.app.DialogFragmen
         final EditText currentNameEditText = (EditText) view.findViewById(R.id.editText_current_website_name);
         final EditText currentURLEditText = (EditText) view.findViewById(R.id.editText_current_website_url);
 
-        defaultWebsiteURLs = presenter.getDefaultWebsiteURLs();
+        String[] defaultWebsiteURLs = presenter.getDefaultWebsiteURLs();
 
-        originalName = defaultWebsiteNames[pos];
+        String originalName = defaultWebsiteNames[pos];
         originalURL = defaultWebsiteURLs[pos];
         currentNameEditText.setText(originalName);
         currentURLEditText.setText(originalURL);
@@ -193,11 +192,6 @@ public class DefaultWebsiteFragment extends android.support.v4.app.DialogFragmen
     public void onStop() {
         super.onStop();
         presenter.detachView();
-    }
-
-    @Override
-    public void onPause() {
-        super.onPause();
     }
 
     @Override public void onSaveInstanceState(Bundle outState) {
@@ -269,4 +263,5 @@ public class DefaultWebsiteFragment extends android.support.v4.app.DialogFragmen
     public Dialog getEditDialog() {
         return editDialog;
     }
+
 }

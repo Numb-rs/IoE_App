@@ -17,11 +17,11 @@ import internetofeveryone.ioe.R;
  */
 public class DefaultWebsitePresenter extends BrowsingPresenter<DefaultWebsiteView> {
 
-    Context context;
+    private final Context context;
     /**
      * Instantiates a new Default website presenter.
      *
-     * @param context
+     * @param context the context
      */
     public DefaultWebsitePresenter(Context context) {
         super(context);
@@ -67,12 +67,9 @@ public class DefaultWebsitePresenter extends BrowsingPresenter<DefaultWebsiteVie
         if(isViewAttached()) {
             getView().onAddDefaultWebsite();
         } else {
-            // ErrorHandling
+            attachView(new DefaultWebsiteFragment());
+            onClickAdd();
         }
-    }
-
-    public void onClickExit() {
-        // may add sth here later
     }
 
     /**
@@ -85,10 +82,11 @@ public class DefaultWebsitePresenter extends BrowsingPresenter<DefaultWebsiteVie
         if(isViewAttached()) {
             boolean success = getModel().addDefaultWebsite(name, url, "");
             if (!success) {
-                Toast.makeText(context, context.getString(R.string.already_downloaded_website), Toast.LENGTH_SHORT);
+                Toast.makeText(context, context.getString(R.string.already_downloaded_website), Toast.LENGTH_SHORT).show();
             }
         } else {
-            // ErrorHandling
+            attachView(new DefaultWebsiteFragment());
+            onClickAddWebsite(name, url);
         }
     }
 
@@ -102,12 +100,9 @@ public class DefaultWebsitePresenter extends BrowsingPresenter<DefaultWebsiteVie
         if(isViewAttached()) {
             getView().onEditDefaultWebsite(pos);
         } else {
-            // ErrorHandling
+            attachView(new DefaultWebsiteFragment());
+            onClickDefaultWebsite(pos);
         }
-    }
-
-    public void onClickCancel() {
-        // may add sth here later
     }
 
     /**
@@ -118,8 +113,7 @@ public class DefaultWebsitePresenter extends BrowsingPresenter<DefaultWebsiteVie
      * @param url         new URL of the DefaultWebsite
      */
     public void onClickSaveChange(String originalURL, String name, String url) {
-        getModel().deleteDefaultWebsite(originalURL);
-        getModel().addDefaultWebsite(name, url, "");
+        getModel().updateDefaultWebsite(name, originalURL, url);
     }
 
     /**
@@ -138,5 +132,19 @@ public class DefaultWebsitePresenter extends BrowsingPresenter<DefaultWebsiteVie
                 getView().dataChanged();
             }
         }
+    }
+
+    /**
+     * May add sth here in later versions
+     */
+    public void onClickExit() {
+
+    }
+
+    /**
+     * May add sth here in later versions
+     */
+    public void onClickCancel() {
+
     }
 }
