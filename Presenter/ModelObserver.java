@@ -14,5 +14,5 @@ public interface ModelObserver {
      *
      * @param type the data type that has changed
      */
-    public void update(DataType type);
+    void update(DataType type);
 }

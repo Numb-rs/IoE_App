@@ -47,7 +47,6 @@ public class PresenterLoader<T extends MvpPresenter> extends Loader<T> {
     @Override
     public void onReset() {
         if (presenter != null) {
-            presenter.onDestroyed();
             presenter = null;
         }
     }

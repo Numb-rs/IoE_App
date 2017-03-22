@@ -21,9 +21,9 @@ public abstract class BrowsingPresenter<V extends MvpView> extends MvpPresenter 
     /**
      * Instantiates a new WebsitePresenter.
      *
-     * @param context
+     * @param context the context
      */
-    public BrowsingPresenter(Context context) {
+    protected BrowsingPresenter(Context context) {
         model = new WebsiteModel(context);
         registerObserver(model);
     }
@@ -42,7 +42,7 @@ public abstract class BrowsingPresenter<V extends MvpView> extends MvpPresenter 
      *
      * @return the boolean
      */
-    public boolean isViewAttached() {
+    protected boolean isViewAttached() {
         return this.view != null && this.view.get() != null;
     }
 

@@ -12,7 +12,7 @@ import internetofeveryone.ioe.View.MvpView;
  * This abstract class represents the presenter for the whole application
  * @param <V> the view
  */
-public abstract class MvpPresenter<V extends MvpView> implements ModelObserver {
+abstract class MvpPresenter<V extends MvpView> implements ModelObserver {
 
     private MessageModel model;
     private WeakReference<V> view;
@@ -27,18 +27,11 @@ public abstract class MvpPresenter<V extends MvpView> implements ModelObserver {
     }
 
     /**
-     * On destroyed.
-     */
-    public void onDestroyed() {
-
-    }
-
-    /**
      * Registers the MvpPresenter as an observer to the Model.
      *
      * @param model the model
      */
-    public void registerObserver(Model model) {
+    void registerObserver(Model model) {
         model.addObserver(this);
     }
 }

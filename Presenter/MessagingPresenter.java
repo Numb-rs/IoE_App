@@ -26,9 +26,9 @@ public abstract class MessagingPresenter<V extends MvpView> extends MvpPresenter
     /**
      * Instantiates a new MessagePresenter.
      *
-     * @param context
+     * @param context the context
      */
-    public MessagingPresenter(Context context) {
+    protected MessagingPresenter(Context context) {
         super();
         model = new MessageModel(context);
         registerObserver(model);
@@ -48,7 +48,7 @@ public abstract class MessagingPresenter<V extends MvpView> extends MvpPresenter
      *
      * @return the boolean
      */
-    public boolean isViewAttached() {
+    protected boolean isViewAttached() {
         return this.view != null && this.view.get() != null;
     }
 
@@ -96,7 +96,7 @@ public abstract class MessagingPresenter<V extends MvpView> extends MvpPresenter
         }
     }
 
-    public class Connect extends AsyncTask<String, String, TcpClient> {
+    private class Connect extends AsyncTask<String, String, TcpClient> {
 
         @Override
         protected TcpClient doInBackground(String... message) {
