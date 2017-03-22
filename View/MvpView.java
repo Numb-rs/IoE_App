@@ -10,21 +10,21 @@ public interface MvpView {
     /**
      * Handles the start of a view
      */
-    public void onStart();
+    void onStart();
 
     /**
      * Handles the stopping of an view
      */
-    public void onStop();
+    void onStop();
 
     /**
      * Handles the pausing of an view
      */
-    public void onPause();
+    void onPause();
 
     /**
      * Updates the data
      */
-    public void dataChanged();
+    void dataChanged();
 
 }
