@@ -21,7 +21,7 @@ public class AddChatPresenter extends MessagingPresenter<AddChatView> {
     /**
      * Instantiates a new AddChatPresenter.
      *
-     * @param context
+     * @param context the context
      */
     public AddChatPresenter(Context context) {
         super(context);
@@ -32,8 +32,6 @@ public class AddChatPresenter extends MessagingPresenter<AddChatView> {
         if (type.equals(DataType.CONTACT)) {
             if (isViewAttached()) {
                 getView().dataChanged();
-            } else {
-                // ErrorHandling
             }
         }
     }

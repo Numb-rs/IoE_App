@@ -7,6 +7,6 @@ import internetofeveryone.ioe.View.MvpView;
  *
  * This interface represents the view for the AddChat fragment
  */
-public interface AddChatView extends MvpView {
+interface AddChatView extends MvpView {
 
 }

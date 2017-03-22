@@ -2,6 +2,7 @@ package internetofeveryone.ioe.AddChat;
 
 import android.app.Dialog;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
 import android.support.v7.app.AlertDialog;
@@ -31,6 +32,7 @@ public class AddChatFragment extends android.support.v4.app.DialogFragment imple
     private ArrayAdapter<String> adapter;
     private static final int LOADER_ID = 103; // unique identification for the AddChatFragment-LoaderManager
 
+    @NonNull
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
 
@@ -64,11 +66,6 @@ public class AddChatFragment extends android.support.v4.app.DialogFragment imple
     public void onStop() {
         super.onStop();
         presenter.detachView();
-    }
-
-    @Override
-    public void onPause() {
-        super.onPause();
     }
 
     @Override public void onSaveInstanceState(Bundle outState) {
@@ -112,4 +109,11 @@ public class AddChatFragment extends android.support.v4.app.DialogFragment imple
         adapter.notifyDataSetChanged();
     }
 
+    public ArrayAdapter<String> getAdapter() {
+        return adapter;
+    }
+
+    public void setAdapter(ArrayAdapter<String> adapter) {
+        this.adapter = adapter;
+    }
 }
