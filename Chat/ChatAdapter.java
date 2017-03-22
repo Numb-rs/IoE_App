@@ -1,6 +1,5 @@
 package internetofeveryone.ioe.Chat;
 
-import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,17 +16,14 @@ import internetofeveryone.ioe.R;
 public class ChatAdapter extends BaseAdapter {
 
     private final ArrayList<Message> data;
-    private Context context;
-    private String contactUserCode;
+    private final String contactUserCode;
 
     /**
      * Instantiates a new ChatAdapter.
      *
      * @param chatList data
-     * @param context
      */
-    public ChatAdapter(TreeMap<Long, Message> chatList, Context context, String contactUserCode) {
-        this.context = context;
+    public ChatAdapter(TreeMap<Long, Message> chatList, String contactUserCode) {
         this.contactUserCode = contactUserCode;
         data = new ArrayList<>();
         data.addAll(chatList.values());
@@ -54,7 +50,6 @@ public class ChatAdapter extends BaseAdapter {
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-        Message message = getItem(position);
         ChatAdapter.ViewHolder viewHolder;
 
         if (convertView == null) {

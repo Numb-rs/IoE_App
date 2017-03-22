@@ -28,7 +28,7 @@ public class ChatPresenter extends MessagingPresenter<ChatView> {
     /**
      * Instantiates a new ChatPresenter.
      *
-     * @param context
+     * @param context the context
      */
     public ChatPresenter(Context context) {
         super(context);
@@ -125,7 +125,7 @@ public class ChatPresenter extends MessagingPresenter<ChatView> {
         return getModel().getContactByID(userCode).getName();
     }
 
-    public class ConnectSend extends AsyncTask<String, String, TcpClient> {
+    private class ConnectSend extends AsyncTask<String, String, TcpClient> {
 
         @Override
         protected TcpClient doInBackground(String... message) {

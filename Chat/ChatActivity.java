@@ -32,6 +32,7 @@ public class ChatActivity extends AppCompatActivity implements ChatView, LoaderM
     private ChatAdapter adapter;
     private ToggleButton encryption;
     private static final int LOADER_ID = 104; // unique identification for the ChatActivity-LoaderManager
+    private final String CONTACTUSERCODE = "contactUserCode";
 
 
     @Override
@@ -41,7 +42,7 @@ public class ChatActivity extends AppCompatActivity implements ChatView, LoaderM
         getSupportLoaderManager().initLoader(LOADER_ID, null, this); // initialises the LoaderManager
         Icepick.restoreInstanceState(this, savedInstanceState); // restore instance state
         setContentView(R.layout.activity_chat);
-        userCode = getIntent().getStringExtra("contactUserCode"); // TODO: constant
+        userCode = getIntent().getStringExtra(CONTACTUSERCODE);
         encryption = (ToggleButton) findViewById(R.id.button_encryption);
     }
 
@@ -50,18 +51,19 @@ public class ChatActivity extends AppCompatActivity implements ChatView, LoaderM
         super.onStart();
         presenter.attachView(this);
 
-        String contactUserCode = getIntent().getStringExtra("contactUserCode"); // TODO: constant
+        String contactUserCode = getIntent().getStringExtra(CONTACTUSERCODE);
         presenter.getContact(contactUserCode);
-        getSupportActionBar().setTitle(presenter.getContactName(userCode));
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().setTitle(presenter.getContactName(userCode));
+        }
         // sets up ListView after load has finished
         ListView listView = (ListView)findViewById(R.id.chat_list);
         TreeMap<Long, Message> msgList = presenter.getMessageList(userCode);
-        adapter = new ChatAdapter(msgList, this, userCode);
+        adapter = new ChatAdapter(msgList, userCode);
         listView.setAdapter(adapter);
         if (msgList.size() > 0) {
             listView.setSelection(msgList.size() - 1);
         }
-
         encryption.setChecked(presenter.isChatEncrypted(userCode));
         presenter.fetchMessagesFromServer();
     }
@@ -80,7 +82,7 @@ public class ChatActivity extends AppCompatActivity implements ChatView, LoaderM
     /**
      * Notifies the presenter that the user wants to change the encryption state
      *
-     * @param view
+     * @param view the view
      */
     public void onClickEncryptToggle(View view) {
         ToggleButton encryption = (ToggleButton) findViewById(R.id.button_encryption);
@@ -90,13 +92,15 @@ public class ChatActivity extends AppCompatActivity implements ChatView, LoaderM
     /**
      * Notifies the presenter that the user wants to send the message
      *
-     * @param view
+     * @param view the view
      */
     public void onClickSend(View view) {
         EditText msgEditText = (EditText) findViewById(R.id.message_to_send);
         String message = msgEditText.getText().toString();
         msgEditText.setText("");
-        presenter.sendMessage(userCode, message);
+        if (!message.equals("")) { // don't send empty messages
+            presenter.sendMessage(userCode, message);
+        }
     }
 
     /**
@@ -106,7 +110,7 @@ public class ChatActivity extends AppCompatActivity implements ChatView, LoaderM
     public void dataChanged() {
         TreeMap<Long, Message> msgList = presenter.getMessageList(userCode);
         ListView listView = (ListView) findViewById(R.id.chat_list);
-        adapter = new ChatAdapter(msgList, this, userCode);
+        adapter = new ChatAdapter(msgList, userCode);
         listView.setAdapter(adapter);
         if (msgList.size() > 0) {
             listView.setSelection(msgList.size() - 1);

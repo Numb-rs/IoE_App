@@ -11,12 +11,12 @@ import internetofeveryone.ioe.Presenter.PresenterFactory;
  */
 public class ChatPresenterFactory implements PresenterFactory<ChatPresenter> {
 
-    Context context;
+    private final Context context;
 
     /**
      * Instantiates a new ChatPresenterFactory.
      *
-     * @param context
+     * @param context the context
      */
     public ChatPresenterFactory(Context context) {
         this.context = context;
