@@ -7,31 +7,31 @@ import internetofeveryone.ioe.View.MvpView;
  *
  * This interface represents the view for the Main page
  */
-public interface MainView extends MvpView {
+interface MainView extends MvpView {
 
     /**
      * Navigates to the Messenger page
      */
-    public void goToMessenger();
+    void goToMessenger();
 
     /**
      * Navigates to the Downloads page
      */
-    public void goToDownloads();
+    void goToDownloads();
 
     /**
      * Navigates to the Browser page
      */
-    public void goToBrowser();
+    void goToBrowser();
 
     /**
      * displays loading message
      */
-    public void displayLoader();
+    void displayLoader();
 
     /**
      * closes loading message
      */
-    public void closeLoader();
+    void closeLoader();
 
 }

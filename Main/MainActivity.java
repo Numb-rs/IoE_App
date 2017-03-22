@@ -66,7 +66,7 @@ public class MainActivity extends AppCompatActivity implements MainView, LoaderM
     /**
      * Notifies the presenter that the user wants to navigate to the Messenger page
      *
-     * @param view
+     * @param view the view
      */
     public void onClickMessenger(View view) {
         presenter.onMessengerClicked();
@@ -84,7 +84,7 @@ public class MainActivity extends AppCompatActivity implements MainView, LoaderM
     /**
      * Notifies the presenter that the user wants to navigate to the Downloads page
      *
-     * @param view
+     * @param view the view
      */
     public void onClickDownloads(View view) {
         presenter.onDownloadsClicked();
@@ -102,7 +102,7 @@ public class MainActivity extends AppCompatActivity implements MainView, LoaderM
     /**
      * Notifies the presenter that the user wants to navigate to the Browser page
      *
-     * @param view
+     * @param view the view
      */
     public void onClickBrowser(View view) {
         presenter.onBrowserClicked();
@@ -117,7 +117,7 @@ public class MainActivity extends AppCompatActivity implements MainView, LoaderM
         startActivity(intent);
     }
 
-    @Override protected void onSaveInstanceState(Bundle outState) {
+    @Override public void onSaveInstanceState(Bundle outState) {
 
         super.onSaveInstanceState(outState);
         Icepick.saveInstanceState(this, outState); // saves instance state
@@ -136,7 +136,6 @@ public class MainActivity extends AppCompatActivity implements MainView, LoaderM
     @Override
     public void onLoaderReset(Loader<MainPresenter> loader) {
         presenter = null;
-
     }
 
     /**
@@ -151,6 +150,14 @@ public class MainActivity extends AppCompatActivity implements MainView, LoaderM
      */
     public void closeLoader() {
         progressDialog.dismiss();
+    }
+
+    public ProgressDialog getProgressDialog() {
+        return progressDialog;
+    }
+
+    public void setProgressDialog(ProgressDialog progressDialog) {
+        this.progressDialog = progressDialog;
     }
 
 

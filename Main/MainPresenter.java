@@ -23,7 +23,7 @@ public class MainPresenter extends MessagingPresenter<MainView> {
     /**
      * Instantiates a new Main presenter.
      *
-     * @param context
+     * @param context the context
      */
     public MainPresenter(Context context) {
         super(context);
@@ -35,15 +35,19 @@ public class MainPresenter extends MessagingPresenter<MainView> {
     public void setUp() {
         if ((getModel().getUserCode(getModel().getSql())).equals(DEFAULTUSERCODE)) {
             if (isViewAttached()) {
-                getView().displayLoader();
-
+                Log.d(TAG, "Sends NEWUSER request");
+                /* getView().displayLoader();
+                                              TODO: BOTH DISABLED FOR TEST PURPOSES
+                */
                 new Connect().execute("");
+
 
                 if (tcpClient != null) {
                     tcpClient.sendMessage("NEWUSER\u0004");
                 }
             } else {
-                // error handling
+                attachView(new MainActivity());
+                setUp();
             }
         }
     }
@@ -56,7 +60,7 @@ public class MainPresenter extends MessagingPresenter<MainView> {
         if (isViewAttached()) {
             getView().goToMessenger();
         } else {
-            // ErrorHandling
+            attachView(new MainActivity());
         }
     }
 
@@ -68,7 +72,7 @@ public class MainPresenter extends MessagingPresenter<MainView> {
         if (isViewAttached()) {
             getView().goToDownloads();
         } else {
-            // ErrorHandling
+            attachView(new MainActivity());
         }
     }
 
@@ -80,18 +84,18 @@ public class MainPresenter extends MessagingPresenter<MainView> {
         if (isViewAttached()) {
             getView().goToBrowser();
         } else {
-            // ErrorHandling
+            attachView(new MainActivity());
         }
     }
 
     @Override
     public void update(DataType type) { } // doesn't need to update anything
 
-    public class Connect extends AsyncTask<String, String, TcpClient> {
+    private class Connect extends AsyncTask<String, String, TcpClient> {
 
         @Override
         protected TcpClient doInBackground(String... message) {
-
+            Log.d(TAG, "started background task");
             // we create a TCPClient object
             tcpClient = new TcpClient(new TcpClient.OnMessageReceived() {
 
