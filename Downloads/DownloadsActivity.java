@@ -22,6 +22,7 @@ import us.feras.mdv.MarkdownView;
 public class DownloadsActivity extends AppCompatActivity implements DownloadsView, LoaderManager.LoaderCallbacks<DownloadsPresenter> {
 
     private DownloadsPresenter presenter;
+    private ListView listView;
     /**
      * Adapter for the ListView
      * It's responsible for displaying data in the list
@@ -36,7 +37,9 @@ public class DownloadsActivity extends AppCompatActivity implements DownloadsVie
         super.onCreate(savedInstanceState);
         getSupportLoaderManager().initLoader(LOADER_ID, null, this); // initialises the LoaderManager
         Icepick.restoreInstanceState(this, savedInstanceState); // restores instance state
-        getSupportActionBar().setTitle("Downloads"); // TODO: constant
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().setTitle(R.string.title_activity_downloads);
+        }
         setContentView(R.layout.activity_downloads);
     }
 
@@ -98,7 +101,7 @@ public class DownloadsActivity extends AppCompatActivity implements DownloadsVie
      * updates the ListView
      */
     public void dataChanged() {
-        ListView listView = (ListView)findViewById(R.id.downloads_list);
+        listView = (ListView)findViewById(R.id.downloads_list);
         adapter = new DownloadsAdapter(presenter.getDownloadedWebsiteNames(), this);
         listView.setAdapter(adapter);
     }
@@ -113,7 +116,7 @@ public class DownloadsActivity extends AppCompatActivity implements DownloadsVie
 
         this.presenter = presenter;
         // sets up the ListView after the load has finished
-        ListView listView = (ListView)findViewById(R.id.downloads_list);
+        listView = (ListView)findViewById(R.id.downloads_list);
         adapter = new DownloadsAdapter(presenter.getDownloadedWebsiteNames(), this);
         listView.setAdapter(adapter);
     }

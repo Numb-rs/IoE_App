@@ -20,7 +20,7 @@ public class DownloadsPresenter extends BrowsingPresenter<DownloadsView> {
     /**
      * Instantiates a new DownloadsPresenter.
      *
-     * @param context
+     * @param context the context
      */
     public DownloadsPresenter(Context context) {
         super(context);
@@ -32,7 +32,7 @@ public class DownloadsPresenter extends BrowsingPresenter<DownloadsView> {
             if(isViewAttached()) {
                 getView().dataChanged();
             } else {
-                attachView(new DownloadsActivity());
+                // attachView(new DownloadsActivity()); TODO: passt?
             }
         }
     }
@@ -44,7 +44,7 @@ public class DownloadsPresenter extends BrowsingPresenter<DownloadsView> {
      */
     public ArrayList<String> getDownloadedWebsiteNames() {
         if (getModel().getAllDownloadedWebsites() == null) {
-            return new ArrayList<>(); // TODO: just momentarily
+            return new ArrayList<>();
         }
         List<Website> websites = getModel().getAllDownloadedWebsites();
         ArrayList<String> result = new ArrayList<>();

@@ -14,7 +14,7 @@ public class DownloadsPresenterFactory implements PresenterFactory<DownloadsPres
     /**
      * The Context.
      */
-    Context context;
+    private final Context context;
 
     /**
      * Instantiates a new DownloadsPresenterFactory.

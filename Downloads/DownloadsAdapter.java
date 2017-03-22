@@ -19,13 +19,13 @@ import internetofeveryone.ioe.R;
  */
 public class DownloadsAdapter extends BaseAdapter {
     private final ArrayList<String> data;
-    private Context context;
+    private final Context context;
 
     /**
      * Instantiates a new DownloadsAdapter.
      *
      * @param downloads data
-     * @param context
+     * @param context the context
      */
     public DownloadsAdapter(ArrayList<String> downloads, Context context) {
         this.context = context;
@@ -75,14 +75,16 @@ public class DownloadsAdapter extends BaseAdapter {
             viewHolder = (ViewHolder) convertView.getTag();
         }
 
-        viewHolder.tvWebsiteName.setText(string);
+        String newString = string;
+        if (newString.length() > 20) {
+            newString = newString.substring(0, 17) + "...";
+        }
+        viewHolder.tvWebsiteName.setText(newString);
         viewHolder.deleteButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 if(context instanceof DownloadsView){
                     ((DownloadsView)context).onClickDelete(string);
-                } else {
-                    // ErrorHandling
                 }
             }
         });viewHolder.openButton.setOnClickListener(new View.OnClickListener() {
@@ -90,8 +92,6 @@ public class DownloadsAdapter extends BaseAdapter {
             public void onClick(View view) {
                 if(context instanceof DownloadsView){
                     ((DownloadsView)context).onClickOpen(getItem(position));
-                } else {
-                    // ErrorHandling
                 }
             }
         });
