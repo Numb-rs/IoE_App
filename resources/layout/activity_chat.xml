@@ -12,13 +12,14 @@
         <ListView
             android:id="@+id/chat_list"
             android:layout_width="match_parent"
-            android:layout_height="459dp"
+            android:layout_height="fill_parent"
             android:layout_above="@+id/form"
             android:divider="@null"
             android:dividerHeight="0dp"
             android:listSelector="@android:color/transparent"
             android:paddingBottom="5dp"
-            android:transcriptMode="alwaysScroll">
+            android:transcriptMode="normal"
+            android:stackFromBottom="true">
 
         </ListView>
 
@@ -26,13 +27,16 @@
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="60dp"
         android:orientation="horizontal">
 
         <EditText
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="7"
+            android:maxLines="2"
+            android:minLines="2"
+            android:scrollbars="vertical"
             android:id="@+id/message_to_send" />
 
         <ToggleButton

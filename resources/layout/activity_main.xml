@@ -37,32 +37,37 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/button_download"
+        android:text="@string/button_browser"
         android:textSize="20sp"
-        android:layout_marginLeft="20dp"
-        android:layout_above="@id/button_downloads"
-        android:layout_marginBottom="10dp"
-        android:id="@+id/textView_download_button"/>
+        android:layout_marginRight="8dp"
+        android:id="@+id/textView_browser_button"
+        android:layout_marginEnd="8dp"
+        android:layout_above="@+id/button_browser"
+        android:layout_alignRight="@+id/button_browser"
+        android:layout_alignEnd="@+id/button_browser"
+        android:layout_marginBottom="7dp" />
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/button_messages"
         android:textSize="20sp"
-        android:layout_above="@id/button_messages"
-        android:layout_centerHorizontal="true"
-        android:layout_marginBottom="10dp"
-        android:id="@+id/textView_message_button" />
+        android:id="@+id/textView_message_button"
+        android:layout_alignBaseline="@+id/textView_browser_button"
+        android:layout_alignBottom="@+id/textView_browser_button"
+        android:layout_centerHorizontal="true" />
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/button_browser"
+        android:text="@string/button_download"
+        android:textAlignment="center"
         android:textSize="20sp"
-        android:layout_above="@id/button_browser"
-        android:layout_alignParentRight="true"
-        android:layout_marginRight="25dp"
-        android:layout_marginBottom="10dp"
-        android:id="@+id/textView_browser_button"/>
+        android:id="@+id/textView_download_button"
+        android:layout_marginLeft="7dp"
+        android:layout_marginStart="7dp"
+        android:layout_alignBottom="@+id/textView_message_button"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true" />
 
 </RelativeLayout>

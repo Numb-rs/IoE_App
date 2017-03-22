@@ -17,7 +17,7 @@
         android:id="@+id/lastMsg"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:text="The last Text is about Mushrooms and Stuff..."
+        android:text="last Text..."
         android:textColor="@android:color/white"/>
 
 

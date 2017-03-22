@@ -10,7 +10,7 @@
         android:layout_marginLeft="25dp">
 
         <TextView
-            android:text="Name"
+            android:text="@string/name"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:id="@+id/textView_current_contact_name" />
@@ -28,7 +28,7 @@
         android:layout_marginLeft="25dp">
 
         <TextView
-            android:text="UserCode"
+            android:text="@string/user_code"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:id="@+id/textView_current_contact_usercode" />
@@ -46,7 +46,7 @@
         android:layout_marginLeft="25dp">
 
         <TextView
-            android:text="Encryption Key"
+            android:text="@string/encryption_key"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:id="@+id/textView_current_contact_key" />
