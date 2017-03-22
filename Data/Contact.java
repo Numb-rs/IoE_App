@@ -15,9 +15,9 @@ public class Contact {
     /**
      * Instantiates a new Contact.
      *
-     * @param name
-     * @param userCode
-     * @param key
+     * @param name contact name
+     * @param userCode contact user code
+     * @param key contact key to encrypt/decrypt messages
      */
     public Contact(String name, String userCode, String key, boolean openChat) {
         this.name = name;

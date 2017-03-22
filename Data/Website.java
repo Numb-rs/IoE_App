@@ -14,9 +14,9 @@ public class Website {
     /**
      * Instantiates a new Website.
      *
-     * @param name
-     * @param url
-     * @param content
+     * @param name name of the website
+     * @param url url of the website
+     * @param content content of the website
      */
     public Website(String name, String url, String content) {
         this.name = name;

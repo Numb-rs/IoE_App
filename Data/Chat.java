@@ -16,8 +16,8 @@ public class Chat {
     /**
      * Instantiates a new Chat.
      *
-     * @param contact
-     * @param messageList
+     * @param contact contact
+     * @param messageList past messages for chat
      */
     public Chat(Contact contact, TreeMap<Long, Message> messageList, boolean encryption) {
         this.contact = contact;

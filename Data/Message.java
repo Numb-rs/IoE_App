@@ -2,15 +2,11 @@ package internetofeveryone.ioe.Data;
 
 import java.io.UnsupportedEncodingException;
 import java.security.InvalidKeyException;
-import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.util.Arrays;
 
 import javax.crypto.BadPaddingException;
-import javax.crypto.Cipher;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
-import javax.crypto.spec.SecretKeySpec;
 
 /**
  * Created by Fabian Martin for 'Internet of Everyone'
@@ -24,15 +20,15 @@ public class Message {
     private String content;
     private long id; // unique identifier the message
     private boolean isEncrypted; // flag that stores if the message is encrypted
-    private boolean isMine; // flag that sotres if the message has been sent by my (it's senderID is equal to my userCode)
+    private boolean isMine; // flag that stores if the message has been sent by my (it's senderID is equal to my userCode)
 
     /**
      * Instantiates a new Message.
      *
-     * @param senderID
-     * @param receiverID
-     * @param content
-     * @param isEncrypted
+     * @param senderID ID of the sender
+     * @param receiverID ID of the receiver
+     * @param content message content
+     * @param isEncrypted flag if the message is curently ecnrypted or not (true if encrypted)
      */
     public Message(long id, String senderID, String receiverID, String content, boolean isEncrypted, String myUserCode) {
         this.id = id;
@@ -51,6 +47,7 @@ public class Message {
      * @return the encrypted message
      */
     public static String encrypt(String message, String key) throws UnsupportedEncodingException, NoSuchAlgorithmException, InvalidKeyException, BadPaddingException, IllegalBlockSizeException, NoSuchPaddingException {
+        /* TODO: implement encrypt
         Cipher cipher = Cipher.getInstance("AES");
         byte[] keyBytes = key.getBytes("UTF-8");
         MessageDigest sha = MessageDigest.getInstance("SHA-1");
@@ -61,6 +58,9 @@ public class Message {
 
         byte[] inputBytes = message.getBytes();
         return new String(cipher.doFinal(inputBytes), "UTF-8");
+        */
+        return message;
+
     }
 
     /**
@@ -71,6 +71,8 @@ public class Message {
      * @return the decrypted message
      */
     public static String decrypt(String message, String key) throws BadPaddingException, IllegalBlockSizeException, UnsupportedEncodingException, NoSuchAlgorithmException, InvalidKeyException, NoSuchPaddingException {
+
+        /* TODO: implement decrypt
         Cipher cipher = Cipher.getInstance("AES");
         byte[] keyBytes = key.getBytes("UTF-8");
         MessageDigest sha = MessageDigest.getInstance("SHA-1");
@@ -82,6 +84,9 @@ public class Message {
         byte[] recoveredBytes =
                 cipher.doFinal(message.getBytes());
         return new String(recoveredBytes, "UTF-8");
+        */
+        return message;
+
     }
 
     /**
