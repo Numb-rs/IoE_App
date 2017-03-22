@@ -5,7 +5,7 @@ import android.provider.BaseColumns;
 /**
  * The type Table data.
  */
-public class TableData {
+class TableData {
 
     /**
      * The type Downloaded websites.

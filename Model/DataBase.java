@@ -38,7 +38,7 @@ import static internetofeveryone.ioe.Model.TableData.UserCode.COLUMN_USERCODE_US
 import static internetofeveryone.ioe.Model.TableData.UserCode.TABLE_USERCODE;
 
 /**
- * This class creates and managaes the database
+ * This class creates and manages the database
  */
 public class DataBase extends SQLiteOpenHelper {
 

@@ -35,12 +35,12 @@ public class MessageModel extends Model {
 
     private SQLiteDatabase sql;
     private DataBase db;
-    private String[] messageColumns = { TableData.Messages.COLUMN_MESSAGES_ID,
+    private final String[] messageColumns = { TableData.Messages.COLUMN_MESSAGES_ID,
             TableData.Messages.COLUMN_MESSAGES_SENDERID, TableData.Messages.COLUMN_MESSAGES_RECEIVERID,
             TableData.Messages.COLUMN_MESSAGES_CONTENT, TableData.Messages.COLUMN_MESSAGES_ISENCRYPTED };
-    private String[] contactColumns = { TableData.Contacts.COLUMN_CONTACTS_NAME, TableData.Contacts.COLUMN_CONTACTS_USERCODE,
+    private final String[] contactColumns = { TableData.Contacts.COLUMN_CONTACTS_NAME, TableData.Contacts.COLUMN_CONTACTS_USERCODE,
             TableData.Contacts.COLUMN_CONTACTS_KEY, TableData.Contacts.COLUMN_CONTACTS_OPENCHAT };
-    private String[] chatColumns = { TableData.Chats.COLUMN_CHATS_USERCODE, TableData.Chats.COLUMN_CHATS_ISENCRYPTED };
+    private final String[] chatColumns = { TableData.Chats.COLUMN_CHATS_USERCODE, TableData.Chats.COLUMN_CHATS_ISENCRYPTED };
 
     /**
      * Instantiates a new Message model.
@@ -83,7 +83,7 @@ public class MessageModel extends Model {
      * @param isEncrypted the is encrypted
      * @return id the message id
      */
-    public long addMessage(String senderID, String receiverID, String content, boolean isEncrypted) { // TODO: does it still work? if not: replace long return type with void
+    public long addMessage(String senderID, String receiverID, String content, boolean isEncrypted) {
 
         ContentValues values = new ContentValues();
         values.put(TableData.Messages.COLUMN_MESSAGES_SENDERID, senderID);
@@ -180,6 +180,11 @@ public class MessageModel extends Model {
     public int deleteChat(String userCode) {
         int amount = sql.delete(TableData.Chats.TABLE_CHATS, TableData.Chats.COLUMN_CHATS_USERCODE
                 + " =? ", new String[] {userCode});
+        Contact contact = getContactByID(userCode); // contact that had its chat deleted
+        if (contact != null) {
+            updateContact(userCode, contact.getName(), userCode, contact.getKey(), false);
+            notify(DataType.CONTACT);
+        }
         notify(DataType.CHAT);
         return amount;
     }
@@ -285,7 +290,9 @@ public class MessageModel extends Model {
         }
 
         Message msg = cursorToMessage(cursor);
-        cursor.close();
+        if (cursor != null) {
+            cursor.close();
+        }
         return msg;
     }
 
@@ -306,7 +313,9 @@ public class MessageModel extends Model {
         }
 
         Contact contact = cursorToContact(cursor);
-        cursor.close();
+        if (cursor != null) {
+            cursor.close();
+        }
         return contact;
     }
 
@@ -327,7 +336,9 @@ public class MessageModel extends Model {
         }
 
         Chat chat = cursorToChat(cursor);
-        cursor.close();
+        if (cursor != null) {
+            cursor.close();
+        }
         return chat;
     }
 
@@ -395,13 +406,17 @@ public class MessageModel extends Model {
         contentValues.put(TableData.Contacts.COLUMN_CONTACTS_KEY, key);
         contentValues.put(TableData.Contacts.COLUMN_CONTACTS_OPENCHAT, String.valueOf(openChat));
         sql.update(TableData.Contacts.TABLE_CONTACTS, contentValues, "userCode =  ?", new String[] {userCode});
+        // update the userCode in the corresponding Chat
+        ContentValues contentValuesChat = new ContentValues();
+        contentValuesChat.put(TableData.Chats.COLUMN_CHATS_USERCODE, newUserCode);
+        sql.update(TableData.Chats.TABLE_CHATS, contentValuesChat, "userCode =  ?", new String[] {userCode});
         notify(DataType.CONTACT);
         notify(DataType.CHAT);
         return true;
     }
 
     /**
-     * Updates a chat in the databasse
+     * Updates a chat in the database
      *
      * @param userCode    the user code
      * @param isEncrypted the is encrypted
@@ -440,9 +455,8 @@ public class MessageModel extends Model {
      * @param cursor the cursor
      * @return the message
      */
-    protected Message cursorToMessage(Cursor cursor) {
-        Message msg = new Message(cursor.getLong(0), cursor.getString(1), cursor.getString(2), cursor.getString(3), Boolean.valueOf(cursor.getString(4)), getUserCode());
-        return msg;
+    private Message cursorToMessage(Cursor cursor) {
+        return new Message(cursor.getLong(0), cursor.getString(1), cursor.getString(2), cursor.getString(3), Boolean.valueOf(cursor.getString(4)), getUserCode());
     }
 
     /**
@@ -451,9 +465,8 @@ public class MessageModel extends Model {
      * @param cursor the cursor
      * @return the contact
      */
-    protected Contact cursorToContact(Cursor cursor) {
-        Contact contact = new Contact(cursor.getString(0), cursor.getString(1), cursor.getString(2), Boolean.valueOf(cursor.getString(3)));
-        return contact;
+    private Contact cursorToContact(Cursor cursor) {
+        return new Contact(cursor.getString(0), cursor.getString(1), cursor.getString(2), Boolean.valueOf(cursor.getString(3)));
     }
 
     /**
@@ -462,9 +475,8 @@ public class MessageModel extends Model {
      * @param cursor the cursor
      * @return the chat
      */
-    protected Chat cursorToChat(Cursor cursor) {
-        Chat chat = new Chat(getContactByID(cursor.getString(0)), getAllMessagesByContact(cursor.getString(0)),Boolean.valueOf(cursor.getString(1)));
-        return chat;
+    private Chat cursorToChat(Cursor cursor) {
+        return new Chat(getContactByID(cursor.getString(0)), getAllMessagesByContact(cursor.getString(0)),Boolean.valueOf(cursor.getString(1)));
     }
 
     /**

@@ -23,7 +23,7 @@ public abstract class Model {
     /**
      * Instantiates a new Model.
      */
-    public Model () {
+    Model() {
         if (observers == null) {
             observers = new ArrayList<>();
         }
@@ -46,7 +46,7 @@ public abstract class Model {
      * @param o the o
      */
     public void addObserver(ModelObserver o) {
-        this.observers.add(o);
+        observers.add(o);
     }
 
     /**
@@ -73,7 +73,7 @@ public abstract class Model {
      * @param sql the sql
      * @return the session hash
      */
-    public String getSessionHash(SQLiteDatabase sql) {
+    String getSessionHash(SQLiteDatabase sql) {
         String sessionHash = "";
         Cursor cursor = sql.query(TableData.SessionHash.TABLE_SESSIONHASH,
                 new String[] { TableData.SessionHash.COLUMN_SESSIONHASH_SESSIONHASH }, null, null, null, null, null);

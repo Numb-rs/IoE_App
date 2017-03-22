@@ -19,10 +19,10 @@ import internetofeveryone.ioe.Data.Website;
 public class WebsiteModel extends Model {
 
     private SQLiteDatabase sql;
-    private DataBase db;
-    private String[] downloadColumns = { TableData.DownloadedWebsites.COLUMN_DOWNLOADED_NAME,
+    private final DataBase db;
+    private final String[] downloadColumns = { TableData.DownloadedWebsites.COLUMN_DOWNLOADED_NAME,
             TableData.DownloadedWebsites.COLUMN_DOWNLOADED_URL, TableData.DownloadedWebsites.COLUMN_DOWNLOADED_CONTENT };
-    private String[] defaultColumns = { TableData.DefaultWebsites.COLUMN_DEFAULT_NAME,
+    private final String[] defaultColumns = { TableData.DefaultWebsites.COLUMN_DEFAULT_NAME,
             TableData.DefaultWebsites.COLUMN_DEFAULT_URL, TableData.DefaultWebsites.COLUMN_DEFAULT_CONTENT };
 
 
@@ -38,7 +38,7 @@ public class WebsiteModel extends Model {
         try {
             open();
         } catch (SQLException e) {
-            // ErrorHandler TODO: Errorhandling
+            e.printStackTrace();
         }
 
     }
@@ -191,12 +191,16 @@ public class WebsiteModel extends Model {
                 return null;
             }
         }
-        if (cursor.getCount() == 0) {
-            return null;
+        if (cursor != null) {
+            if (cursor.getCount() == 0) {
+                return null;
+            }
         }
 
         Website website = cursorToWebsite(cursor);
-        cursor.close();
+        if (cursor != null) {
+            cursor.close();
+        }
         return website;
     }
 
@@ -217,7 +221,9 @@ public class WebsiteModel extends Model {
         }
 
         Website website = cursorToWebsite(cursor);
-        cursor.close();
+        if (cursor != null) {
+            cursor.close();
+        }
         return website;
     }
 
@@ -241,14 +247,31 @@ public class WebsiteModel extends Model {
     }
 
     /**
+     * Updates default website in the database
+     *
+     * @param name    the name
+     * @param oldURL  the old url
+     * @param newURL  the new url
+     * @return the boolean
+     */
+    public boolean updateDefaultWebsite(String name, String oldURL, String newURL) {
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(TableData.DefaultWebsites.COLUMN_DEFAULT_NAME, name);
+        contentValues.put(TableData.DefaultWebsites.COLUMN_DEFAULT_URL, newURL);
+        contentValues.put(TableData.DefaultWebsites.COLUMN_DEFAULT_CONTENT, "");
+        sql.update(TableData.DefaultWebsites.TABLE_DEFAULT, contentValues, "url =  ?", new String[] {oldURL});
+        notify(DataType.WEBSITE);
+        return true;
+    }
+
+    /**
      * Converts cursor to website
      *
      * @param cursor the cursor
      * @return the website
      */
-    protected Website cursorToWebsite(Cursor cursor) {
-        Website website = new Website(cursor.getString(0), cursor.getString(1), cursor.getString(2));
-        return website;
+    private Website cursorToWebsite(Cursor cursor) {
+        return new Website(cursor.getString(0), cursor.getString(1), cursor.getString(2));
     }
 
     /**
