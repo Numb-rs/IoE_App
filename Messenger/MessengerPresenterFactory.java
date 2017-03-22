@@ -13,7 +13,7 @@ public class MessengerPresenterFactory implements PresenterFactory<MessengerPres
     /**
      * The Context.
      */
-    Context context;
+    private final Context context;
 
     /**
      * Instantiates a new Messenger presenter factory.

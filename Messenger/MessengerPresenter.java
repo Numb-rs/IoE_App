@@ -23,7 +23,7 @@ public class MessengerPresenter extends MessagingPresenter<MessengerView> {
     /**
      * Instantiates a new MessengerPresenter.
      *
-     * @param context
+     * @param context the context
      */
     public MessengerPresenter(Context context) {
         super(context);
@@ -35,8 +35,6 @@ public class MessengerPresenter extends MessagingPresenter<MessengerView> {
         if (type.equals(DataType.CHAT) || type.equals(DataType.MESSAGE)) {
             if (isViewAttached()) {
                 getView().dataChanged();
-            } else {
-                // Error
             }
         }
     }
@@ -50,7 +48,22 @@ public class MessengerPresenter extends MessagingPresenter<MessengerView> {
         if(isViewAttached()) {
             getView().openChat(chat.getContact());
         } else {
-            // ErrorHandling
+            attachView(new MessengerActivity());
+            onChatClicked(chat);
+        }
+    }
+
+    /**
+     * Sends a request to the model to delete a Chat
+     *
+     * @param chat the chat
+     */
+    public void onChatDeleteClicked(Chat chat) {
+        if(isViewAttached()) {
+           getModel().deleteChat(chat.getContact().getUserCode());
+        } else {
+            attachView(new MessengerActivity());
+            onChatDeleteClicked(chat);
         }
     }
 

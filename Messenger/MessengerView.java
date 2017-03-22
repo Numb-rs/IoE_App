@@ -8,13 +8,13 @@ import internetofeveryone.ioe.View.MvpView;
  *
  * This interface represents the view for the Messenger page
  */
-public interface MessengerView extends MvpView {
+interface MessengerView extends MvpView {
 
     /**
      * Opens the chat for the given contact
      *
      * @param contact the contact
      */
-    public void openChat(Contact contact);
+    void openChat(Contact contact);
 
 }

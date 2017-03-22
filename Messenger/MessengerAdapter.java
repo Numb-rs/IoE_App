@@ -1,6 +1,5 @@
 package internetofeveryone.ioe.Messenger;
 
-import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,16 +20,13 @@ import internetofeveryone.ioe.R;
  */
 public class MessengerAdapter extends BaseAdapter {
     private final ArrayList<Chat> data;
-    private Context context;
 
     /**
      * Instantiates a new MessengerAdapter.
      *
      * @param chatList data
-     * @param context
      */
-    public MessengerAdapter(Map<String, Chat> chatList, Context context) {
-        this.context = context;
+    public MessengerAdapter(Map<String, Chat> chatList) {
         data = new ArrayList<>();
         data.addAll(chatList.values());
     }
@@ -76,6 +72,10 @@ public class MessengerAdapter extends BaseAdapter {
         viewHolder.tVContact.setText(chat.getContact().getName());
         Message lastMsg = chat.getLastMessage();
         String lastMessagePreview = lastMsg == null ? "" : lastMsg.getContent();
+        lastMessagePreview = lastMessagePreview.replace("\n", " ");
+        if (lastMessagePreview.length() > 47) {
+            lastMessagePreview = lastMessagePreview.substring(0, 47) + "...";
+        }
         viewHolder.tVLastMessage.setText(lastMessagePreview);
 
         return convertView;
