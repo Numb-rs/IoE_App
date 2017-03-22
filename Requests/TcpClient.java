@@ -12,31 +12,39 @@ import java.net.Socket;
 
 public class TcpClient {
 
-    public static final String ROUTER_IP = "45.154.32.208"; // router ip address
-    public static final int ROUTER_PORT = 42;
+    private static final String ROUTER_IP = "192.168.42.1"; // router ip address
+    private static final int ROUTER_PORT = 42;
 
+    private final String TAG = "TcpClient";
     private String mServerMessage; // message to send to the router
     private OnMessageReceived mMessageListener = null; // sends message-received notifications
     private boolean mRun = false; // while true, the server will continue running
     private PrintWriter mBufferOut; // to send messages
     private BufferedReader mBufferIn;// to read messages from the router
+    private boolean openRequest;
 
     /**
      * Constructor of the class. OnMessagedReceived listens for the messages received from router
      */
     public TcpClient(OnMessageReceived listener) {
+        Log.d(TAG, "new TcpClient created");
         mMessageListener = listener;
     }
 
     /**
      * Sends the message to the router
      *
-     * @param message
+     * @param message the message to be sent
      */
     public void sendMessage(String message) {
+        while(openRequest);
+        Log.d(TAG, "TcpClient sends Message");
         if (mBufferOut != null && !mBufferOut.checkError()) {
+            Log.d(TAG, "mBufferOut fully functional");
             mBufferOut.println(message);
             mBufferOut.flush();
+        } else {
+            Log.d(TAG, "mBufferOut NOT fully functional");
         }
     }
 
@@ -60,7 +68,9 @@ public class TcpClient {
 
     public void run() {
 
+        openRequest = true;
         mRun = true;
+
 
         try {
             InetAddress serverAddr = InetAddress.getByName(ROUTER_IP);
@@ -98,6 +108,7 @@ public class TcpClient {
 
             } finally {
                 socket.close();
+                openRequest = false;
             }
 
         } catch (Exception e) {
@@ -109,7 +120,7 @@ public class TcpClient {
     }
 
     public interface OnMessageReceived {
-        public void messageReceived(String message);
+        void messageReceived(String message);
     }
 
 }
