@@ -31,8 +31,6 @@ public class DownloadsPresenter extends BrowsingPresenter<DownloadsView> {
         if (type.equals(DataType.WEBSITE)) {
             if(isViewAttached()) {
                 getView().dataChanged();
-            } else {
-                // attachView(new DownloadsActivity()); TODO: passt?
             }
         }
     }

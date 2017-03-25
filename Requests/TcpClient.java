@@ -83,10 +83,10 @@ public class TcpClient {
             Log.e(TAG, "C: Connecting...");
 
             // makes connection with the server
-            if (socket == null) {
+            if (socket == null || socket.isClosed()) {
                 socket = new Socket(serverAddr, ROUTER_PORT);
             }
-            socket.setSoTimeout(2 * 10000); // 2 * 10 seconds
+            socket.setSoTimeout(6 * 10000); // 6 * 10 seconds
 
             try {
 

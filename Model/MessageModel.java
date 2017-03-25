@@ -101,6 +101,17 @@ public class MessageModel extends Model {
         Log.d(TAG, "content = " + content);
         Log.d(TAG, "isEncrypted = " + isEncrypted);
 
+        if (getContactByID(senderID) == null || getContactByID(receiverID) == null) {
+            if (senderID.equals(getUserCode())) {
+                addContact("???", receiverID, "", true);
+                addChat(receiverID, false);
+            } else {
+                addContact("???", senderID, "", true);
+                addChat(senderID, false);
+            }
+            notify(DataType.CONTACT);
+            notify(DataType.CHAT);
+        }
 
         notify(DataType.MESSAGE);
         return id;

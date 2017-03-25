@@ -9,6 +9,8 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.EditText;
 import android.widget.ListAdapter;
 import android.widget.ListView;
@@ -36,6 +38,7 @@ public class BrowserActivity extends AppCompatActivity implements BrowserView, L
     public static final String SEARCHTERM = "SEARCHTERM";
     public static final String URL = "URL";
     private DefaultWebsiteFragment fragment;
+    private Animation animAlpha;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -47,6 +50,8 @@ public class BrowserActivity extends AppCompatActivity implements BrowserView, L
             getSupportActionBar().setTitle(R.string.title_activity_browser);
         }
         setContentView(R.layout.activity_browser);
+        animAlpha = AnimationUtils.loadAnimation(this, R.anim.anim_alpha);
+
     }
 
     @Override
@@ -73,10 +78,15 @@ public class BrowserActivity extends AppCompatActivity implements BrowserView, L
      * @param view the view
      */
     public void onClickOpenSearch(View view) {
+        view.startAnimation(animAlpha);
         TextView textView = (TextView) findViewById(R.id.search_website_name);
         String name = textView.getText().toString();
         EditText editText = (EditText) findViewById(R.id.editText_searchterm);
         String searchTerm = editText.getText().toString();
+        if (searchTerm.equals("")) {
+            Toast.makeText(this, R.string.please_enter_search_term, Toast.LENGTH_SHORT).show();
+            return;
+        }
         presenter.onOpenClickedSearch(name, searchTerm);
     }
 
@@ -86,6 +96,7 @@ public class BrowserActivity extends AppCompatActivity implements BrowserView, L
      * @param view the view
      */
     public void onClickDownloadSearch(View view) {
+        view.startAnimation(animAlpha);
         TextView textView = (TextView) findViewById(R.id.search_website_name);
         String name = textView.getText().toString();
         EditText editText = (EditText) findViewById(R.id.editText_searchterm);
@@ -121,8 +132,13 @@ public class BrowserActivity extends AppCompatActivity implements BrowserView, L
      * @param view the view
      */
     public void onClickOpenURL(View view) {
+        view.startAnimation(animAlpha);
         EditText editText = (EditText) findViewById(R.id.editText_browser_url);
         String url = editText.getText().toString();
+        if (!url.contains(".")) {
+            Toast.makeText(this, R.string.validURL, Toast.LENGTH_SHORT).show();
+            return;
+        }
         editText.setText("");
         presenter.onOpenClickedURL(url);
     }
@@ -133,8 +149,13 @@ public class BrowserActivity extends AppCompatActivity implements BrowserView, L
      * @param view the view
      */
     public void onClickDownloadURL(View view) {
+        view.startAnimation(animAlpha);
         EditText editText = (EditText) findViewById(R.id.editText_browser_url);
         String url = editText.getText().toString();
+        if (!url.contains(".")) {
+            Toast.makeText(this, R.string.validURL, Toast.LENGTH_SHORT).show();
+            return;
+        }
         editText.setText("");
         presenter.onDownloadClickedURL(url);
     }

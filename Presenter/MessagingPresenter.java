@@ -134,6 +134,9 @@ public abstract class MessagingPresenter<V extends MvpView> extends MvpPresenter
             try {
                 String[] data = response.split("\0");
                 Log.d(TAG, ""  + data.length);
+                if ((data.length % 3) != 0) {
+                    throw new Exception();
+                }
                 for (int i = 0; i < data.length; i += 3) {
                     Log.d(TAG, "start adding messages");
                     String myUserCode = getModel().getUserCode();

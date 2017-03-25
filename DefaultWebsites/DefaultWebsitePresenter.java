@@ -145,6 +145,6 @@ public class DefaultWebsitePresenter extends BrowsingPresenter<DefaultWebsiteVie
      * May add sth here in later versions
      */
     public void onClickCancel() {
-
+        
     }
 }

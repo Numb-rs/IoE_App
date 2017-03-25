@@ -7,6 +7,8 @@ import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.TextView;
 
 import icepick.Icepick;
@@ -26,6 +28,7 @@ public class MainActivity extends AppCompatActivity implements MainView, LoaderM
     private MainPresenter presenter;
     private static final int LOADER_ID = 101; // unique identification for the MainActivity-LoaderManager
     private ProgressDialog progressDialog;
+    private Animation animAlpha;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -34,6 +37,7 @@ public class MainActivity extends AppCompatActivity implements MainView, LoaderM
         getSupportLoaderManager().initLoader(LOADER_ID, null, this); // initialises the LoaderManager
         Icepick.restoreInstanceState(this, savedInstanceState); // restores instance state
         setContentView(R.layout.activity_main);
+        animAlpha = AnimationUtils.loadAnimation(this, R.anim.anim_alpha);
         progressDialog = new ProgressDialog(this);
         progressDialog.setMessage(getString(R.string.please_wait_app_configuration));
         progressDialog.setIndeterminate(true);
@@ -84,6 +88,7 @@ public class MainActivity extends AppCompatActivity implements MainView, LoaderM
      * @param view the view
      */
     public void onClickMessenger(View view) {
+        view.startAnimation(animAlpha);
         presenter.onMessengerClicked();
     }
 
@@ -102,6 +107,7 @@ public class MainActivity extends AppCompatActivity implements MainView, LoaderM
      * @param view the view
      */
     public void onClickDownloads(View view) {
+        view.startAnimation(animAlpha);
         presenter.onDownloadsClicked();
     }
 
@@ -120,6 +126,7 @@ public class MainActivity extends AppCompatActivity implements MainView, LoaderM
      * @param view the view
      */
     public void onClickBrowser(View view) {
+        view.startAnimation(animAlpha);
         presenter.onBrowserClicked();
     }
 
