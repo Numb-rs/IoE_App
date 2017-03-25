@@ -9,11 +9,12 @@ import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.net.InetAddress;
 import java.net.Socket;
+import java.net.SocketTimeoutException;
 
 public class TcpClient {
 
     private static final String ROUTER_IP = "192.168.42.1"; // router ip address
-    private static final int ROUTER_PORT = 42;
+    private static final int ROUTER_PORT = 42; // port
 
     private final String TAG = "TcpClient";
     private String mServerMessage; // message to send to the router
@@ -21,7 +22,7 @@ public class TcpClient {
     private boolean mRun = false; // while true, the server will continue running
     private PrintWriter mBufferOut; // to send messages
     private BufferedReader mBufferIn;// to read messages from the router
-    private boolean openRequest;
+    private Socket socket;
 
     /**
      * Constructor of the class. OnMessagedReceived listens for the messages received from router
@@ -37,14 +38,18 @@ public class TcpClient {
      * @param message the message to be sent
      */
     public void sendMessage(String message) {
-        while(openRequest);
-        Log.d(TAG, "TcpClient sends Message");
+
+        Log.d(TAG, "TcpClient sends Message: " + message);
+
         if (mBufferOut != null && !mBufferOut.checkError()) {
+
             Log.d(TAG, "mBufferOut fully functional");
             mBufferOut.println(message);
             mBufferOut.flush();
         } else {
-            Log.d(TAG, "mBufferOut NOT fully functional");
+            Log.d(TAG, "mBufferOut NOT fully functional. mBufferOut is " + mBufferOut);
+            run();
+            sendMessage(message);
         }
     }
 
@@ -52,6 +57,8 @@ public class TcpClient {
      * Close the connection and release the members
      */
     public void stopClient() {
+
+        Log.d(TAG, "client stopped");
 
         mRun = false;
 
@@ -67,52 +74,70 @@ public class TcpClient {
     }
 
     public void run() {
-
-        openRequest = true;
         mRun = true;
 
 
         try {
             InetAddress serverAddr = InetAddress.getByName(ROUTER_IP);
 
-            Log.e("TCP Client", "C: Connecting...");
+            Log.e(TAG, "C: Connecting...");
 
             // makes connection with the server
-            Socket socket = new Socket(serverAddr, ROUTER_PORT);
+            if (socket == null) {
+                socket = new Socket(serverAddr, ROUTER_PORT);
+            }
+            socket.setSoTimeout(2 * 10000); // 2 * 10 seconds
 
             try {
 
-                // sends message to the router
-                mBufferOut = new PrintWriter(new BufferedWriter(new OutputStreamWriter(socket.getOutputStream())), true);
-
+                if (mBufferOut == null) {
+                    // sends message to the router
+                    mBufferOut = new PrintWriter(new BufferedWriter(new OutputStreamWriter(socket.getOutputStream())), true);
+                }
                 // receives message which the router sends back
                 mBufferIn = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 
                 // in this while the client listens for the messages sent by the router
                 while (mRun) {
 
+                    Log.d(TAG, "in while(mRun)");
                     mServerMessage = mBufferIn.readLine();
+                    Log.d(TAG, "finished reading message from the router: " + mServerMessage);
 
                     if (mServerMessage != null && mMessageListener != null) {
-
+                        Log.d(TAG, "mServerMessage = " + mServerMessage + ", mMessageListener " + mMessageListener);
                         mMessageListener.messageReceived(mServerMessage);
+                        mRun = false;
+                    } else {
+                        Log.d(TAG, "else");
+                        throw (new SocketTimeoutException());
                     }
 
                 }
 
                 Log.e("RESPONSE FROM SERVER", "S: Received Message: '" + mServerMessage + "'");
+                if (mServerMessage == null) {
+                    if(socket.isConnected()){
+                        // socket.close();
+                    }
+                    run();
+                }
+
+            } catch (SocketTimeoutException e){
+                Log.d(TAG,"Timeout");
+                if(socket.isConnected()){
+                    socket.close();
+                }
+                run();
 
             } catch (Exception e) {
-
                 Log.e("TCP", "S: Error", e);
 
             } finally {
                 socket.close();
-                openRequest = false;
             }
 
         } catch (Exception e) {
-
             Log.e("TCP", "C: Error", e);
 
         }

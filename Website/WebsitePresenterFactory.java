@@ -11,12 +11,12 @@ import internetofeveryone.ioe.Presenter.PresenterFactory;
  */
 public class WebsitePresenterFactory implements PresenterFactory<WebsitePresenter> {
 
-    Context context;
+    private final Context context;
 
     /**
      * Instantiates a new WebsitePresenterFactory.
      *
-     * @param context
+     * @param context the context
      */
     public WebsitePresenterFactory(Context context) {
         this.context = context;

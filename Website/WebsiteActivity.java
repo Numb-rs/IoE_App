@@ -7,7 +7,6 @@ import android.support.v4.content.Loader;
 import android.support.v7.app.AppCompatActivity;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import icepick.Icepick;
@@ -25,7 +24,6 @@ import us.feras.mdv.MarkdownView;
 public class WebsiteActivity extends AppCompatActivity implements WebsiteView, LoaderManager.LoaderCallbacks<WebsitePresenter> {
 
     private WebsitePresenter presenter;
-    private TextView textView;
     private static final int LOADER_ID = 108; // unique identification for the WebsiteActivity-LoaderManager
     private MarkdownView markdownView;
 
@@ -37,7 +35,6 @@ public class WebsiteActivity extends AppCompatActivity implements WebsiteView, L
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_website);
-        textView = (TextView) findViewById(R.id.website);
     }
 
     /**
@@ -111,6 +108,7 @@ public class WebsiteActivity extends AppCompatActivity implements WebsiteView, L
         } else {
             presenter.onSearchRequest(enginePassed, searchTermPassed);
         }
+
     }
 
     @Override
@@ -123,7 +121,7 @@ public class WebsiteActivity extends AppCompatActivity implements WebsiteView, L
      * opens a new website
      * @param url of the new website
      */
-    public void openNewPage(String url) {
+    private void openNewPage(String url) {
         Intent intent = new Intent(this, WebsiteActivity.class);
         intent.putExtra(BrowserActivity.URL, url);
         startActivity(intent);

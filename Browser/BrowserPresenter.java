@@ -13,6 +13,7 @@ import com.google.gson.JsonParser;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.util.concurrent.TimeUnit;
 
 import internetofeveryone.ioe.Data.DataType;
 import internetofeveryone.ioe.Data.Website;
@@ -204,8 +205,16 @@ public class BrowserPresenter extends BrowsingPresenter<BrowserView> {
 
         new Connect().execute("");
 
+        try {
+            TimeUnit.SECONDS.sleep(2);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
         if (tcpClient != null) {
-            tcpClient.sendMessage("WEBSRCH\0" + searchTerm + "\0" + engine + "\0" + languageParameter + "\u0004");
+            tcpClient.sendMessage(getModel().getUserCode() + "\0WEBSRCH\0" + searchTerm + "\0" + engine + "\0" + languageParameter + "\u0004");
+        } else {
+            Log.e(TAG, "tcpclient is null");
         }
 
     }
@@ -224,8 +233,16 @@ public class BrowserPresenter extends BrowsingPresenter<BrowserView> {
 
         new Connect().execute("");
 
+        try {
+            TimeUnit.SECONDS.sleep(2);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
         if (tcpClient != null) {
-            tcpClient.sendMessage("WEBREQU\0" + urlOfWebsite + "\u0004");
+            tcpClient.sendMessage(getModel().getUserCode() + "\0WEBREQU\0" + urlOfWebsite + "\u0004");
+        } else {
+            Log.e(TAG, "tcpclient is null");
         }
 
     }

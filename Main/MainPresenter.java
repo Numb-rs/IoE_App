@@ -4,6 +4,8 @@ import android.content.Context;
 import android.os.AsyncTask;
 import android.util.Log;
 
+import java.util.concurrent.TimeUnit;
+
 import internetofeveryone.ioe.Data.DataType;
 import internetofeveryone.ioe.Presenter.MessagingPresenter;
 import internetofeveryone.ioe.Requests.TcpClient;
@@ -33,22 +35,30 @@ public class MainPresenter extends MessagingPresenter<MainView> {
      * sets up the usercode
      */
     public void setUp() {
+        Log.d(TAG, "setup");
         if ((getModel().getUserCode(getModel().getSql())).equals(DEFAULTUSERCODE)) {
             if (isViewAttached()) {
                 Log.d(TAG, "Sends NEWUSER request");
-                /* getView().displayLoader();
-                                              TODO: BOTH DISABLED FOR TEST PURPOSES
-                */
+                // getView().displayLoader();
+                                             // TODO: DISABLED FOR TEST PURPOSES
+
+                Log.d(TAG, "execute");
                 new Connect().execute("");
 
+                try {
+                    TimeUnit.SECONDS.sleep(2);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
 
                 if (tcpClient != null) {
-                    tcpClient.sendMessage("NEWUSER\u0004");
+                    tcpClient.sendMessage(DEFAULTUSERCODE + "\0NEWUSER\u0004");
+                } else {
+                    Log.e(TAG, "tcpClient is null!~");
                 }
-            } else {
-                attachView(new MainActivity());
-                setUp();
             }
+        } else {
+            // getModel().getDb().onUpgrade(getModel().getSql(), 0, 0);
         }
     }
 
@@ -97,10 +107,12 @@ public class MainPresenter extends MessagingPresenter<MainView> {
         protected TcpClient doInBackground(String... message) {
             Log.d(TAG, "started background task");
             // we create a TCPClient object
+
             tcpClient = new TcpClient(new TcpClient.OnMessageReceived() {
 
                 @Override
                 public void messageReceived(String message) {
+                    Log.d(TAG, "message received");
                     publishProgress(message);
                 }
             });
@@ -113,17 +125,25 @@ public class MainPresenter extends MessagingPresenter<MainView> {
         protected void onProgressUpdate(String... values) {
 
             super.onProgressUpdate(values);
+            Log.d(TAG, "onprogressupdate");
+            try {
+                String response = values[0];
+                Log.d(TAG, "response " + response);
+                int delimiter = response.indexOf("/");
+                String userCode = response.substring(0, delimiter);
+                String sessionHash = response.substring(delimiter + 1);
+                Log.d(TAG, "userCode = " + userCode);
+                Log.d(TAG, "sessionHash = " + sessionHash);
 
-            String response = values[0];
-            Log.d(TAG, "response " + response);
-            int delimiter = response.indexOf("/");
-            String userCode = response.substring(delimiter);
-            String sessionHash = response.substring(delimiter+1);
+                getModel().insertUserCode(userCode, getModel().getSql());
+                getView().showUserCode(userCode);
+                getModel().insertSessionHash(sessionHash, getModel().getSql());
+                getView().closeLoader();
 
-            getModel().insertUserCode(userCode, getModel().getSql());
-            getModel().insertSessionHash(sessionHash, getModel().getSql());
-            getView().closeLoader();
-            tcpClient.stopClient();
+            } catch (Exception e) {
+                Log.e(TAG, "invalid response");
+                tcpClient.stopClient();
+            }
         }
     }
 

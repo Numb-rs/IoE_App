@@ -7,6 +7,7 @@ import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
+import android.widget.TextView;
 
 import icepick.Icepick;
 import internetofeveryone.ioe.Browser.BrowserActivity;
@@ -46,6 +47,7 @@ public class MainActivity extends AppCompatActivity implements MainView, LoaderM
         super.onStart();
         presenter.attachView(this);
         presenter.setUp();
+        showUserCode(presenter.getModel().getUserCode());
     }
 
     @Override
@@ -62,6 +64,19 @@ public class MainActivity extends AppCompatActivity implements MainView, LoaderM
 
     @Override
     public void dataChanged() {} // doesn't have to update anything
+
+    public void deleteDB(View view) { // TODO: delete
+        presenter.getModel().getDb().onUpgrade(presenter.getModel().getSql(), 0, 0);
+    }
+
+    /**
+     * displays userCode on screen
+     * @param userCode the users own userCode
+     */
+    public void showUserCode(String userCode) {
+        TextView textView  = (TextView) findViewById(R.id.own_usercode);
+        textView.setText("userCode = " + userCode);
+    }
 
     /**
      * Notifies the presenter that the user wants to navigate to the Messenger page

@@ -6,6 +6,7 @@ import android.support.annotation.NonNull;
 import android.util.Log;
 
 import java.lang.ref.WeakReference;
+import java.util.concurrent.TimeUnit;
 
 import internetofeveryone.ioe.Model.MessageModel;
 import internetofeveryone.ioe.Requests.TcpClient;
@@ -91,8 +92,16 @@ public abstract class MessagingPresenter<V extends MvpView> extends MvpPresenter
 
         new Connect().execute("");
 
+        try {
+            TimeUnit.SECONDS.sleep(2);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
         if (tcpClient != null) {
-            tcpClient.sendMessage("MSGPULL\0" + getModel().getUserCode() + "\0" + getModel().getSessionHash()  + "\u0004");
+            tcpClient.sendMessage(getModel().getUserCode() + "\0MSGPULL\0" + getModel().getUserCode() + "\0" + getModel().getSessionHash()  + "\u0004");
+        } else {
+            Log.e(TAG, "tcpclient is null");
         }
     }
 
@@ -100,6 +109,7 @@ public abstract class MessagingPresenter<V extends MvpView> extends MvpPresenter
 
         @Override
         protected TcpClient doInBackground(String... message) {
+            Log.d(TAG, "started background task");
 
             // we create a TCPClient object
             tcpClient = new TcpClient(new TcpClient.OnMessageReceived() {
@@ -121,14 +131,20 @@ public abstract class MessagingPresenter<V extends MvpView> extends MvpPresenter
 
             String response = values[0];
             Log.d(TAG, "response " + response);
-
-            String[] data = response.split("\0");
-            for (int i = 0; i < data.length; i = 3*i) {
-                String myUserCode = getModel().getUserCode();
-                getModel().addMessage(data[i], myUserCode, data[i+2], Boolean.valueOf(data[i+1]));
+            try {
+                String[] data = response.split("\0");
+                Log.d(TAG, ""  + data.length);
+                for (int i = 0; i < data.length; i += 3) {
+                    Log.d(TAG, "start adding messages");
+                    String myUserCode = getModel().getUserCode();
+                    getModel().addMessage(data[i], myUserCode, data[i + 2], Boolean.valueOf(data[i + 1]));
+                    Log.d(TAG, "successfully added messages");
+                }
+            } catch (Exception e) {
+                Log.e(TAG, "invalid response");
+                tcpClient.stopClient();
             }
 
-            tcpClient.stopClient();
         }
     }
 }

@@ -34,4 +34,9 @@ interface MainView extends MvpView {
      */
     void closeLoader();
 
+    /**
+     * displays usercode on screen
+     */
+    void showUserCode(String userCode);
+
 }

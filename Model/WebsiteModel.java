@@ -60,6 +60,15 @@ public class WebsiteModel extends Model {
     }
 
     /**
+     * Gets user code.
+     *
+     * @return the user code
+     */
+    public String getUserCode() {
+        return super.getUserCode(sql);
+    }
+
+    /**
      * Adds a downloaded website to the database
      *
      * @param name    the name

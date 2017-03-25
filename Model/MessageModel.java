@@ -5,6 +5,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
+import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -41,6 +42,7 @@ public class MessageModel extends Model {
     private final String[] contactColumns = { TableData.Contacts.COLUMN_CONTACTS_NAME, TableData.Contacts.COLUMN_CONTACTS_USERCODE,
             TableData.Contacts.COLUMN_CONTACTS_KEY, TableData.Contacts.COLUMN_CONTACTS_OPENCHAT };
     private final String[] chatColumns = { TableData.Chats.COLUMN_CHATS_USERCODE, TableData.Chats.COLUMN_CHATS_ISENCRYPTED };
+    private final String TAG = "MessageModel";
 
     /**
      * Instantiates a new Message model.
@@ -92,6 +94,14 @@ public class MessageModel extends Model {
         values.put(TableData.Messages.COLUMN_MESSAGES_ISENCRYPTED, String.valueOf(isEncrypted));
 
         long id = sql.insert(TableData.Messages.TABLE_MESSAGES, null, values);
+
+        Log.d(TAG, "id = " + id);
+        Log.d(TAG, "senderID = " + senderID);
+        Log.d(TAG, "receiverID = " + receiverID);
+        Log.d(TAG, "content = " + content);
+        Log.d(TAG, "isEncrypted = " + isEncrypted);
+
+
         notify(DataType.MESSAGE);
         return id;
     }

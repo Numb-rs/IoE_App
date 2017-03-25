@@ -65,7 +65,6 @@ public class ChatActivity extends AppCompatActivity implements ChatView, LoaderM
             listView.setSelection(msgList.size() - 1);
         }
         encryption.setChecked(presenter.isChatEncrypted(userCode));
-        presenter.fetchMessagesFromServer();
     }
 
     @Override

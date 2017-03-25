@@ -10,6 +10,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
 import java.util.Locale;
+import java.util.concurrent.TimeUnit;
 
 import internetofeveryone.ioe.Data.DataType;
 import internetofeveryone.ioe.Presenter.BrowsingPresenter;
@@ -25,12 +26,12 @@ public class WebsitePresenter extends BrowsingPresenter<WebsiteView> {
 
     private TcpClient tcpClient;
     private static final String TAG = "WebsitePresenter";
-    private Context context;
+    private final Context context;
 
     /**
      * Instantiates a new Website presenter.
      *
-     * @param context
+     * @param context the context
      */
     public WebsitePresenter(Context context) {
         super(context);
@@ -51,8 +52,16 @@ public class WebsitePresenter extends BrowsingPresenter<WebsiteView> {
 
         new Connect().execute("");
 
+        try {
+            TimeUnit.SECONDS.sleep(2);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
         if (tcpClient != null) {
-            tcpClient.sendMessage("WEBREQU\0" + urlOfWebsite + "\u0004");
+            tcpClient.sendMessage(getModel().getUserCode() + "\0WEBREQU\0" + urlOfWebsite + "\u0004");
+        } else {
+            Log.e(TAG, "TcpClient is null");
         }
     }
 
@@ -67,34 +76,42 @@ public class WebsitePresenter extends BrowsingPresenter<WebsiteView> {
 
         new Connect().execute("");
 
+        try {
+            TimeUnit.SECONDS.sleep(2);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
         if (tcpClient != null) {
-            tcpClient.sendMessage("WEBSRCH\0" + searchTerm + "\0" + engine + "\0" + languageParameter + "\u0004");
+            tcpClient.sendMessage(getModel().getUserCode() + "\0WEBSRCH\0" + searchTerm + "\0" + engine + "\0" + languageParameter + "\u0004");
+        } else {
+            Log.e(TAG, "TcpClient is null");
         }
     }
 
     /**
      * fixes links and line breaks to adapt it to MarkdownView
-     * @param jsonLine
-     * @return
+     * @param jsonLine the json response
+     * @return the parsed response
      */
-    public String parse(String jsonLine) {
+    private String parse(String jsonLine) {
         try {
             JsonElement jelement = new JsonParser().parse(jsonLine);
             JsonObject jobject = jelement.getAsJsonObject();
             JsonArray jarray = jobject.getAsJsonArray("data");
             jobject = jarray.get(0).getAsJsonObject();
             JsonObject jobject2 = jobject.getAsJsonObject("attributes");
-            String result = jobject2.get("markdown").toString();
-            return result;
+            return jobject2.get("markdown").toString();
         } catch (Exception e) {
             return context.getString(R.string.error_message_website);
         }
     }
 
-    public class Connect extends AsyncTask<String, String, TcpClient> {
+    private class Connect extends AsyncTask<String, String, TcpClient> {
 
         @Override
         protected TcpClient doInBackground(String... message) {
+            Log.d(TAG, "started background task");
 
             // we create a TCPClient object
             tcpClient = new TcpClient(new TcpClient.OnMessageReceived() {
@@ -104,7 +121,7 @@ public class WebsitePresenter extends BrowsingPresenter<WebsiteView> {
                     publishProgress(message);
                 }
             });
-
+            Log.d(TAG, "Connect runs TcpClient");
             tcpClient.run();
             return null;
         }
@@ -122,8 +139,6 @@ public class WebsitePresenter extends BrowsingPresenter<WebsiteView> {
             if (parsedResponse.equals(context.getString(R.string.error_message_website))) {
                 if (isViewAttached()) {
                     getView().displayMessage(context.getString(R.string.not_valid_website_without_error));
-                } else {
-                    // error handling
                 }
                 tcpClient.stopClient();
                 return;

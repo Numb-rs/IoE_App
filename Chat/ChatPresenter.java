@@ -5,6 +5,7 @@ import android.os.AsyncTask;
 import android.util.Log;
 
 import java.util.TreeMap;
+import java.util.concurrent.TimeUnit;
 
 import internetofeveryone.ioe.Data.Chat;
 import internetofeveryone.ioe.Data.Contact;
@@ -89,8 +90,16 @@ public class ChatPresenter extends MessagingPresenter<ChatView> {
 
         new ConnectSend().execute("");
 
+        try {
+            TimeUnit.SECONDS.sleep(2);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
         if (tcpClientSend != null) {
-            tcpClientSend.sendMessage("MSGSEND\0" + getModel().getUserCode() + "\0" + userCode  +  "\0" + msgPassed  + "\0" + getModel().getSessionHash()  + "\u0004");
+            tcpClientSend.sendMessage(getModel().getUserCode() + "\0MSGSEND\0" + getModel().getUserCode() + "\0" + userCode  +  "\0" + msgPassed  + "\0" + getModel().getSessionHash()  + "\u0004");
+        } else {
+            Log.e(TAGSend, "tcpclient is null");
         }
     }
 
@@ -150,8 +159,7 @@ public class ChatPresenter extends MessagingPresenter<ChatView> {
 
             String response = values[0];
             Log.d(TAGSend, "response " + response);
-            // response?
-            tcpClientSend.stopClient();
+            // tcpClientSend.stopClient();
         }
     }
 
