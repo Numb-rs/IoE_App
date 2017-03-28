@@ -17,4 +17,8 @@ interface MessengerView extends MvpView {
      */
     void openChat(Contact contact);
 
+    void displayNetworkErrorMessage();
+
+    void closeLoader();
+
 }

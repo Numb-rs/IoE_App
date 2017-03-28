@@ -71,7 +71,11 @@ public class MessengerAdapter extends BaseAdapter {
 
         viewHolder.tVContact.setText(chat.getContact().getName());
         Message lastMsg = chat.getLastMessage();
-        String lastMessagePreview = lastMsg == null ? "" : lastMsg.getContent();
+        String content = lastMsg.getContent();
+        if (lastMsg.isEncrypted()) {
+            content = Message.decrypt(lastMsg.getContent(), chat.getContact().getKey());
+        }
+        String lastMessagePreview = lastMsg == null ? "" : content;
         lastMessagePreview = lastMessagePreview.replace("\n", " ");
         if (lastMessagePreview.length() > 47) {
             lastMessagePreview = lastMessagePreview.substring(0, 47) + "...";

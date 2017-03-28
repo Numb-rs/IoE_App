@@ -1,6 +1,9 @@
 package internetofeveryone.ioe.Messenger;
 
 import android.content.Context;
+import android.os.AsyncTask;
+import android.os.Handler;
+import android.util.Log;
 
 import java.util.HashMap;
 import java.util.List;
@@ -10,6 +13,7 @@ import internetofeveryone.ioe.Data.Chat;
 import internetofeveryone.ioe.Data.DataType;
 import internetofeveryone.ioe.Data.Message;
 import internetofeveryone.ioe.Presenter.MessagingPresenter;
+import internetofeveryone.ioe.Requests.TcpClient;
 
 /**
  * Created by Fabian Martin for 'Internet of Everyone'
@@ -19,6 +23,7 @@ import internetofeveryone.ioe.Presenter.MessagingPresenter;
 public class MessengerPresenter extends MessagingPresenter<MessengerView> {
 
     public static final String TAG = "MessengerPresenter";
+    private TcpClient tcpClient;
 
     /**
      * Instantiates a new MessengerPresenter.
@@ -81,6 +86,78 @@ public class MessengerPresenter extends MessagingPresenter<MessengerView> {
             chatList.put(c.getContact().getName(), c);
         }
         return chatList;
+    }
+
+    @Override
+    public void fetchMessagesFromServer() {
+
+        Log.e(TAG, "fetches");
+
+        new Connect().execute("");
+
+        Handler handler = new Handler();
+        Runnable r = new Runnable() {
+            public void run() {
+                if (tcpClient != null) {
+                    if (!tcpClient.sendMessage(getModel().getUserCode() + "\0MSGPULL\0" + getModel().getUserCode() + "\0" + getModel().getSessionHash()  + "\u0004")) {
+                        Log.e(TAG, "fetch didn't work due to connection issues");
+                        getView().displayNetworkErrorMessage();
+                    }
+                } else {
+                    Log.e(TAG, "tcpclient is null");
+                }
+                if (isViewAttached()) {
+                    getView().closeLoader();
+                }
+            }
+        };
+        handler.postDelayed(r, 2000); // 2 seconds
+    }
+    private class Connect extends AsyncTask<String, String, TcpClient> {
+
+        @Override
+        protected TcpClient doInBackground(String... message) {
+            Log.d(TAG, "started background task");
+
+            // we create a TCPClient object
+            tcpClient = new TcpClient(new TcpClient.OnMessageReceived() {
+
+                @Override
+                public void messageReceived(String message) {
+                    publishProgress(message);
+                }
+            });
+
+            if (!tcpClient.run()) {
+                connectionFailed();
+            }
+            return null;
+        }
+
+        @Override
+        protected void onProgressUpdate(String... values) {
+
+            super.onProgressUpdate(values);
+
+            String response = values[0];
+            Log.d(TAG, "response " + response);
+            try {
+                String[] data = response.split("\0");
+                Log.d(TAG, ""  + data.length);
+                if ((data.length % 3) != 0) {
+                    throw new Exception();
+                }
+                for (int i = 0; i < data.length; i += 3) {
+                    String myUserCode = getModel().getUserCode();
+                    getModel().addMessage(data[i], myUserCode, data[i + 2], (data[i + 1].equals("1")));
+                    Log.d(TAG, "successfully added messages");
+                }
+            } catch (Exception e) {
+                Log.e(TAG, "invalid response " + response);
+                tcpClient.stopClient();
+            }
+
+        }
     }
 
 }

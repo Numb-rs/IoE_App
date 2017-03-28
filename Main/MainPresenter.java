@@ -2,9 +2,8 @@ package internetofeveryone.ioe.Main;
 
 import android.content.Context;
 import android.os.AsyncTask;
+import android.os.Handler;
 import android.util.Log;
-
-import java.util.concurrent.TimeUnit;
 
 import internetofeveryone.ioe.Data.DataType;
 import internetofeveryone.ioe.Presenter.MessagingPresenter;
@@ -40,23 +39,23 @@ public class MainPresenter extends MessagingPresenter<MainView> {
             if (isViewAttached()) {
                 Log.d(TAG, "Sends NEWUSER request");
 
+                getView().displayLoader();
                 Log.d(TAG, "execute");
                 new Connect().execute("");
 
-                getView().displayLoader();
+                Handler handler = new Handler();
+                Runnable r = new Runnable() {
+                    public void run() {
+                        if (tcpClient != null) {
+                            tcpClient.sendMessage(DEFAULTUSERCODE + "\0NEWUSER\u0004");
+                        } else {
+                            Log.e(TAG, "tcpClient is null! ");
+                        }
+                        getView().closeLoader();
+                    }
+                };
+                handler.postDelayed(r, 2000); // 2 seconds
 
-                try {
-                    TimeUnit.SECONDS.sleep(2);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-
-                if (tcpClient != null) {
-                    tcpClient.sendMessage(DEFAULTUSERCODE + "\0NEWUSER\u0004");
-                } else {
-                    Log.e(TAG, "tcpClient is null!~");
-                }
-                getView().closeLoader();
             }
         }
     }
@@ -103,10 +102,7 @@ public class MainPresenter extends MessagingPresenter<MainView> {
     private class Connect extends AsyncTask<String, String, TcpClient> {
 
         @Override
-        protected TcpClient doInBackground(String... message) {
-            Log.d(TAG, "started background task");
-            // we create a TCPClient object
-
+        protected void onPreExecute() {
             tcpClient = new TcpClient(new TcpClient.OnMessageReceived() {
 
                 @Override
@@ -115,12 +111,22 @@ public class MainPresenter extends MessagingPresenter<MainView> {
                     publishProgress(message);
                 }
             });
+        }
+
+        @Override
+        protected TcpClient doInBackground(String... message) {
+            Log.d(TAG, "started background task");
+            // we create a TCPClient object
 
             if (!tcpClient.run()) {
                 Log.e(TAG, "network offline");
                 getView().displayNetworkErrorMessage();
             }
-            return null;
+            return tcpClient;
+        }
+
+        @Override
+        protected void onPostExecute(TcpClient tcp) {
         }
 
         @Override

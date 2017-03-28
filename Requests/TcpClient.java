@@ -93,6 +93,7 @@ public class TcpClient {
             if (socket == null || socket.isClosed()) {
                 socket = new Socket(serverAddr, ROUTER_PORT);
             }
+            Log.d(TAG, "socket = " + socket);
             socket.setSoTimeout(6 * 10000); // 6 * 10 seconds
 
             try {
@@ -114,6 +115,7 @@ public class TcpClient {
                     if (mServerMessage != null && mMessageListener != null) {
                         Log.d(TAG, "mServerMessage = " + mServerMessage + ", mMessageListener " + mMessageListener);
                         mMessageListener.messageReceived(mServerMessage);
+                        Log.d(TAG, "responseAnswer from presenter = " + mServerMessage);
                         mRun = false;
                     } else {
                         Log.d(TAG, "else");
@@ -125,9 +127,9 @@ public class TcpClient {
                 Log.e("RESPONSE FROM SERVER", "S: Received Message: '" + mServerMessage + "'");
                 if (mServerMessage == null) {
                     if(socket.isConnected()){
-                        // socket.close();
+                        socket.close();
                     }
-                    run();
+                    // run();
                 }
 
             } catch (SocketTimeoutException e){

@@ -55,4 +55,8 @@ public interface BrowserView extends MvpView {
      */
     void displayMessage(String text);
 
+    void displayNetworkErrorMessage();
+
+    void closeLoader();
+
 }

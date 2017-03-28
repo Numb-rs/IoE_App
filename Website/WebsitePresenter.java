@@ -2,6 +2,7 @@ package internetofeveryone.ioe.Website;
 
 import android.content.Context;
 import android.os.AsyncTask;
+import android.os.Handler;
 import android.util.Log;
 
 import com.google.gson.JsonElement;
@@ -9,7 +10,6 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
 import java.util.Locale;
-import java.util.concurrent.TimeUnit;
 
 import internetofeveryone.ioe.Data.DataType;
 import internetofeveryone.ioe.Presenter.BrowsingPresenter;
@@ -45,60 +45,60 @@ public class WebsitePresenter extends BrowsingPresenter<WebsiteView> {
      *
      * @param urlOfWebsite URL of the requested Website
      */
-    public boolean onURLPassed(final String urlOfWebsite) {
+    public void onURLPassed(final String urlOfWebsite) {
 
         Log.d(TAG, "Url passed: " + urlOfWebsite);
 
         new Connect().execute("");
 
-        try {
-            TimeUnit.SECONDS.sleep(2);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-
-        if (tcpClient != null) {
-            if (!tcpClient.sendMessage(getModel().getUserCode() + "\0WEBREQU\0" + urlOfWebsite + "\u0004")) {
-                Log.e(TAG, "url request didn't work due to connection issues");
-                return false;
+        Handler handler = new Handler();
+        Runnable r = new Runnable() {
+            public void run() {
+                if (tcpClient != null) {
+                    if (!tcpClient.sendMessage(getModel().getUserCode() + "\0WEBREQU\0" + urlOfWebsite + "\u0004")) {
+                        Log.e(TAG, "url request didn't work due to connection issues");
+                        getView().displayNetworkErrorMessage();
+                    }
+                } else {
+                    Log.e(TAG, "TcpClient is null");
+                }
             }
-        } else {
-            Log.e(TAG, "TcpClient is null");
-        }
-        return true;
+        };
+        handler.postDelayed(r, 2000); // 2 seconds
+        return;
     }
 
     /**
      * Sends a website request to the network
      */
-    public boolean onSearchRequest(final String engine, final String searchTerm) {
+    public void onSearchRequest(final String engine, final String searchTerm) {
 
         Log.d(TAG, "Engine passed: " + engine);
         Log.d(TAG, "Searchterm passed: " + searchTerm);
-        String languageParameter = "{\"language\": \"" + Locale.getDefault().getDisplayLanguage() + "\"}";
+        final String languageParameter = "{\"language\": \"" + Locale.getDefault().getDisplayLanguage() + "\"}";
 
         new Connect().execute("");
 
         getView().displayLoader();
 
-        try {
-            TimeUnit.SECONDS.sleep(2);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+        Handler handler = new Handler();
+        Runnable r = new Runnable() {
+            public void run() {
+                if (tcpClient != null) {
+                    if (!tcpClient.sendMessage(getModel().getUserCode() + "\0WEBSRCH\0" + searchTerm + "\0" + engine + "\0" + languageParameter + "\u0004")) {
+                        Log.e(TAG, "search didn't work due to connection issues");
+                        getView().displayNetworkErrorMessage();
+                    }
+                } else {
+                    Log.e(TAG, "TcpClient is null");
+                }
 
-        if (tcpClient != null) {
-            if (!tcpClient.sendMessage(getModel().getUserCode() + "\0WEBSRCH\0" + searchTerm + "\n" + engine + "\n" + languageParameter + "\u0004")) {
-                Log.e(TAG, "search didn't work due to connection issues");
-                return false;
             }
-        } else {
-            Log.e(TAG, "TcpClient is null");
-        }
-
+        };
+        handler.postDelayed(r, 2000); // 2 seconds
         getView().closeLoader();
 
-        return true;
+        return;
     }
 
     /**

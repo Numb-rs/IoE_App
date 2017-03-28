@@ -97,7 +97,7 @@ public class ChatPresenter extends MessagingPresenter<ChatView> {
         }
 
         if (tcpClientSend != null) {
-            tcpClientSend.sendMessage(getModel().getUserCode() + "\0MSGSEND\0" + getModel().getUserCode() + "\n" + userCode  +  "\n" + getModel().getSessionHash()  + "\n" + (encrypt ? 1 : 0) + msgPassed  + "\n" + "\u0004");
+            tcpClientSend.sendMessage(getModel().getUserCode() + "\0MSGSEND\0" + getModel().getUserCode() + "\0" + userCode  +  "\0" + getModel().getSessionHash()  + "\0" + (encrypt ? 1 : 0) + content + "\u0004");
         } else {
             Log.e(TAGSend, "tcpclient is null");
         }

@@ -2,12 +2,9 @@ package internetofeveryone.ioe.Messenger;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Looper;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.ContextMenu;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -66,20 +63,9 @@ public class MessengerActivity extends AppCompatActivity implements MessengerVie
         spinner.setVisibility(GONE);
         findViewById(R.id.activity_messenger).setOnTouchListener(new OnSwipeTouchListener(MessengerActivity.this) {
             public void onSwipeBottom() {
-                new Handler(Looper.getMainLooper()).post(new Runnable() {
-                    @Override
-                    public void run() {
-                        Log.d("Messenger UI thread", "Started progress bar");
-                        spinner.setVisibility(VISIBLE);
-                    }
-                });
-                if (!presenter.fetchMessagesFromServer()) {
-                    Log.e(TAG, "error message displayed");
-                    displayNetworkErrorMessage();
-                }
+                spinner.setVisibility(VISIBLE);
+                presenter.fetchMessagesFromServer();
                 dataChanged();
-                spinner.setVisibility(GONE);
-
             }
         });
 
@@ -124,6 +110,9 @@ public class MessengerActivity extends AppCompatActivity implements MessengerVie
     public void onStart() {
         super.onStart();
         presenter.attachView(this);
+        spinner.setVisibility(VISIBLE);
+        presenter.fetchMessagesFromServer();
+        dataChanged();
     }
 
     @Override
@@ -230,6 +219,10 @@ public class MessengerActivity extends AppCompatActivity implements MessengerVie
 
     public ContactFragment getContactFragment() {
         return contactFragment;
+    }
+
+    public void closeLoader() {
+        spinner.setVisibility(GONE);
     }
 
 }

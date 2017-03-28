@@ -60,7 +60,6 @@ public class BrowserActivity extends AppCompatActivity implements BrowserView, L
         animAlpha = AnimationUtils.loadAnimation(this, R.anim.anim_alpha);
         spinner = (ProgressBar)findViewById(R.id.progressBarBrowser);
         spinner.setVisibility(GONE);
-
     }
 
     @Override
@@ -119,7 +118,6 @@ public class BrowserActivity extends AppCompatActivity implements BrowserView, L
             Log.e(TAG, "error message displayed");
             displayNetworkErrorMessage();
         }
-        spinner.setVisibility(GONE);
     }
 
     public void displayNetworkErrorMessage() {
@@ -148,7 +146,6 @@ public class BrowserActivity extends AppCompatActivity implements BrowserView, L
             Log.e(TAG, "error message displayed");
             displayNetworkErrorMessage();
         }
-        spinner.setVisibility(GONE);
     }
 
     /**
@@ -187,7 +184,6 @@ public class BrowserActivity extends AppCompatActivity implements BrowserView, L
             Log.e(TAG, "error message displayed");
             displayNetworkErrorMessage();
         }
-        spinner.setVisibility(GONE);
     }
 
     /**
@@ -317,5 +313,9 @@ public class BrowserActivity extends AppCompatActivity implements BrowserView, L
 
     public DefaultWebsiteFragment getFragment() {
         return fragment;
+    }
+
+    public void closeLoader() {
+        spinner.setVisibility(GONE);
     }
 }

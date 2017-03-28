@@ -74,6 +74,13 @@ public class WebsiteActivity extends AppCompatActivity implements WebsiteView, L
 
     public void displayNetworkErrorMessage() {
         errorMessage = this.getString(R.string.networkFailure);
+        WebsiteActivity.this.runOnUiThread(new Runnable() {
+            public void run() {
+                Toast.makeText(WebsiteActivity.this, errorMessage, Toast.LENGTH_SHORT).show();
+            }
+        });
+
+
     }
 
     @Override
@@ -92,6 +99,11 @@ public class WebsiteActivity extends AppCompatActivity implements WebsiteView, L
         } else {
             presenter.onSearchRequest(enginePassed, searchTermPassed);
         }
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
         if (errorMessage != null) {
             Toast.makeText(this, errorMessage, Toast.LENGTH_SHORT).show();
         }
