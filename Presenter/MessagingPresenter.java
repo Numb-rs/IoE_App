@@ -99,7 +99,7 @@ public abstract class MessagingPresenter<V extends MvpView> extends MvpPresenter
         }
 
         if (tcpClient != null) {
-            if (!tcpClient.sendMessage(getModel().getUserCode() + "\0MSGPULL\0" + getModel().getUserCode() + "\0" + getModel().getSessionHash()  + "\u0004")) {
+            if (!tcpClient.sendMessage(getModel().getUserCode() + "\0MSGPULL\0" + getModel().getUserCode() + "\n" + getModel().getSessionHash()  + "\u0004")) {
                 Log.e(TAG, "fetch didn't work due to connection issues");
                 return false;
             }

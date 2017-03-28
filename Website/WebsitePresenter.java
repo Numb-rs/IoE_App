@@ -4,7 +4,6 @@ import android.content.Context;
 import android.os.AsyncTask;
 import android.util.Log;
 
-import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
@@ -89,7 +88,7 @@ public class WebsitePresenter extends BrowsingPresenter<WebsiteView> {
         }
 
         if (tcpClient != null) {
-            if (!tcpClient.sendMessage(getModel().getUserCode() + "\0WEBSRCH\0" + searchTerm + "\0" + engine + "\0" + languageParameter + "\u0004")) {
+            if (!tcpClient.sendMessage(getModel().getUserCode() + "\0WEBSRCH\0" + searchTerm + "\n" + engine + "\n" + languageParameter + "\u0004")) {
                 Log.e(TAG, "search didn't work due to connection issues");
                 return false;
             }
@@ -111,9 +110,8 @@ public class WebsitePresenter extends BrowsingPresenter<WebsiteView> {
         try {
             JsonElement jelement = new JsonParser().parse(jsonLine);
             JsonObject jobject = jelement.getAsJsonObject();
-            JsonArray jarray = jobject.getAsJsonArray("data");
-            jobject = jarray.get(0).getAsJsonObject();
-            JsonObject jobject2 = jobject.getAsJsonObject("attributes");
+            JsonObject jdataObject = jobject.getAsJsonObject("data");
+            JsonObject jobject2 = jdataObject.getAsJsonObject("attributes");
             return jobject2.get("markdown").toString();
         } catch (Exception e) {
             return context.getString(R.string.error_message_website);
