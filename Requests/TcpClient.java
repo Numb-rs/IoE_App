@@ -23,6 +23,7 @@ public class TcpClient {
     private PrintWriter mBufferOut; // to send messages
     private BufferedReader mBufferIn;// to read messages from the router
     private Socket socket;
+    private boolean networkoffline;
 
     /**
      * Constructor of the class. OnMessagedReceived listens for the messages received from router
@@ -37,7 +38,7 @@ public class TcpClient {
      *
      * @param message the message to be sent
      */
-    public void sendMessage(String message) {
+    public boolean sendMessage(String message) {
 
         Log.d(TAG, "TcpClient sends Message: " + message);
 
@@ -48,9 +49,13 @@ public class TcpClient {
             mBufferOut.flush();
         } else {
             Log.d(TAG, "mBufferOut NOT fully functional. mBufferOut is " + mBufferOut);
-            run();
+            if (!run()) {
+                Log.e(TAG, "sending Message didn't work (network failure)");
+                return false;
+            }
             sendMessage(message);
         }
+        return true;
     }
 
     /**
@@ -73,9 +78,11 @@ public class TcpClient {
         mServerMessage = null;
     }
 
-    public void run() {
+    public boolean run() {
+        if (networkoffline) {
+            return false;
+        }
         mRun = true;
-
 
         try {
             InetAddress serverAddr = InetAddress.getByName(ROUTER_IP);
@@ -139,9 +146,10 @@ public class TcpClient {
 
         } catch (Exception e) {
             Log.e("TCP", "C: Error", e);
-
+            networkoffline = true;
+            return false;
         }
-
+    return true;
     }
 
     public interface OnMessageReceived {

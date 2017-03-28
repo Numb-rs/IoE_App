@@ -1,13 +1,5 @@
 package internetofeveryone.ioe.Data;
 
-import java.io.UnsupportedEncodingException;
-import java.security.InvalidKeyException;
-import java.security.NoSuchAlgorithmException;
-
-import javax.crypto.BadPaddingException;
-import javax.crypto.IllegalBlockSizeException;
-import javax.crypto.NoSuchPaddingException;
-
 /**
  * Created by Fabian Martin for 'Internet of Everyone'
  *
@@ -42,50 +34,51 @@ public class Message {
     /**
      * Encrypts a message.
      *
-     * @param message the decrypted message
+     * @param original the decrypted message
      * @param key     the key
      * @return the encrypted message
      */
-    public static String encrypt(String message, String key) throws UnsupportedEncodingException, NoSuchAlgorithmException, InvalidKeyException, BadPaddingException, IllegalBlockSizeException, NoSuchPaddingException {
-        /* TODO: implement encrypt
-        Cipher cipher = Cipher.getInstance("AES");
-        byte[] keyBytes = key.getBytes("UTF-8");
-        MessageDigest sha = MessageDigest.getInstance("SHA-1");
-        keyBytes = sha.digest(keyBytes);
-        keyBytes = Arrays.copyOf(keyBytes, 16); // use only first 128 bit
-        SecretKeySpec secretKeySpec = new SecretKeySpec(keyBytes, "AES");
-        cipher.init(Cipher.ENCRYPT_MODE, secretKeySpec);
-
-        byte[] inputBytes = message.getBytes();
-        return new String(cipher.doFinal(inputBytes), "UTF-8");
-        */
-        return message;
-
+    public static String encrypt(String original, String key) {
+        System.out.println("Message before encryption: " + original);
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < original.length(); i++) {
+            char c = original.charAt(i);
+            if (c >= 32) {
+                int keyCharValue = key.charAt(i % key.length()) - 'A';
+                c += keyCharValue;
+                if (c > 127) {
+                    c = (char) (c + 32 - 127);
+                }
+            }
+            sb.append(c);
+        }
+        System.out.println("Message after encryption: " + sb.toString());
+        return sb.toString();
     }
 
     /**
      * Decrypts a message.
      *
-     * @param message the encrypted message
+     * @param original the encrypted message
      * @param key     the key
      * @return the decrypted message
      */
-    public static String decrypt(String message, String key) throws BadPaddingException, IllegalBlockSizeException, UnsupportedEncodingException, NoSuchAlgorithmException, InvalidKeyException, NoSuchPaddingException {
-
-        /* TODO: implement decrypt
-        Cipher cipher = Cipher.getInstance("AES");
-        byte[] keyBytes = key.getBytes("UTF-8");
-        MessageDigest sha = MessageDigest.getInstance("SHA-1");
-        keyBytes = sha.digest(keyBytes);
-        keyBytes = Arrays.copyOf(keyBytes, 16); // use only first 128 bit
-        SecretKeySpec secretKeySpec = new SecretKeySpec(keyBytes, "AES");
-        cipher.init(Cipher.ENCRYPT_MODE, secretKeySpec);
-
-        byte[] recoveredBytes =
-                cipher.doFinal(message.getBytes());
-        return new String(recoveredBytes, "UTF-8");
-        */
-        return message;
+    public static String decrypt(String original, String key) {
+        System.out.println("Message before decryption: " + original);
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < original.length(); i++) {
+            char c = original.charAt(i);
+            if (c >= 32) {
+                int keyCharValue = key.charAt(i % key.length()) - 'A';
+                c -= keyCharValue;
+                if (c < 32) {
+                    c = (char) (c + 127 - 32);
+                }
+            }
+            sb.append(c);
+        }
+        System.out.println("Message after decryption: " + sb.toString());
+        return sb.toString();
 
     }
 

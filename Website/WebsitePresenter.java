@@ -46,7 +46,7 @@ public class WebsitePresenter extends BrowsingPresenter<WebsiteView> {
      *
      * @param urlOfWebsite URL of the requested Website
      */
-    public void onURLPassed(final String urlOfWebsite) {
+    public boolean onURLPassed(final String urlOfWebsite) {
 
         Log.d(TAG, "Url passed: " + urlOfWebsite);
 
@@ -59,22 +59,28 @@ public class WebsitePresenter extends BrowsingPresenter<WebsiteView> {
         }
 
         if (tcpClient != null) {
-            tcpClient.sendMessage(getModel().getUserCode() + "\0WEBREQU\0" + urlOfWebsite + "\u0004");
+            if (!tcpClient.sendMessage(getModel().getUserCode() + "\0WEBREQU\0" + urlOfWebsite + "\u0004")) {
+                Log.e(TAG, "url request didn't work due to connection issues");
+                return false;
+            }
         } else {
             Log.e(TAG, "TcpClient is null");
         }
+        return true;
     }
 
     /**
      * Sends a website request to the network
      */
-    public void onSearchRequest(final String engine, final String searchTerm) {
+    public boolean onSearchRequest(final String engine, final String searchTerm) {
 
         Log.d(TAG, "Engine passed: " + engine);
         Log.d(TAG, "Searchterm passed: " + searchTerm);
         String languageParameter = "{\"language\": \"" + Locale.getDefault().getDisplayLanguage() + "\"}";
 
         new Connect().execute("");
+
+        getView().displayLoader();
 
         try {
             TimeUnit.SECONDS.sleep(2);
@@ -83,10 +89,17 @@ public class WebsitePresenter extends BrowsingPresenter<WebsiteView> {
         }
 
         if (tcpClient != null) {
-            tcpClient.sendMessage(getModel().getUserCode() + "\0WEBSRCH\0" + searchTerm + "\0" + engine + "\0" + languageParameter + "\u0004");
+            if (!tcpClient.sendMessage(getModel().getUserCode() + "\0WEBSRCH\0" + searchTerm + "\0" + engine + "\0" + languageParameter + "\u0004")) {
+                Log.e(TAG, "search didn't work due to connection issues");
+                return false;
+            }
         } else {
             Log.e(TAG, "TcpClient is null");
         }
+
+        getView().closeLoader();
+
+        return true;
     }
 
     /**
@@ -121,8 +134,10 @@ public class WebsitePresenter extends BrowsingPresenter<WebsiteView> {
                     publishProgress(message);
                 }
             });
-            Log.d(TAG, "Connect runs TcpClient");
-            tcpClient.run();
+            if (!tcpClient.run()) {
+                Log.e(TAG, "network offline");
+                getView().displayNetworkErrorMessage();
+            }
             return null;
         }
 

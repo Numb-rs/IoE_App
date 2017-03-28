@@ -2,9 +2,12 @@ package internetofeveryone.ioe.Messenger;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.ContextMenu;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -12,6 +15,8 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
+import android.widget.ProgressBar;
+import android.widget.Toast;
 
 import java.util.HashMap;
 
@@ -23,6 +28,9 @@ import internetofeveryone.ioe.Data.Chat;
 import internetofeveryone.ioe.Data.Contact;
 import internetofeveryone.ioe.Presenter.PresenterLoader;
 import internetofeveryone.ioe.R;
+
+import static android.view.View.GONE;
+import static android.view.View.VISIBLE;
 
 /**
  * Created by Fabian Martin for 'Internet of Everyone'
@@ -41,6 +49,8 @@ public class MessengerActivity extends AppCompatActivity implements MessengerVie
     private final String ADDCHAT = "AddChat";
     private final String CONTACT = "Contact";
     private final String CONTACTUSERCODE = "contactUserCode";
+    private final String TAG = "MessengerActivity";
+    private ProgressBar spinner;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,6 +62,27 @@ public class MessengerActivity extends AppCompatActivity implements MessengerVie
         if (getSupportActionBar() != null) {
             getSupportActionBar().setTitle(R.string.title_activity_messenger);
         }
+        spinner = (ProgressBar)findViewById(R.id.progressBarMessenger);
+        spinner.setVisibility(GONE);
+        findViewById(R.id.activity_messenger).setOnTouchListener(new OnSwipeTouchListener(MessengerActivity.this) {
+            public void onSwipeBottom() {
+                new Handler(Looper.getMainLooper()).post(new Runnable() {
+                    @Override
+                    public void run() {
+                        Log.d("Messenger UI thread", "Started progress bar");
+                        spinner.setVisibility(VISIBLE);
+                    }
+                });
+                if (!presenter.fetchMessagesFromServer()) {
+                    Log.e(TAG, "error message displayed");
+                    displayNetworkErrorMessage();
+                }
+                dataChanged();
+                spinner.setVisibility(GONE);
+
+            }
+        });
+
     }
 
     @Override
@@ -93,8 +124,6 @@ public class MessengerActivity extends AppCompatActivity implements MessengerVie
     public void onStart() {
         super.onStart();
         presenter.attachView(this);
-        presenter.fetchMessagesFromServer();
-        dataChanged();
     }
 
     @Override
@@ -106,6 +135,11 @@ public class MessengerActivity extends AppCompatActivity implements MessengerVie
     @Override
     public void onPause() {
         super.onPause();
+    }
+
+    public void displayNetworkErrorMessage() {
+        Toast.makeText(this, this.getString(R.string.networkFailure), Toast.LENGTH_SHORT).show();
+        spinner.setVisibility(GONE);
     }
 
     /**
@@ -197,4 +231,5 @@ public class MessengerActivity extends AppCompatActivity implements MessengerVie
     public ContactFragment getContactFragment() {
         return contactFragment;
     }
+
 }

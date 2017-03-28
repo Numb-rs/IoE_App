@@ -1,6 +1,5 @@
 package internetofeveryone.ioe.Main;
 
-import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.LoaderManager;
@@ -9,7 +8,9 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import icepick.Icepick;
 import internetofeveryone.ioe.Browser.BrowserActivity;
@@ -17,6 +18,9 @@ import internetofeveryone.ioe.Downloads.DownloadsActivity;
 import internetofeveryone.ioe.Messenger.MessengerActivity;
 import internetofeveryone.ioe.Presenter.PresenterLoader;
 import internetofeveryone.ioe.R;
+
+import static android.view.View.GONE;
+import static android.view.View.VISIBLE;
 
 /**
  * Created by Fabian Martin for 'Internet of Everyone'
@@ -27,8 +31,9 @@ public class MainActivity extends AppCompatActivity implements MainView, LoaderM
 
     private MainPresenter presenter;
     private static final int LOADER_ID = 101; // unique identification for the MainActivity-LoaderManager
-    private ProgressDialog progressDialog;
     private Animation animAlpha;
+    private ProgressBar spinner;
+    private String errorMessage;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -38,11 +43,7 @@ public class MainActivity extends AppCompatActivity implements MainView, LoaderM
         Icepick.restoreInstanceState(this, savedInstanceState); // restores instance state
         setContentView(R.layout.activity_main);
         animAlpha = AnimationUtils.loadAnimation(this, R.anim.anim_alpha);
-        progressDialog = new ProgressDialog(this);
-        progressDialog.setMessage(getString(R.string.please_wait_app_configuration));
-        progressDialog.setIndeterminate(true);
-        progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-        progressDialog.setCancelable(false);
+        spinner = (ProgressBar)findViewById(R.id.progressBarMain);
     }
 
     @Override
@@ -50,8 +51,12 @@ public class MainActivity extends AppCompatActivity implements MainView, LoaderM
 
         super.onStart();
         presenter.attachView(this);
+        spinner.setVisibility(GONE);
         presenter.setUp();
         showUserCode(presenter.getModel().getUserCode());
+        if (errorMessage != null) {
+            Toast.makeText(this, errorMessage, Toast.LENGTH_SHORT).show();
+        }
     }
 
     @Override
@@ -64,6 +69,10 @@ public class MainActivity extends AppCompatActivity implements MainView, LoaderM
     @Override
     public void onPause() {
         super.onPause();
+    }
+
+    public void displayNetworkErrorMessage() {
+        errorMessage = this.getString(R.string.networkFailure);
     }
 
     @Override
@@ -161,27 +170,17 @@ public class MainActivity extends AppCompatActivity implements MainView, LoaderM
     }
 
     /**
-     * displays loading message
+     * displays loading bar
      */
     public void displayLoader() {
-        progressDialog.show();
+        spinner.setVisibility(VISIBLE);
     }
 
     /**
-     * closes loading message
+     * closes loading bar
      */
     public void closeLoader() {
-        progressDialog.dismiss();
+        spinner.setVisibility(GONE);
     }
-
-    public ProgressDialog getProgressDialog() {
-        return progressDialog;
-    }
-
-    public void setProgressDialog(ProgressDialog progressDialog) {
-        this.progressDialog = progressDialog;
-    }
-
-
 
 }

@@ -88,7 +88,7 @@ public abstract class MessagingPresenter<V extends MvpView> extends MvpPresenter
     /**
      * starts request to fetch new messages from server
      */
-    public void fetchMessagesFromServer() {
+    public boolean fetchMessagesFromServer() {
 
         new Connect().execute("");
 
@@ -99,10 +99,14 @@ public abstract class MessagingPresenter<V extends MvpView> extends MvpPresenter
         }
 
         if (tcpClient != null) {
-            tcpClient.sendMessage(getModel().getUserCode() + "\0MSGPULL\0" + getModel().getUserCode() + "\0" + getModel().getSessionHash()  + "\u0004");
+            if (!tcpClient.sendMessage(getModel().getUserCode() + "\0MSGPULL\0" + getModel().getUserCode() + "\0" + getModel().getSessionHash()  + "\u0004")) {
+                Log.e(TAG, "fetch didn't work due to connection issues");
+                return false;
+            }
         } else {
             Log.e(TAG, "tcpclient is null");
         }
+        return true;
     }
 
     private class Connect extends AsyncTask<String, String, TcpClient> {

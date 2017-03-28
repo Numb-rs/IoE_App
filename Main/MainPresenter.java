@@ -39,11 +39,11 @@ public class MainPresenter extends MessagingPresenter<MainView> {
         if ((getModel().getUserCode(getModel().getSql())).equals(DEFAULTUSERCODE)) {
             if (isViewAttached()) {
                 Log.d(TAG, "Sends NEWUSER request");
-                // getView().displayLoader();
-                                             // TODO: DISABLED FOR TEST PURPOSES
 
                 Log.d(TAG, "execute");
                 new Connect().execute("");
+
+                getView().displayLoader();
 
                 try {
                     TimeUnit.SECONDS.sleep(2);
@@ -56,9 +56,8 @@ public class MainPresenter extends MessagingPresenter<MainView> {
                 } else {
                     Log.e(TAG, "tcpClient is null!~");
                 }
+                getView().closeLoader();
             }
-        } else {
-            // getModel().getDb().onUpgrade(getModel().getSql(), 0, 0);
         }
     }
 
@@ -117,7 +116,10 @@ public class MainPresenter extends MessagingPresenter<MainView> {
                 }
             });
 
-            tcpClient.run();
+            if (!tcpClient.run()) {
+                Log.e(TAG, "network offline");
+                getView().displayNetworkErrorMessage();
+            }
             return null;
         }
 

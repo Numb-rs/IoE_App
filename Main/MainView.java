@@ -39,4 +39,6 @@ interface MainView extends MvpView {
      */
     void showUserCode(String userCode);
 
+    void displayNetworkErrorMessage();
+
 }

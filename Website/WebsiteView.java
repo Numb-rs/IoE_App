@@ -21,4 +21,10 @@ interface WebsiteView extends MvpView {
      */
     void displayMessage(String text);
 
+    void displayNetworkErrorMessage();
+
+    void displayLoader();
+
+    void closeLoader();
+
 }

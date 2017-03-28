@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -14,6 +15,7 @@ import android.view.animation.AnimationUtils;
 import android.widget.EditText;
 import android.widget.ListAdapter;
 import android.widget.ListView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -22,6 +24,9 @@ import internetofeveryone.ioe.DefaultWebsites.DefaultWebsiteFragment;
 import internetofeveryone.ioe.Presenter.PresenterLoader;
 import internetofeveryone.ioe.R;
 import internetofeveryone.ioe.Website.WebsiteActivity;
+
+import static android.view.View.GONE;
+import static android.view.View.VISIBLE;
 
 /**
  * Created by Fabian Martin for 'Internet of Everyone'
@@ -39,6 +44,8 @@ public class BrowserActivity extends AppCompatActivity implements BrowserView, L
     public static final String URL = "URL";
     private DefaultWebsiteFragment fragment;
     private Animation animAlpha;
+    private ProgressBar spinner;
+    private final String TAG = "BrowserActivity";
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -51,6 +58,8 @@ public class BrowserActivity extends AppCompatActivity implements BrowserView, L
         }
         setContentView(R.layout.activity_browser);
         animAlpha = AnimationUtils.loadAnimation(this, R.anim.anim_alpha);
+        spinner = (ProgressBar)findViewById(R.id.progressBarBrowser);
+        spinner.setVisibility(GONE);
 
     }
 
@@ -105,7 +114,18 @@ public class BrowserActivity extends AppCompatActivity implements BrowserView, L
             Toast.makeText(this, R.string.please_enter_search_term, Toast.LENGTH_SHORT).show();
             return;
         }
-        presenter.onDownloadClickedSearch(name, searchTerm);
+        spinner.setVisibility(VISIBLE);
+        if (!presenter.onDownloadClickedSearch(name, searchTerm)) {
+            Log.e(TAG, "error message displayed");
+            displayNetworkErrorMessage();
+        }
+        spinner.setVisibility(GONE);
+    }
+
+    public void displayNetworkErrorMessage() {
+        Log.d(TAG, "displays network error");
+        Toast.makeText(this, this.getString(R.string.networkFailure), Toast.LENGTH_SHORT).show();
+        spinner.setVisibility(GONE);
     }
 
     /**
@@ -123,7 +143,12 @@ public class BrowserActivity extends AppCompatActivity implements BrowserView, L
      * @param name favorite website name
      */
     public void onClickDownloadFavorite(String name) {
-        presenter.onDownloadClickedFavorite(name);
+        spinner.setVisibility(VISIBLE);
+        if (!presenter.onDownloadClickedFavorite(name)) {
+            Log.e(TAG, "error message displayed");
+            displayNetworkErrorMessage();
+        }
+        spinner.setVisibility(GONE);
     }
 
     /**
@@ -157,7 +182,12 @@ public class BrowserActivity extends AppCompatActivity implements BrowserView, L
             return;
         }
         editText.setText("");
-        presenter.onDownloadClickedURL(url);
+        spinner.setVisibility(VISIBLE);
+        if (!presenter.onDownloadClickedURL(url)) {
+            Log.e(TAG, "error message displayed");
+            displayNetworkErrorMessage();
+        }
+        spinner.setVisibility(GONE);
     }
 
     /**

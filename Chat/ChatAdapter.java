@@ -1,5 +1,6 @@
 package internetofeveryone.ioe.Chat;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,6 +18,7 @@ public class ChatAdapter extends BaseAdapter {
 
     private final ArrayList<Message> data;
     private final String contactUserCode;
+    private final String TAG = "ChatAdapter";
 
     /**
      * Instantiates a new ChatAdapter.
@@ -54,22 +56,26 @@ public class ChatAdapter extends BaseAdapter {
 
         if (convertView == null) {
             viewHolder = new ChatAdapter.ViewHolder();
-            LayoutInflater inflater = LayoutInflater.from(parent.getContext());
-            // If receiver is the other person (the message has been sent by me) align to right
-            if ((data.get(position)).getReceiverID().equals(contactUserCode)) {
-                convertView = inflater.inflate(R.layout.item_chat_right, parent, false);
-            }
-            // If not mine then align to left
-            else {
-                convertView = inflater.inflate(R.layout.item_chat_left, parent, false);
-            }
-
-            viewHolder.tVMessage = (TextView) convertView.findViewById(R.id.txt_msg);
-            convertView.setTag(viewHolder);
-
         } else {
             viewHolder = (ChatAdapter.ViewHolder) convertView.getTag();
         }
+        LayoutInflater inflater = LayoutInflater.from(parent.getContext());
+        // If receiver is the other person (the message has been sent by me) align to right
+        if ((data.get(position)).getReceiverID().equals(contactUserCode)) {
+            Log.d(TAG, "Message " + getItem(position).getContent() + " on position " + position + " is right. Sender = " + getItem(position).getSenderID() + ", receiver = " +
+            getItem(position).getReceiverID());
+            convertView = inflater.inflate(R.layout.item_chat_right, parent, false);
+        }
+        // If not mine then align to left
+        else {
+            Log.d(TAG, "Message " + getItem(position).getContent() + " on position " + position + " is left. Sender = " + getItem(position).getSenderID() + ", receiver = " +
+                    getItem(position).getReceiverID());
+            convertView = inflater.inflate(R.layout.item_chat_left, parent, false);
+        }
+
+        viewHolder.tVMessage = (TextView) convertView.findViewById(R.id.txt_msg);
+        convertView.setTag(viewHolder);
+        
         viewHolder.tVMessage.setText(data.get(position).getContent());
 
         return convertView;

@@ -82,17 +82,15 @@ public class BrowserPresenter extends BrowsingPresenter<BrowserView> {
     /**
      * Downloads the Website that has been selected through a search engine
      */
-    public void onDownloadClickedSearch(String name, String searchTerm) {
+    public boolean onDownloadClickedSearch(String name, String searchTerm) {
         switch (name) {
             case GOOGLE:
             case WEATHER:
-                downloadSearch(name, searchTerm);
-                break;
+                return downloadSearch(name, searchTerm);
             case WIKI:
-                downloadSearch("wiki", searchTerm);
-                break;
+                return downloadSearch("wiki", searchTerm);
             default:
-                break;
+                return false;
         }
     }
 
@@ -112,25 +110,26 @@ public class BrowserPresenter extends BrowsingPresenter<BrowserView> {
      * Downloads the favorite website that has been clicked on
      * @param name of the website
      */
-    public void onDownloadClickedFavorite(String name) {
+    public boolean onDownloadClickedFavorite(String name) {
         for (Website w : getModel().getAllDefaultWebsites()) {
             if (w.getName().equals(name)) {
-                downloadWithoutSearch(w.getUrl(), name);
+                return downloadWithoutSearch(w.getUrl(), name);
             }
         }
+        return false;
     }
 
     public void onOpenClickedURL(String url) {
         getView().goToURL(url);
     }
 
-    public void onDownloadClickedURL(String url) {
+    public boolean onDownloadClickedURL(String url) {
         String name = url.replace("http://www.", "");
         name = name.replace("https://www.", "");
         if (name.endsWith("/")) {
             name = name.substring(0, name.length()-1);
         }
-        downloadWithoutSearch(url, name);
+        return downloadWithoutSearch(url, name);
     }
 
     public void downloadWebsite(String websiteName, String content) {
@@ -194,7 +193,7 @@ public class BrowserPresenter extends BrowsingPresenter<BrowserView> {
      * @param engine search engine
      * @param searchTerm search term
      */
-    private void downloadSearch(final String engine, final String searchTerm) {
+    private boolean downloadSearch(final String engine, final String searchTerm) {
 
         Log.d(VolleyLog.TAG, "Engine passed: " + engine);
         Log.d(VolleyLog.TAG, "Searchterm passed: " + searchTerm);
@@ -211,11 +210,16 @@ public class BrowserPresenter extends BrowsingPresenter<BrowserView> {
             e.printStackTrace();
         }
 
+
         if (tcpClient != null) {
-            tcpClient.sendMessage(getModel().getUserCode() + "\0WEBSRCH\0" + searchTerm + "\0" + engine + "\0" + languageParameter + "\u0004");
+            if (!tcpClient.sendMessage(getModel().getUserCode() + "\0WEBSRCH\0" + searchTerm + "\0" + engine + "\0" + languageParameter + "\u0004")) {
+                Log.e(TAG, "download search didn't work due to connection issues");
+                return false;
+            }
         } else {
             Log.e(TAG, "tcpclient is null");
         }
+        return true;
 
     }
 
@@ -224,7 +228,7 @@ public class BrowserPresenter extends BrowsingPresenter<BrowserView> {
      * @param urlOfWebsite url of website
      * @param name name of website
      */
-    private void downloadWithoutSearch(final String urlOfWebsite, final String name) {
+    private boolean downloadWithoutSearch(final String urlOfWebsite, final String name) {
 
         Log.d(TAG, "Url passed: " + urlOfWebsite);
 
@@ -240,10 +244,14 @@ public class BrowserPresenter extends BrowsingPresenter<BrowserView> {
         }
 
         if (tcpClient != null) {
-            tcpClient.sendMessage(getModel().getUserCode() + "\0WEBREQU\0" + urlOfWebsite + "\u0004");
+            if (!tcpClient.sendMessage(getModel().getUserCode() + "\0WEBREQU\0" + urlOfWebsite + "\u0004")) {
+                Log.e(TAG, "download without search didn't work due to connection issues");
+                return false;
+            }
         } else {
             Log.e(TAG, "tcpclient is null");
         }
+        return true;
 
     }
 

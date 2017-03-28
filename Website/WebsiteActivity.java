@@ -7,6 +7,7 @@ import android.support.v4.content.Loader;
 import android.support.v7.app.AppCompatActivity;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import icepick.Icepick;
@@ -14,6 +15,9 @@ import internetofeveryone.ioe.Browser.BrowserActivity;
 import internetofeveryone.ioe.Presenter.PresenterLoader;
 import internetofeveryone.ioe.R;
 import us.feras.mdv.MarkdownView;
+
+import static android.view.View.GONE;
+import static android.view.View.VISIBLE;
 
 
 /**
@@ -26,6 +30,8 @@ public class WebsiteActivity extends AppCompatActivity implements WebsiteView, L
     private WebsitePresenter presenter;
     private static final int LOADER_ID = 108; // unique identification for the WebsiteActivity-LoaderManager
     private MarkdownView markdownView;
+    private ProgressBar spinner;
+    private String errorMessage;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,6 +41,8 @@ public class WebsiteActivity extends AppCompatActivity implements WebsiteView, L
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_website);
+        spinner = (ProgressBar)findViewById(R.id.progressBarWebsite);
+        spinner.setVisibility(GONE);
     }
 
     /**
@@ -64,6 +72,9 @@ public class WebsiteActivity extends AppCompatActivity implements WebsiteView, L
         Toast.makeText(this, text, Toast.LENGTH_SHORT).show();
     }
 
+    public void displayNetworkErrorMessage() {
+        errorMessage = this.getString(R.string.networkFailure);
+    }
 
     @Override
     public void dataChanged() {}
@@ -72,6 +83,18 @@ public class WebsiteActivity extends AppCompatActivity implements WebsiteView, L
     public void onStart() {
         super.onStart();
         presenter.attachView(this);
+
+        String urlPassed = getIntent().getStringExtra(BrowserActivity.URL);
+        String enginePassed = getIntent().getStringExtra(BrowserActivity.ENGINE);
+        String searchTermPassed = getIntent().getStringExtra(BrowserActivity.SEARCHTERM);
+        if (urlPassed != null) {
+            presenter.onURLPassed(urlPassed);
+        } else {
+            presenter.onSearchRequest(enginePassed, searchTermPassed);
+        }
+        if (errorMessage != null) {
+            Toast.makeText(this, errorMessage, Toast.LENGTH_SHORT).show();
+        }
     }
 
     @Override
@@ -100,14 +123,7 @@ public class WebsiteActivity extends AppCompatActivity implements WebsiteView, L
     public void onLoadFinished(Loader<WebsitePresenter> loader, WebsitePresenter presenter) {
 
         this.presenter = presenter;
-        String urlPassed = getIntent().getStringExtra(BrowserActivity.URL);
-        String enginePassed = getIntent().getStringExtra(BrowserActivity.ENGINE);
-        String searchTermPassed = getIntent().getStringExtra(BrowserActivity.SEARCHTERM);
-        if (urlPassed != null) {
-            presenter.onURLPassed(urlPassed);
-        } else {
-            presenter.onSearchRequest(enginePassed, searchTermPassed);
-        }
+
 
     }
 
@@ -129,6 +145,20 @@ public class WebsiteActivity extends AppCompatActivity implements WebsiteView, L
 
     public MarkdownView getMarkdownView() {
         return markdownView;
+    }
+
+    /**
+     * displays loading bar
+     */
+    public void displayLoader() {
+        spinner.setVisibility(VISIBLE);
+    }
+
+    /**
+     * closes loading bar
+     */
+    public void closeLoader() {
+        spinner.setVisibility(GONE);
     }
 }
 
