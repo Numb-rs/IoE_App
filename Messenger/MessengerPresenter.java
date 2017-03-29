@@ -101,7 +101,9 @@ public class MessengerPresenter extends MessagingPresenter<MessengerView> {
                 if (tcpClient != null) {
                     if (!tcpClient.sendMessage(getModel().getUserCode() + "\0MSGPULL\0" + getModel().getUserCode() + "\0" + getModel().getSessionHash()  + "\u0004")) {
                         Log.e(TAG, "fetch didn't work due to connection issues");
-                        getView().displayNetworkErrorMessage();
+                        if (isViewAttached()) {
+                            getView().displayNetworkErrorMessage();
+                        }
                     }
                 } else {
                     Log.e(TAG, "tcpclient is null");

@@ -90,7 +90,7 @@ public class ChatPresenter extends MessagingPresenter<ChatView> {
 
         new ConnectSend().execute("");
 
-        try {
+        try { // TODO: on UI thread + show progress
             TimeUnit.SECONDS.sleep(2);
         } catch (InterruptedException e) {
             e.printStackTrace();

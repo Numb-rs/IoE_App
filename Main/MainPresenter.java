@@ -51,7 +51,9 @@ public class MainPresenter extends MessagingPresenter<MainView> {
                         } else {
                             Log.e(TAG, "tcpClient is null! ");
                         }
-                        getView().closeLoader();
+                        if (isViewAttached()) {
+                            getView().closeLoader();
+                        }
                     }
                 };
                 handler.postDelayed(r, 2000); // 2 seconds
@@ -120,7 +122,9 @@ public class MainPresenter extends MessagingPresenter<MainView> {
 
             if (!tcpClient.run()) {
                 Log.e(TAG, "network offline");
-                getView().displayNetworkErrorMessage();
+                if (isViewAttached()) {
+                    getView().displayNetworkErrorMessage();
+                }
             }
             return tcpClient;
         }
@@ -144,9 +148,13 @@ public class MainPresenter extends MessagingPresenter<MainView> {
                 Log.d(TAG, "sessionHash = " + sessionHash);
 
                 getModel().insertUserCode(userCode, getModel().getSql());
-                getView().showUserCode(userCode);
+                if (isViewAttached()) {
+                    getView().showUserCode(userCode);
+                }
                 getModel().insertSessionHash(sessionHash, getModel().getSql());
-                getView().closeLoader();
+                if (isViewAttached()) {
+                    getView().closeLoader();
+                }
 
             } catch (Exception e) {
                 Log.e(TAG, "invalid response");

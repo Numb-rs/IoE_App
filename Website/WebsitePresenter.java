@@ -57,7 +57,9 @@ public class WebsitePresenter extends BrowsingPresenter<WebsiteView> {
                 if (tcpClient != null) {
                     if (!tcpClient.sendMessage(getModel().getUserCode() + "\0WEBREQU\0" + urlOfWebsite + "\u0004")) {
                         Log.e(TAG, "url request didn't work due to connection issues");
-                        getView().displayNetworkErrorMessage();
+                        if (isViewAttached()) {
+                            getView().displayNetworkErrorMessage();
+                        }
                     }
                 } else {
                     Log.e(TAG, "TcpClient is null");
@@ -134,7 +136,9 @@ public class WebsitePresenter extends BrowsingPresenter<WebsiteView> {
             });
             if (!tcpClient.run()) {
                 Log.e(TAG, "network offline");
-                getView().displayNetworkErrorMessage();
+                if (isViewAttached()) {
+                    getView().displayNetworkErrorMessage();
+                }
             }
             return null;
         }
@@ -161,7 +165,9 @@ public class WebsitePresenter extends BrowsingPresenter<WebsiteView> {
             parsedResponse = parsedResponse.replace("\\" + "n", "  \n");
             parsedResponse = parsedResponse.replace("\\" + "\"", "\"");
             String content = parsedResponse.substring(1, parsedResponse.length()-1);
-            getView().displayWebsite(content);
+            if (isViewAttached()) {
+                getView().displayWebsite(content);
+            }
             tcpClient.stopClient();
         }
     }
