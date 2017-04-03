@@ -2,6 +2,7 @@ package internetofeveryone.ioe.Chat;
 
 import android.content.Context;
 import android.os.AsyncTask;
+import android.os.Handler;
 import android.util.Log;
 
 import java.util.TreeMap;
@@ -76,9 +77,9 @@ public class ChatPresenter extends MessagingPresenter<ChatView> {
      *
      * @param msgPassed the message
      */
-    public void sendMessage(String userCode, String msgPassed) {
+    public void sendMessage(final String userCode, String msgPassed) {
         String content = msgPassed;
-        boolean encrypt = getModel().getChatByID(userCode).isEncrypted();
+        final boolean encrypt = getModel().getChatByID(userCode).isEncrypted();
         if (encrypt) {
             try {
                 content = Message.encrypt(msgPassed, getModel().getContactByID(userCode).getKey());
@@ -86,21 +87,30 @@ public class ChatPresenter extends MessagingPresenter<ChatView> {
                 e.printStackTrace();
             }
         }
+        final String finalContent = content;
         getModel().addMessage(getModel().getUserCode(), getModel().getContactByID(userCode).getUserCode(), content, encrypt);
 
         new ConnectSend().execute("");
 
-        try { // TODO: on UI thread + show progress
-            TimeUnit.SECONDS.sleep(2);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-
-        if (tcpClientSend != null) {
-            tcpClientSend.sendMessage(getModel().getUserCode() + "\0MSGSEND\0" + getModel().getUserCode() + "\0" + userCode  +  "\0" + getModel().getSessionHash()  + "\0" + (encrypt ? 1 : 0) + content + "\u0004");
-        } else {
-            Log.e(TAGSend, "tcpclient is null");
-        }
+        Handler handler = new Handler();
+        Runnable r = new Runnable() {
+            public void run() {
+                if (tcpClientSend != null) {
+                    if (!tcpClientSend.sendMessage(getModel().getUserCode() + "\0MSGSEND\0" + getModel().getUserCode() + "\0" + userCode  +  "\0" + getModel().getSessionHash()  + "\0" + (encrypt ? 1 : 0) + finalContent + "\u0004")) {
+                        Log.e(TAGSend, "sending message didn't work due to connection issues");
+                        if (isViewAttached()) {
+                            getView().displayNetworkErrorMessage();
+                        }
+                    }
+                } else {
+                    Log.e(TAGSend, "tcpclient is null");
+                }
+                if (isViewAttached()) {
+                    getView().closeLoader();
+                }
+            }
+        };
+        handler.postDelayed(r, 2000); // 2 seconds
     }
 
     /**

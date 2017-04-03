@@ -10,5 +10,7 @@ import internetofeveryone.ioe.View.MvpView;
  */
 public interface ChatView extends MvpView {
 
+    void displayNetworkErrorMessage();
 
+    void closeLoader();
 }

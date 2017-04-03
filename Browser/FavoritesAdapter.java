@@ -87,7 +87,7 @@ public class FavoritesAdapter extends BaseAdapter {
         viewHolder.downloadButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                view.startAnimation(animAlpha); // TODO: animation doesnt work yet
+                view.startAnimation(animAlpha);
                 if(context instanceof BrowserView){
                     ((BrowserView)context).onClickDownloadFavorite(name);
                 }

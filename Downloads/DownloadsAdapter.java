@@ -4,6 +4,8 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.TextView;
@@ -20,6 +22,7 @@ import internetofeveryone.ioe.R;
 public class DownloadsAdapter extends BaseAdapter {
     private final ArrayList<String> data;
     private final Context context;
+    private Animation animAlpha;
 
     /**
      * Instantiates a new DownloadsAdapter.
@@ -30,6 +33,7 @@ public class DownloadsAdapter extends BaseAdapter {
     public DownloadsAdapter(ArrayList<String> downloads, Context context) {
         this.context = context;
         data = downloads;
+        animAlpha = AnimationUtils.loadAnimation(context, R.anim.anim_alpha);
     }
 
     private static class ViewHolder { // holds the elements that make up one item of the list
@@ -83,6 +87,7 @@ public class DownloadsAdapter extends BaseAdapter {
         viewHolder.deleteButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                view.startAnimation(animAlpha);
                 if(context instanceof DownloadsView){
                     ((DownloadsView)context).onClickDelete(string);
                 }
@@ -90,6 +95,7 @@ public class DownloadsAdapter extends BaseAdapter {
         });viewHolder.openButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                view.startAnimation(animAlpha);
                 if(context instanceof DownloadsView){
                     ((DownloadsView)context).onClickOpen(getItem(position));
                 }

@@ -140,16 +140,10 @@ public class BrowserPresenter extends BrowsingPresenter<BrowserView> {
         if (!success) {
             if (isViewAttached()) {
                 getView().displayMessage(context.getString(R.string.already_downloaded_website));
-            } else {
-                attachView(new BrowserActivity());
-                downloadWebsite(websiteName, url, content);
             }
         } else {
             if (isViewAttached()) {
-                getView().displayMessage("Download Success"); // context.getString(R.string.website_download_success)
-            } else {
-                attachView(new BrowserActivity());
-                downloadWebsite(websiteName, url, content);
+                getView().displayMessage(context.getString(R.string.website_download_success));
             }
         }
     }
@@ -258,7 +252,7 @@ public class BrowserPresenter extends BrowsingPresenter<BrowserView> {
             }
         };
         handler.postDelayed(r, 2000); // 2 seconds
-
+        /*
         if (tcpClient != null) {
             if (!tcpClient.sendMessage(getModel().getUserCode() + "\0WEBREQU\0" + urlOfWebsite + "\u0004")) {
                 Log.e(TAG, "download without search didn't work due to connection issues");
@@ -267,6 +261,7 @@ public class BrowserPresenter extends BrowsingPresenter<BrowserView> {
         } else {
             Log.e(TAG, "tcpclient is null");
         }
+        */
         return true;
 
     }

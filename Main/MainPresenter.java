@@ -69,8 +69,6 @@ public class MainPresenter extends MessagingPresenter<MainView> {
 
         if (isViewAttached()) {
             getView().goToMessenger();
-        } else {
-            attachView(new MainActivity());
         }
     }
 
@@ -81,8 +79,6 @@ public class MainPresenter extends MessagingPresenter<MainView> {
 
         if (isViewAttached()) {
             getView().goToDownloads();
-        } else {
-            attachView(new MainActivity());
         }
     }
 
@@ -93,8 +89,6 @@ public class MainPresenter extends MessagingPresenter<MainView> {
 
         if (isViewAttached()) {
             getView().goToBrowser();
-        } else {
-            attachView(new MainActivity());
         }
     }
 

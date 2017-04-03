@@ -42,7 +42,7 @@ public class WebsiteActivity extends AppCompatActivity implements WebsiteView, L
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_website);
         spinner = (ProgressBar)findViewById(R.id.progressBarWebsite);
-        spinner.setVisibility(GONE);
+        spinner.setVisibility(VISIBLE);
     }
 
     /**

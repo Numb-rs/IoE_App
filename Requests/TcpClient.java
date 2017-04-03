@@ -129,7 +129,6 @@ public class TcpClient {
                     if(socket.isConnected()){
                         socket.close();
                     }
-                    // run();
                 }
 
             } catch (SocketTimeoutException e){

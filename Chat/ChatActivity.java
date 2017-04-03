@@ -4,9 +4,14 @@ import android.os.Bundle;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.ProgressBar;
+import android.widget.Toast;
 import android.widget.ToggleButton;
 
 import java.util.TreeMap;
@@ -15,6 +20,9 @@ import icepick.Icepick;
 import internetofeveryone.ioe.Data.Message;
 import internetofeveryone.ioe.Presenter.PresenterLoader;
 import internetofeveryone.ioe.R;
+
+import static android.view.View.GONE;
+import static android.view.View.VISIBLE;
 
 /**
  * Created by Fabian Martin for 'Internet of Everyone'
@@ -33,7 +41,9 @@ public class ChatActivity extends AppCompatActivity implements ChatView, LoaderM
     private ToggleButton encryption;
     private static final int LOADER_ID = 104; // unique identification for the ChatActivity-LoaderManager
     private final String CONTACTUSERCODE = "contactUserCode";
-
+    private ProgressBar spinner;
+    private Animation animAlpha;
+    private final String TAG = "ChatActivity";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,6 +54,9 @@ public class ChatActivity extends AppCompatActivity implements ChatView, LoaderM
         setContentView(R.layout.activity_chat);
         userCode = getIntent().getStringExtra(CONTACTUSERCODE);
         encryption = (ToggleButton) findViewById(R.id.button_encryption);
+        animAlpha = AnimationUtils.loadAnimation(this, R.anim.anim_alpha);
+        spinner = (ProgressBar)findViewById(R.id.progressBarChat);
+        spinner.setVisibility(GONE);
     }
 
     @Override
@@ -84,6 +97,7 @@ public class ChatActivity extends AppCompatActivity implements ChatView, LoaderM
      * @param view the view
      */
     public void onClickEncryptToggle(View view) {
+        view.startAnimation(animAlpha);
         ToggleButton encryption = (ToggleButton) findViewById(R.id.button_encryption);
         presenter.encryptChanged(userCode, encryption.isChecked());
     }
@@ -94,13 +108,27 @@ public class ChatActivity extends AppCompatActivity implements ChatView, LoaderM
      * @param view the view
      */
     public void onClickSend(View view) {
+        view.startAnimation(animAlpha);
         EditText msgEditText = (EditText) findViewById(R.id.message_to_send);
         String message = msgEditText.getText().toString();
+        message = message.replace("\\n", "\n");
         msgEditText.setText("");
         if (!message.equals("")) { // don't send empty messages
+            spinner.setVisibility(VISIBLE);
             presenter.sendMessage(userCode, message);
         }
     }
+
+    public void displayNetworkErrorMessage() {
+        Log.d(TAG, "displays network error");
+        Toast.makeText(this, this.getString(R.string.networkFailure), Toast.LENGTH_SHORT).show();
+        spinner.setVisibility(GONE);
+    }
+
+    public void closeLoader() {
+        spinner.setVisibility(GONE);
+    }
+
 
     /**
      * Updates the data in the ListView by creating a new Adapter and replacing the old one,

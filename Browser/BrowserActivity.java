@@ -162,7 +162,11 @@ public class BrowserActivity extends AppCompatActivity implements BrowserView, L
             return;
         }
         editText.setText("");
-        presenter.onOpenClickedURL(url);
+        if (url.startsWith("http://") || url.startsWith("https://")) {
+            presenter.onOpenClickedURL(url);
+        } else {
+            presenter.onOpenClickedURL("http://" + url);
+        }
     }
 
     /**

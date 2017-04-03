@@ -1,5 +1,7 @@
 package internetofeveryone.ioe.Data;
 
+import android.util.Log;
+
 /**
  * Created by Fabian Martin for 'Internet of Everyone'
  *
@@ -13,6 +15,8 @@ public class Message {
     private long id; // unique identifier the message
     private boolean isEncrypted; // flag that stores if the message is encrypted
     private boolean isMine; // flag that stores if the message has been sent by my (it's senderID is equal to my userCode)
+    private static final String TAG = "Message";
+    private static final String dictionary = "aeorisn1tl2md0cp3hbuk45g9687yfwjvzxq ASERBTMLNPOIDCHGKFJUW.\0\n\"!Y*@V-ZQX_$#,/+?;^%~=&`)]\\[:<(æ>ü|{'öä}ßÄÖÜèéà";
 
     /**
      * Instantiates a new Message.
@@ -39,21 +43,21 @@ public class Message {
      * @return the encrypted message
      */
     public static String encrypt(String original, String key) {
-        System.out.println("Message before encryption: " + original);
+        Log.d(TAG, "Message before encryption: " + original);
         StringBuilder sb = new StringBuilder();
         for (int i = 0; i < original.length(); i++) {
-            char c = original.charAt(i);
-            if (c >= 32) {
-                int keyCharValue = key.charAt(i % key.length()) - 'A';
-                c += keyCharValue;
-                if (c > 127) {
-                    c = (char) (c + 32 - 127);
-                }
+            int c = dictionary.indexOf(original.charAt(i));
+            int keyCharValue = dictionary.indexOf(key.charAt(i % key.length()));
+            c =  (c + keyCharValue) % dictionary.length();
+            if (c < 0) {
+                c += dictionary.length();
             }
-            sb.append(c);
+            sb.append(dictionary.charAt(c));
         }
-        System.out.println("Message after encryption: " + sb.toString());
+
+        Log.d(TAG, "Message after encryption: " + sb.toString());
         return sb.toString();
+
     }
 
     /**
@@ -64,20 +68,20 @@ public class Message {
      * @return the decrypted message
      */
     public static String decrypt(String original, String key) {
-        System.out.println("Message before decryption: " + original);
+        Log.d(TAG, "Message before decryption: " + original);
+
         StringBuilder sb = new StringBuilder();
         for (int i = 0; i < original.length(); i++) {
-            char c = original.charAt(i);
-            if (c >= 32) {
-                int keyCharValue = key.charAt(i % key.length()) - 'A';
-                c -= keyCharValue;
-                if (c < 32) {
-                    c = (char) (c + 127 - 32);
-                }
+            int c = dictionary.indexOf(original.charAt(i));
+            int keyCharValue = dictionary.indexOf(key.charAt(i % key.length()));
+            c = (c - keyCharValue) % dictionary.length();
+            if (c < 0) {
+                c += dictionary.length();
             }
-            sb.append(c);
+            sb.append(dictionary.charAt(c));
         }
-        System.out.println("Message after decryption: " + sb.toString());
+
+        Log.d(TAG, "Message after decryption: " + sb.toString());
         return sb.toString();
 
     }
